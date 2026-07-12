@@ -1,0 +1,110 @@
+// src/ToastHost.jsx
+import { useState, useEffect, useRef, useCallback } from 'react'
+import { toast } from './toast.js'
+
+const MAX_SUCCESS = 3 // success items are capped at 3 concurrent; error and action toasts are exempt
+
+let _hostMounted = false // Strict Mode / multi-instance guard
+
+function ToastItem({ item, onClose }) {
+  const [shown, setShown] = useState(false)
+  const timerRef = useRef(null)
+  const remainRef = useRef(item.duration)
+  const startRef = useRef(0)
+
+  const persistent = item.duration == null
+
+  const startTimer = useCallback(() => {
+    if (persistent) return
+    startRef.current = Date.now()
+    timerRef.current = setTimeout(() => onClose(item.id), remainRef.current)
+  }, [item.id, onClose, persistent])
+
+  const pauseTimer = useCallback(() => {
+    if (persistent) return
+    clearTimeout(timerRef.current)
+    remainRef.current -= Date.now() - startRef.current
+  }, [persistent])
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => setShown(true))
+    startTimer()
+    return () => { cancelAnimationFrame(raf); clearTimeout(timerRef.current) }
+  }, [startTimer])
+
+  const isError = item.type === 'error'
+  const hasAction = !!item.action
+  const bodyClose = !hasAction && !isError
+
+  return (
+    <div
+      role={isError ? 'alert' : 'status'}
+      onMouseEnter={pauseTimer}
+      onMouseLeave={startTimer}
+      onClick={bodyClose ? () => onClose(item.id) : undefined}
+      className={[
+        'fbk-toast',
+        isError && 'fbk-toast--error',
+        bodyClose && 'fbk-toast--clickable',
+        shown && 'fbk-toast--shown',
+      ].filter(Boolean).join(' ')}
+    >
+      <div className="fbk-toast__dot" />
+      <span className="fbk-toast__message">{item.message}</span>
+      {item.count > 1 && <span className="fbk-toast__count">×{item.count}</span>}
+      {hasAction && (
+        <button type="button" className="fbk-toast__action"
+          onClick={(e) => { e.stopPropagation(); item.action.onClick(); onClose(item.id) }}>
+          {item.action.label}
+        </button>
+      )}
+      <button type="button" className="fbk-toast__close" aria-label="關閉"
+        onClick={(e) => { e.stopPropagation(); onClose(item.id) }}>✕</button>
+    </div>
+  )
+}
+
+export default function ToastHost() {
+  const [items, setItems] = useState([])
+
+  useEffect(() => {
+    if (_hostMounted) {
+      console.warn('[aw-notify-kit] ToastHost 已掛載超過一次，僅第一個實例會生效')
+    } else {
+      _hostMounted = true
+    }
+    const unsubscribe = toast.subscribe(incoming => {
+      setItems(prev => {
+        if (incoming.type === 'error') {
+          const idx = prev.findIndex(t => t.type === 'error' && t.message === incoming.message)
+          if (idx !== -1) {
+            const next = [...prev]
+            next[idx] = { ...next[idx], count: (next[idx].count || 1) + 1 }
+            return next
+          }
+        }
+        const next = [...prev, { ...incoming, count: 1 }]
+        const evictable = next.filter(t => t.type === 'success' && !t.action)
+        if (evictable.length > MAX_SUCCESS) {
+          const victimId = evictable[0].id
+          return next.filter(t => t.id !== victimId)
+        }
+        return next
+      })
+    })
+    return () => {
+      unsubscribe()
+      _hostMounted = false
+    }
+  }, [])
+
+  const close = useCallback(id => setItems(prev => prev.filter(t => t.id !== id)), [])
+
+  return (
+    <div aria-live="polite" className="fbk-toast-container">
+      {items.map(item => (
+        <ToastItem key={item.id} item={item} onClose={close} />
+      ))}
+    </div>
+  )
+}
