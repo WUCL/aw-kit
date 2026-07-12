@@ -40,8 +40,11 @@ if (await confirm({ title: '確定要刪除？', variant: 'danger' })) {
 ```
 
 ⚠️ **Only mount `<ToastHost />` and `<ConfirmDialogHost />` once each**, at the app root. Both
-emitters are module-level singletons; a second mounted host will log a console warning and
-compete with the first for the same events.
+emitters are module-level singletons; a second mounted host will log a console warning. The
+failure mode differs by component: `ToastHost` uses a multi-listener pub/sub, so duplicate hosts
+will each render the same toast (visible duplication). `ConfirmDialogHost` uses a single-slot
+handler, so the most recently mounted host wins and earlier ones stop receiving `confirm()`
+calls (silent, not duplicated).
 
 ## CSS: use the stylesheet import, not `injectStyles()`
 

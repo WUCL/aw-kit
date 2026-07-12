@@ -13,7 +13,7 @@ export default function ConfirmDialogHost() {
 
   useEffect(() => {
     if (_confirmHostMountCount > 0) {
-      console.warn('[aw-notify-kit] ConfirmDialogHost 已掛載超過一次，僅第一個實例會生效')
+      console.warn('[aw-notify-kit] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次')
     }
     _confirmHostMountCount += 1
     const unregister = registerConfirmHost((opts, resolve) => setDialog({ opts, resolve }))
