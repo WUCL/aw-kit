@@ -6,7 +6,7 @@ Zero-dependency toast + confirm-dialog emitter/host pair for React 18. Extracted
 ## Install
 
 ```bash
-npm install github:chunglunwu/aw-notify-kit#v1
+npm install github:chunglunwu/aw-notify-kit#v0.1.0
 ```
 
 ## Quick Start
@@ -164,6 +164,6 @@ installed — it would break every consumer's install. Build locally, commit `di
 
 ## Versioning
 
-Install a specific tag: `npm install github:chunglunwu/aw-notify-kit#v1`. Tags can technically be
+Install a specific tag: `npm install github:chunglunwu/aw-notify-kit#v0.1.0`. Tags can technically be
 moved; if you need reproducibility guarantees, pin a commit hash instead:
 `npm install github:chunglunwu/aw-notify-kit#<commit-sha>`.

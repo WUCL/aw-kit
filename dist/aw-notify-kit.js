@@ -1,6 +1,6 @@
 import { jsx as i, jsxs as p, Fragment as q } from "react/jsx-runtime";
 import { useState as S, useEffect as v, useCallback as _, useRef as g } from "react";
-const A = /* @__PURE__ */ new Set();
+const D = /* @__PURE__ */ new Set();
 let P = 0;
 const H = /* @__PURE__ */ new Map(), j = 300;
 function I(e, t, { duration: f = 3500, action: c = null, key: r = null } = {}) {
@@ -11,7 +11,7 @@ function I(e, t, { duration: f = 3500, action: c = null, key: r = null } = {}) {
     H.set(s, o);
   }
   const u = { id: ++P, type: e, message: t, duration: f, action: c, key: s };
-  A.forEach((o) => o(u));
+  D.forEach((o) => o(u));
 }
 const K = {
   success(e, t) {
@@ -21,7 +21,7 @@ const K = {
     I("error", e, { duration: null, ...t });
   },
   subscribe(e) {
-    return A.add(e), () => A.delete(e);
+    return D.add(e), () => D.delete(e);
   }
 };
 let w = null;
@@ -118,7 +118,7 @@ function U({ item: e, onClose: t }) {
 function G() {
   const [e, t] = S([]);
   v(() => {
-    T > 0 && console.warn("[aw-notify-kit] ToastHost 已掛載超過一次，僅第一個實例會生效"), T += 1;
+    T > 0 && console.warn("[aw-notify-kit] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), T += 1;
     const c = K.subscribe((r) => {
       t((s) => {
         if (r.type === "error") {
@@ -152,15 +152,15 @@ function N({ variant: e = "secondary", onClick: t, children: f, ...c }) {
   const r = F[e] || F.secondary;
   return /* @__PURE__ */ i("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...c, children: f });
 }
-let D = 0;
+let A = 0;
 function J() {
   var x;
   const [e, t] = S(null), [f, c] = S(!1), r = g(null), s = g(null);
   v(() => {
-    D > 0 && console.warn("[aw-notify-kit] ConfirmDialogHost 已掛載超過一次，僅第一個實例會生效"), D += 1;
+    A > 0 && console.warn("[aw-notify-kit] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), A += 1;
     const l = B((d, b) => t({ opts: d, resolve: b }));
     return () => {
-      l(), D -= 1;
+      l(), A -= 1;
     };
   }, []);
   const u = !!((x = e == null ? void 0 : e.opts) != null && x.actions), o = _((l) => {

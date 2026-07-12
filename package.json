@@ -5,8 +5,13 @@
   "description": "Zero-dependency toast + confirm-dialog emitter/host pair for React 18, extracted from MH1491.",
   "main": "./dist/aw-notify-kit.js",
   "module": "./dist/aw-notify-kit.js",
+  "types": "./dist/index.d.ts",
+  "license": "MIT",
   "exports": {
-    ".": "./dist/aw-notify-kit.js",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/aw-notify-kit.js"
+    },
     "./dist/style.css": "./dist/style.css"
   },
   "files": ["dist"],
