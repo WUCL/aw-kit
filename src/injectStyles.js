@@ -10,26 +10,12 @@
 // - double injection (React 18 Strict Mode mounts effects twice in dev; naive callers might
 //   call this on every mount)
 // - SSR (no `document` global)
+//
+// Imported as raw text (Vite's `?raw` suffix) rather than duplicated as a string, so this
+// fallback can never drift out of sync with the authoritative rules in styles.css.
+import CSS from './styles.css?raw'
 
 const STYLE_ID = 'fbk-styles'
-
-// Kept as a string (not imported from styles.css) so this file has zero build-time coupling
-// to the CSS pipeline — it's a standalone fallback, not a re-export of styles.css.
-const CSS = `
-:root {
-  --fbk-accent: #7d6299;
-  --fbk-accent-hover: #634d7d;
-  --fbk-toast-bg: #1f2937;
-  --fbk-toast-fg: #f9fafb;
-  --fbk-success: #4ade80;
-  --fbk-error: #f87171;
-  --fbk-error-border: rgba(248, 113, 113, 0.35);
-  --fbk-z-toast: 850;
-  --fbk-z-dialog: 1000;
-}
-/* See src/styles.css for the full, authoritative rule set — this fallback carries the
-   same rules; keep the two files in sync if the design changes. */
-`
 
 export function injectStyles() {
   if (typeof document === 'undefined') return

@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.1] — 2026-07-12
+
+Fixes found in a final pre-install review pass.
+
+- Fixed install commands in README/CHANGELOG pointing at the wrong GitHub org
+  (`chunglunwu/aw-notify-kit` → `WUCL/aw-notify-kit`).
+- Fixed `injectStyles()`: the fallback only carried `:root` CSS variables, not the actual
+  component rules, so consumers using it got unstyled toasts/dialogs. Now imports
+  `styles.css` via Vite's `?raw` suffix instead of a hand-duplicated string, so the fallback
+  can't drift out of sync with the real stylesheet again.
+- Doc corrections: undo-toast pause behavior is mouse-hover only (not focus); added the
+  missing `--fbk-error-border` theming token to the README table; corrected a stale
+  `package-lock.json` note in CLAUDE.md.
+
 ## [0.1.0] — 2026-07-12
 
 Initial extraction from [MH1491](https://github.com/chunglunwu/mh1491)'s notification system.

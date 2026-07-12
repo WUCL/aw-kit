@@ -6,7 +6,7 @@ Zero-dependency toast + confirm-dialog emitter/host pair for React 18. Extracted
 ## Install
 
 ```bash
-npm install github:chunglunwu/aw-notify-kit#v0.1.0
+npm install github:WUCL/aw-notify-kit#v0.1.1
 ```
 
 ## Quick Start
@@ -72,6 +72,7 @@ Override CSS custom properties (defaults shown):
   --fbk-toast-fg: #f9fafb;
   --fbk-success: #4ade80;
   --fbk-error: #f87171;
+  --fbk-error-border: rgba(248, 113, 113, 0.35);
   --fbk-z-toast: 850;
   --fbk-z-dialog: 1000;
 }
@@ -112,7 +113,7 @@ own project's conventions doc.
 | # | Situation | Channel | Behavior |
 |---|-----------|---------|----------|
 | 1 | Success / confirmation (saved, completed, undo succeeded…) | `toast.success` | Dark gray, green dot, 3.5s auto-dismiss |
-| 2 | Delete (single row, zero external references, destructive) | `toast.success` with `action: { label: 'Undo' }` | 8s (pauses on hover/focus), clickable undo |
+| 2 | Delete (single row, zero external references, destructive) | `toast.success` with `action: { label: 'Undo' }` | 8s (pauses on hover), clickable undo |
 | 3 | Form validation error (required field, invalid amount) | **inline** field-level error (not part of this package) | Persistent until the field is fixed |
 | 4 | Operation failure (save/delete/submit/batch failed) | `toast.error` | Red dot, never auto-dismisses, manual ✕ close |
 | 5 | Real confirmation (logout, rename-sync, clearing form data) | `confirm({...})` | OK / Cancel |
@@ -164,6 +165,6 @@ installed — it would break every consumer's install. Build locally, commit `di
 
 ## Versioning
 
-Install a specific tag: `npm install github:chunglunwu/aw-notify-kit#v0.1.0`. Tags can technically be
+Install a specific tag: `npm install github:WUCL/aw-notify-kit#v0.1.1`. Tags can technically be
 moved; if you need reproducibility guarantees, pin a commit hash instead:
-`npm install github:chunglunwu/aw-notify-kit#<commit-sha>`.
+`npm install github:WUCL/aw-notify-kit#<commit-sha>`.

@@ -45,7 +45,7 @@ Zero-dependency toast + confirm-dialog emitter/host 套件（React 18），從 M
 - **`dist/` 是刻意 commit 進 git 的**（沒有 gitignore）：因為套件靠 `npm install github:...` 安裝，消費端不會跑 build，只會拉 `dist/` 靜態檔。每次改完 `src/` 後記得 `npm run build`，把新的 `dist/` 一起 commit，否則消費端裝到的是舊版程式碼。
 - **`ToastHost` 和 `ConfirmDialogHost` 的 Strict Mode guard 用的是 refcount（不是布林旗標）**：早期版本用布林旗標，code review 抓到「兩個 host 卸載順序不同時會誤判」的 bug，改成 module-level 計數器（掛載無條件 +1、卸載無條件 -1）才修正。要改這個 guard 邏輯前，先理解為什麼不能用布林。
 - **兩個 host 的「多重掛載」警告文字刻意寫得不一樣**：`ToastHost` 重複掛載 = 兩個都會收到事件、畫面重複顯示；`ConfirmDialogHost` 重複掛載 = 最後掛載的那個會贏，前面的悄悄失效。這是真實的機制差異（一個是 Set 多監聽者、一個是單一 handler 變數覆蓋），不是文字打錯，改文案前先理解機制。
-- **`package-lock.json` 目前刻意留著 untracked**（不追蹤也不 gitignore）：因為消費端不會在這個 repo 裝依賴，只有真的要在本地開發這個套件時才需要它。未來要認真維護開發環境可重現性可以考慮補上。
+- **`package-lock.json` 已 commit 進 git**：確保本地開發這個套件時安裝到一致的 devDependency 版本。消費端不會在這個 repo 裝依賴，這份 lockfile 只服務套件開發者自己。
 - **`undoDelete` 之類綁定資料庫的邏輯刻意不進這個套件**：只給 `toast` / `confirm` 這兩個機制，任何跟特定後端（如 Supabase）耦合的邏輯留在消費端自己組（README 有 adapter 食譜範例）。
 
 ---

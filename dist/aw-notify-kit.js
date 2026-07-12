@@ -1,112 +1,275 @@
-import { jsx as i, jsxs as p, Fragment as q } from "react/jsx-runtime";
-import { useState as S, useEffect as v, useCallback as _, useRef as g } from "react";
-const D = /* @__PURE__ */ new Set();
-let P = 0;
-const H = /* @__PURE__ */ new Map(), j = 300;
-function I(e, t, { duration: f = 3500, action: c = null, key: r = null } = {}) {
-  const s = r ?? t;
-  if (!c) {
-    const o = Date.now(), n = H.get(s);
-    if (n != null && o - n < j) return;
-    H.set(s, o);
+import { jsx as c, jsxs as x, Fragment as I } from "react/jsx-runtime";
+import { useState as E, useEffect as y, useCallback as w, useRef as h } from "react";
+const A = /* @__PURE__ */ new Set();
+let R = 0;
+const L = /* @__PURE__ */ new Map(), F = 300;
+function j(n, e, { duration: d = 3500, action: s = null, key: r = null } = {}) {
+  const a = r ?? e;
+  if (!s) {
+    const o = Date.now(), t = L.get(a);
+    if (t != null && o - t < F) return;
+    L.set(a, o);
   }
-  const u = { id: ++P, type: e, message: t, duration: f, action: c, key: s };
-  D.forEach((o) => o(u));
+  const f = { id: ++R, type: n, message: e, duration: d, action: s, key: a };
+  A.forEach((o) => o(f));
 }
-const K = {
-  success(e, t) {
-    I("success", e, t);
+const P = {
+  success(n, e) {
+    j("success", n, e);
   },
-  error(e, t) {
-    I("error", e, { duration: null, ...t });
+  error(n, e) {
+    j("error", n, { duration: null, ...e });
   },
-  subscribe(e) {
-    return D.add(e), () => D.delete(e);
+  subscribe(n) {
+    return A.add(n), () => A.delete(n);
   }
 };
-let w = null;
-function B(e) {
-  return w = e, () => {
-    w === e && (w = null);
+let v = null;
+function B(n) {
+  return v = n, () => {
+    v === n && (v = null);
   };
 }
-function X(e) {
-  return w ? new Promise((t) => w(e, t)) : Promise.resolve(e != null && e.actions ? null : !1);
+function X(n) {
+  return v ? new Promise((e) => v(n, e)) : Promise.resolve(n != null && n.actions ? null : !1);
 }
-const R = "fbk-styles", $ = `
+const K = `/* src/styles.css — aw-notify-kit default theme.
+   All rules are scoped under the fbk- prefix to avoid colliding with consumer styles.
+   Override --fbk-* custom properties to re-theme without touching these rules. */
+
 :root {
-  --fbk-accent: #7d6299;
-  --fbk-accent-hover: #634d7d;
-  --fbk-toast-bg: #1f2937;
-  --fbk-toast-fg: #f9fafb;
-  --fbk-success: #4ade80;
-  --fbk-error: #f87171;
+  --fbk-accent: #7d6299;        /* brand-600 equivalent, used for primary buttons / undo action */
+  --fbk-accent-hover: #634d7d;  /* brand-700 equivalent */
+  --fbk-toast-bg: #1f2937;      /* gray-800 */
+  --fbk-toast-fg: #f9fafb;      /* gray-50 */
+  --fbk-success: #4ade80;       /* green-400 */
+  --fbk-error: #f87171;         /* red-400 */
   --fbk-error-border: rgba(248, 113, 113, 0.35);
   --fbk-z-toast: 850;
   --fbk-z-dialog: 1000;
 }
-/* See src/styles.css for the full, authoritative rule set — this fallback carries the
-   same rules; keep the two files in sync if the design changes. */
-`;
-function Y() {
-  if (typeof document > "u" || document.getElementById(R)) return;
-  const e = document.createElement("style");
-  e.id = R, e.textContent = $, document.head.appendChild(e);
+
+/* ---------- Toast ---------- */
+
+.fbk-toast-container {
+  position: fixed;
+  z-index: var(--fbk-z-toast);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
 }
-const z = 3;
+
+.fbk-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--fbk-toast-bg);
+  color: var(--fbk-toast-fg);
+  font-size: 14px;
+  border-radius: 8px;
+  padding: 10px 16px;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 8px 10px -6px rgba(0,0,0,0.2);
+  max-width: min(88vw, 384px);
+  transition: opacity 300ms ease-out, transform 300ms ease-out;
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+.fbk-toast--shown { opacity: 1; transform: translateY(0); }
+.fbk-toast--clickable { cursor: pointer; }
+.fbk-toast--error { border: 1px solid var(--fbk-error-border); }
+
+.fbk-toast__dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: var(--fbk-success); }
+.fbk-toast--error .fbk-toast__dot { background: var(--fbk-error); }
+
+.fbk-toast__message { flex: 1; line-height: 1.4; word-break: break-word; }
+
+.fbk-toast__count {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(255,255,255,0.15);
+  border-radius: 999px;
+  padding: 1px 6px;
+}
+
+.fbk-toast__action {
+  flex-shrink: 0;
+  font-weight: 700;
+  color: var(--fbk-accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.fbk-toast__action:hover { color: var(--fbk-accent-hover); }
+
+.fbk-toast__close {
+  flex-shrink: 0;
+  color: #6b7280;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 0 2px;
+}
+.fbk-toast__close:hover { color: #d1d5db; }
+
+/* ---------- ConfirmDialog ---------- */
+
+.fbk-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--fbk-z-dialog);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.fbk-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  transition: opacity 150ms ease-out;
+  opacity: 0;
+}
+.fbk-dialog-backdrop--shown { opacity: 1; }
+
+.fbk-dialog-panel {
+  position: relative;
+  width: 100%;
+  max-width: 384px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: opacity 150ms ease-out, transform 150ms ease-out;
+  opacity: 0;
+  transform: scale(0.95);
+}
+.fbk-dialog-panel--shown { opacity: 1; transform: scale(1); }
+
+.fbk-dialog-title { margin: 0; font-size: 16px; font-weight: 600; color: #111827; }
+.fbk-dialog-body { margin: 0; font-size: 14px; color: #4b5563; white-space: pre-line; line-height: 1.6; }
+
+.fbk-dialog-actions {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ---------- Button ---------- */
+
+.fbk-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 150ms, color 150ms, border-color 150ms;
+}
+
+.fbk-btn--primary {
+  background: var(--fbk-accent);
+  color: #fff;
+  border: none;
+}
+.fbk-btn--primary:hover { background: var(--fbk-accent-hover); }
+
+.fbk-btn--secondary {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+.fbk-btn--secondary:hover { background: #f9fafb; }
+
+.fbk-btn--danger {
+  background: #fff;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.fbk-btn--danger:hover { background: #fef2f2; }
+
+@media (prefers-reduced-motion: reduce) {
+  .fbk-toast, .fbk-dialog-backdrop, .fbk-dialog-panel { transition: none; }
+}
+`, q = "fbk-styles";
+function V() {
+  if (typeof document > "u" || document.getElementById(q)) return;
+  const n = document.createElement("style");
+  n.id = q, n.textContent = K, document.head.appendChild(n);
+}
+const Y = 3;
 let T = 0;
-function U({ item: e, onClose: t }) {
-  const [f, c] = S(!1), r = g(null), s = g(e.duration), u = g(0), o = e.duration == null, n = _(() => {
-    o || (u.current = Date.now(), r.current = setTimeout(() => t(e.id), s.current));
-  }, [e.id, t, o]), a = _(() => {
-    o || (clearTimeout(r.current), s.current -= Date.now() - u.current);
+function $({ item: n, onClose: e }) {
+  const [d, s] = E(!1), r = h(null), a = h(n.duration), f = h(0), o = n.duration == null, t = w(() => {
+    o || (f.current = Date.now(), r.current = setTimeout(() => e(n.id), a.current));
+  }, [n.id, e, o]), i = w(() => {
+    o || (clearTimeout(r.current), a.current -= Date.now() - f.current);
   }, [o]);
-  v(() => {
-    const m = requestAnimationFrame(() => c(!0));
-    return n(), () => {
-      cancelAnimationFrame(m), clearTimeout(r.current);
+  y(() => {
+    const p = requestAnimationFrame(() => s(!0));
+    return t(), () => {
+      cancelAnimationFrame(p), clearTimeout(r.current);
     };
-  }, [n]);
-  const k = e.type === "error", C = !!e.action, E = !C && !k;
-  return /* @__PURE__ */ p(
+  }, [t]);
+  const k = n.type === "error", _ = !!n.action, C = !_ && !k;
+  return /* @__PURE__ */ x(
     "div",
     {
       role: k ? "alert" : "status",
-      onMouseEnter: a,
-      onMouseLeave: n,
-      onClick: E ? () => t(e.id) : void 0,
+      onMouseEnter: i,
+      onMouseLeave: t,
+      onClick: C ? () => e(n.id) : void 0,
       className: [
         "fbk-toast",
         k && "fbk-toast--error",
-        E && "fbk-toast--clickable",
-        f && "fbk-toast--shown"
+        C && "fbk-toast--clickable",
+        d && "fbk-toast--shown"
       ].filter(Boolean).join(" "),
       children: [
-        /* @__PURE__ */ i("div", { className: "fbk-toast__dot" }),
-        /* @__PURE__ */ i("span", { className: "fbk-toast__message", children: e.message }),
-        e.count > 1 && /* @__PURE__ */ p("span", { className: "fbk-toast__count", children: [
+        /* @__PURE__ */ c("div", { className: "fbk-toast__dot" }),
+        /* @__PURE__ */ c("span", { className: "fbk-toast__message", children: n.message }),
+        n.count > 1 && /* @__PURE__ */ x("span", { className: "fbk-toast__count", children: [
           "×",
-          e.count
+          n.count
         ] }),
-        C && /* @__PURE__ */ i(
+        _ && /* @__PURE__ */ c(
           "button",
           {
             type: "button",
             className: "fbk-toast__action",
-            onClick: (m) => {
-              m.stopPropagation(), e.action.onClick(), t(e.id);
+            onClick: (p) => {
+              p.stopPropagation(), n.action.onClick(), e(n.id);
             },
-            children: e.action.label
+            children: n.action.label
           }
         ),
-        /* @__PURE__ */ i(
+        /* @__PURE__ */ c(
           "button",
           {
             type: "button",
             className: "fbk-toast__close",
             "aria-label": "關閉",
-            onClick: (m) => {
-              m.stopPropagation(), t(e.id);
+            onClick: (p) => {
+              p.stopPropagation(), e(n.id);
             },
             children: "✕"
           }
@@ -116,108 +279,108 @@ function U({ item: e, onClose: t }) {
   );
 }
 function G() {
-  const [e, t] = S([]);
-  v(() => {
+  const [n, e] = E([]);
+  y(() => {
     T > 0 && console.warn("[aw-notify-kit] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), T += 1;
-    const c = K.subscribe((r) => {
-      t((s) => {
+    const s = P.subscribe((r) => {
+      e((a) => {
         if (r.type === "error") {
-          const n = s.findIndex((a) => a.type === "error" && a.message === r.message);
-          if (n !== -1) {
-            const a = [...s];
-            return a[n] = { ...a[n], count: (a[n].count || 1) + 1 }, a;
+          const t = a.findIndex((i) => i.type === "error" && i.message === r.message);
+          if (t !== -1) {
+            const i = [...a];
+            return i[t] = { ...i[t], count: (i[t].count || 1) + 1 }, i;
           }
         }
-        const u = [...s, { ...r, count: 1 }], o = u.filter((n) => n.type === "success" && !n.action);
-        if (o.length > z) {
-          const n = o[0].id;
-          return u.filter((a) => a.id !== n);
+        const f = [...a, { ...r, count: 1 }], o = f.filter((t) => t.type === "success" && !t.action);
+        if (o.length > Y) {
+          const t = o[0].id;
+          return f.filter((i) => i.id !== t);
         }
-        return u;
+        return f;
       });
     });
     return () => {
-      c(), T -= 1;
+      s(), T -= 1;
     };
   }, []);
-  const f = _((c) => t((r) => r.filter((s) => s.id !== c)), []);
-  return /* @__PURE__ */ i("div", { "aria-live": "polite", className: "fbk-toast-container", children: e.map((c) => /* @__PURE__ */ i(U, { item: c, onClose: f }, c.id)) });
+  const d = w((s) => e((r) => r.filter((a) => a.id !== s)), []);
+  return /* @__PURE__ */ c("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ c($, { item: s, onClose: d }, s.id)) });
 }
-const F = {
+const H = {
   primary: "fbk-btn--primary",
   secondary: "fbk-btn--secondary",
   danger: "fbk-btn--danger"
 };
-function N({ variant: e = "secondary", onClick: t, children: f, ...c }) {
-  const r = F[e] || F.secondary;
-  return /* @__PURE__ */ i("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...c, children: f });
+function S({ variant: n = "secondary", onClick: e, children: d, ...s }) {
+  const r = H[n] || H.secondary;
+  return /* @__PURE__ */ c("button", { type: "button", className: `fbk-btn ${r}`, onClick: e, ...s, children: d });
 }
-let A = 0;
+let N = 0;
 function J() {
-  var x;
-  const [e, t] = S(null), [f, c] = S(!1), r = g(null), s = g(null);
-  v(() => {
-    A > 0 && console.warn("[aw-notify-kit] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), A += 1;
-    const l = B((d, b) => t({ opts: d, resolve: b }));
+  var D;
+  const [n, e] = E(null), [d, s] = E(!1), r = h(null), a = h(null);
+  y(() => {
+    N > 0 && console.warn("[aw-notify-kit] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), N += 1;
+    const l = B((u, b) => e({ opts: u, resolve: b }));
     return () => {
-      l(), A -= 1;
+      l(), N -= 1;
     };
   }, []);
-  const u = !!((x = e == null ? void 0 : e.opts) != null && x.actions), o = _((l) => {
-    e == null || e.resolve(l), c(!1), setTimeout(() => t(null), 150);
-  }, [e]), n = _(() => o(u ? null : !1), [o, u]);
-  if (v(() => {
-    if (!e) return;
-    s.current = document.activeElement;
-    const l = requestAnimationFrame(() => c(!0)), d = document.body.style.overflow;
+  const f = !!((D = n == null ? void 0 : n.opts) != null && D.actions), o = w((l) => {
+    n == null || n.resolve(l), s(!1), setTimeout(() => e(null), 150);
+  }, [n]), t = w(() => o(f ? null : !1), [o, f]);
+  if (y(() => {
+    if (!n) return;
+    a.current = document.activeElement;
+    const l = requestAnimationFrame(() => s(!0)), u = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const b = setTimeout(() => {
-      var y, h;
-      (h = (y = r.current) == null ? void 0 : y.querySelector("button:not([disabled])")) == null || h.focus();
+      var m, g;
+      (g = (m = r.current) == null ? void 0 : m.querySelector("button:not([disabled])")) == null || g.focus();
     }, 60);
     return () => {
-      cancelAnimationFrame(l), clearTimeout(b), document.body.style.overflow = d, s.current instanceof HTMLElement && document.body.contains(s.current) && s.current.focus();
+      cancelAnimationFrame(l), clearTimeout(b), document.body.style.overflow = u, a.current instanceof HTMLElement && document.body.contains(a.current) && a.current.focus();
     };
-  }, [e]), v(() => {
-    if (!e) return;
-    const l = (d) => {
-      var L;
-      if (d.key === "Escape") {
-        n();
+  }, [n]), y(() => {
+    if (!n) return;
+    const l = (u) => {
+      var M;
+      if (u.key === "Escape") {
+        t();
         return;
       }
-      if (d.key !== "Tab") return;
-      const b = (L = r.current) == null ? void 0 : L.querySelectorAll("button:not([disabled])");
+      if (u.key !== "Tab") return;
+      const b = (M = r.current) == null ? void 0 : M.querySelectorAll("button:not([disabled])");
       if (!b || b.length === 0) return;
-      const y = b[0], h = b[b.length - 1];
-      d.shiftKey && document.activeElement === y ? (d.preventDefault(), h.focus()) : !d.shiftKey && document.activeElement === h && (d.preventDefault(), y.focus());
+      const m = b[0], g = b[b.length - 1];
+      u.shiftKey && document.activeElement === m ? (u.preventDefault(), g.focus()) : !u.shiftKey && document.activeElement === g && (u.preventDefault(), m.focus());
     };
     return document.addEventListener("keydown", l), () => document.removeEventListener("keydown", l);
-  }, [e, n]), !e) return null;
-  const { title: a, body: k, confirmLabel: C = "確定", cancelLabel: E = "取消", variant: m = "primary", actions: M } = e.opts;
-  return /* @__PURE__ */ p("div", { className: "fbk-dialog-overlay", children: [
-    /* @__PURE__ */ i(
+  }, [n, t]), !n) return null;
+  const { title: i, body: k, confirmLabel: _ = "確定", cancelLabel: C = "取消", variant: p = "primary", actions: z } = n.opts;
+  return /* @__PURE__ */ x("div", { className: "fbk-dialog-overlay", children: [
+    /* @__PURE__ */ c(
       "div",
       {
-        onClick: n,
+        onClick: t,
         "aria-hidden": "true",
-        className: `fbk-dialog-backdrop ${f ? "fbk-dialog-backdrop--shown" : ""}`
+        className: `fbk-dialog-backdrop ${d ? "fbk-dialog-backdrop--shown" : ""}`
       }
     ),
-    /* @__PURE__ */ p(
+    /* @__PURE__ */ x(
       "div",
       {
         ref: r,
         role: "alertdialog",
         "aria-modal": "true",
-        "aria-label": a,
-        className: `fbk-dialog-panel ${f ? "fbk-dialog-panel--shown" : ""}`,
+        "aria-label": i,
+        className: `fbk-dialog-panel ${d ? "fbk-dialog-panel--shown" : ""}`,
         children: [
-          a && /* @__PURE__ */ i("h2", { className: "fbk-dialog-title", children: a }),
-          k && /* @__PURE__ */ i("p", { className: "fbk-dialog-body", children: k }),
-          /* @__PURE__ */ i("div", { className: "fbk-dialog-actions", children: M ? M.map((l) => /* @__PURE__ */ i(N, { variant: l.variant || "secondary", onClick: () => o(l.key), children: l.label }, l.key)) : /* @__PURE__ */ p(q, { children: [
-            /* @__PURE__ */ i(N, { variant: "secondary", onClick: () => o(!1), children: E }),
-            /* @__PURE__ */ i(N, { variant: m, onClick: () => o(!0), children: C })
+          i && /* @__PURE__ */ c("h2", { className: "fbk-dialog-title", children: i }),
+          k && /* @__PURE__ */ c("p", { className: "fbk-dialog-body", children: k }),
+          /* @__PURE__ */ c("div", { className: "fbk-dialog-actions", children: z ? z.map((l) => /* @__PURE__ */ c(S, { variant: l.variant || "secondary", onClick: () => o(l.key), children: l.label }, l.key)) : /* @__PURE__ */ x(I, { children: [
+            /* @__PURE__ */ c(S, { variant: "secondary", onClick: () => o(!1), children: C }),
+            /* @__PURE__ */ c(S, { variant: p, onClick: () => o(!0), children: _ })
           ] }) })
         ]
       }
@@ -228,7 +391,7 @@ export {
   J as ConfirmDialogHost,
   G as ToastHost,
   X as confirm,
-  Y as injectStyles,
+  V as injectStyles,
   B as registerConfirmHost,
-  K as toast
+  P as toast
 };
