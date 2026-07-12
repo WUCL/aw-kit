@@ -32,4 +32,14 @@ describe('ToastHost', () => {
     render(<ToastHost />)
     expect(warnSpy).not.toHaveBeenCalled()
   })
+
+  it('out-of-order unmount: if the first host unmounts while a second (warned) host is still mounted, a third host still warns', () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { unmount: unmountA } = render(<ToastHost />)       // A claims the flag
+    render(<ToastHost />)                                      // B mounts concurrently, warns, does not claim
+    unmountA()                                                 // A unmounts; flag must stay true (B still live)
+    warnSpy.mockClear()
+    render(<ToastHost />)                                      // C mounts while B is still live -> must warn
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('已掛載超過一次'))
+  })
 })

@@ -4,7 +4,7 @@ import { toast } from './toast.js'
 
 const MAX_SUCCESS = 3 // success items are capped at 3 concurrent; error and action toasts are exempt
 
-let _hostMounted = false // Strict Mode / multi-instance guard
+let _hostMountCount = 0 // Strict Mode / multi-instance guard: count of currently-mounted hosts
 
 function ToastItem({ item, onClose }) {
   const [shown, setShown] = useState(false)
@@ -68,11 +68,10 @@ export default function ToastHost() {
   const [items, setItems] = useState([])
 
   useEffect(() => {
-    if (_hostMounted) {
+    if (_hostMountCount > 0) {
       console.warn('[aw-notify-kit] ToastHost 已掛載超過一次，僅第一個實例會生效')
-    } else {
-      _hostMounted = true
     }
+    _hostMountCount += 1
     const unsubscribe = toast.subscribe(incoming => {
       setItems(prev => {
         if (incoming.type === 'error') {
@@ -94,7 +93,7 @@ export default function ToastHost() {
     })
     return () => {
       unsubscribe()
-      _hostMounted = false
+      _hostMountCount -= 1
     }
   }, [])
 
