@@ -11,6 +11,10 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ['react', 'react-dom', 'react/jsx-runtime'],
+      output: {
+        assetFileNames: (assetInfo) =>
+          assetInfo.name === 'aw-notify-kit.css' ? 'style.css' : assetInfo.name,
+      },
     },
     cssCodeSplit: false, // force single dist/style.css instead of per-chunk splitting
   },
