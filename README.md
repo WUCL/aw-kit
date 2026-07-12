@@ -6,7 +6,7 @@ Zero-dependency toast + confirm-dialog emitter/host pair for React 18. Extracted
 ## Install
 
 ```bash
-npm install github:WUCL/aw-notify-kit#v0.1.1
+npm install github:WUCL/aw-notify-kit#v0.1.2
 ```
 
 ## Quick Start
@@ -151,6 +151,36 @@ async function deleteRowWithUndo(row, { deleteFn, restoreFn }) {
 }
 ```
 
+## Migrating from an in-house toast/confirm implementation
+
+Replacing an existing project's own toast/confirm module with this package is mostly mechanical,
+but two mistakes are easy to make and produce **no error message** when you make them — they just
+silently drop notifications or silently stop testing anything. Both surfaced during aw-notify-kit's
+first real consumer migration (see `docs/consumer-reports/` if this repo has one).
+
+1. **Find every call site by content, not by import-path depth.** A grep for one exact import
+   string (e.g. `from '../lib/toast'`) will miss call sites at a different relative depth (e.g.
+   `from './toast'` in a file that already lives inside `lib/`). Search by usage pattern instead,
+   with a regex that doesn't care how deep the import is:
+
+   ```bash
+   grep -rn "toast\.\(success\|error\)(" src/
+   grep -rEn "from ['\"].*[/'\"]toast['\"]" src/
+   ```
+
+   Any call site your survey misses keeps calling the *old* module's emitter. Once you swap the
+   mounted `<ToastHost />` at the app root to this package's, the old emitter has zero
+   subscribers — those calls become silent no-ops. No crash, no warning; the only symptom is
+   "this toast just doesn't show up," discovered by a user or in manual testing, not by the tests.
+
+2. **Update test mocks alongside the production code.** If your tests do
+   `vi.mock('../lib/toast', ...)` or `jest.mock(...)`, and you change the *production* import to
+   `aw-notify-kit` but forget to update the mock target to match, the mock stops intercepting
+   anything. The real (now-unmounted, unsubscribed) call becomes a silent no-op, which usually
+   doesn't throw — so the test keeps passing green, but it's no longer asserting anything real.
+   Grep your test suite for mocks of the old module path as part of the same pass, not as an
+   afterthought.
+
 ## Development
 
 ```bash
@@ -165,6 +195,6 @@ installed — it would break every consumer's install. Build locally, commit `di
 
 ## Versioning
 
-Install a specific tag: `npm install github:WUCL/aw-notify-kit#v0.1.1`. Tags can technically be
+Install a specific tag: `npm install github:WUCL/aw-notify-kit#v0.1.2`. Tags can technically be
 moved; if you need reproducibility guarantees, pin a commit hash instead:
 `npm install github:WUCL/aw-notify-kit#<commit-sha>`.

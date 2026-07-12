@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.2] — 2026-07-12
+
+Docs-only release, informed by mh1491's first real consumer migration
+(`docs/consumer-reports/2026-07-12-mh1491-migration.md`).
+
+- Added a "Migrating from an in-house toast/confirm implementation" README section covering the
+  two silent-failure pitfalls found during migration: (1) grepping for one fixed import-path
+  depth misses call sites at other relative depths — search by usage pattern instead; (2) test
+  `vi.mock`/`jest.mock` targets must be updated alongside production imports, or mocks silently
+  stop intercepting and tests keep passing green without asserting anything real.
+
 ## [0.1.1] — 2026-07-12
 
 Fixes found in a final pre-install review pass.
