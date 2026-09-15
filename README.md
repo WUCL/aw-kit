@@ -32,7 +32,8 @@ function App() {
 import { toast, confirm } from 'aw-notify-kit'
 
 toast.success('已儲存')
-toast.error('儲存失敗')
+toast.warn('請選擇設計師')   // the user can fix it → auto-dismisses
+toast.error('儲存失敗')      // the data may not be saved → stays until dismissed
 
 if (await confirm({ title: '確定要刪除？', variant: 'danger' })) {
   // ...
@@ -71,6 +72,7 @@ Override CSS custom properties (defaults shown):
   --fbk-toast-bg: #1f2937;
   --fbk-toast-fg: #f9fafb;
   --fbk-success: #4ade80;
+  --fbk-warn: #fbbf24;
   --fbk-error: #f87171;
   --fbk-error-border: rgba(248, 113, 113, 0.35);
   --fbk-z-toast: 850;
@@ -86,8 +88,18 @@ If your app has its own modal/overlay system, check `--fbk-z-dialog` (default `1
 ### `toast.success(message, opts?)`
 Default: 3.5s auto-dismiss.
 
+### `toast.warn(message, opts?)`
+Default: 4s auto-dismiss. For anything **the user can fix himself, right now** — a required
+field, an out-of-range number, "this slot is already taken, pick another".
+
 ### `toast.error(message, opts?)`
 Default: persistent (`duration: null`), dismissed manually via the ✕ button.
+
+**Picking between warn and error — one question: can the user fix this right now?**
+If yes it is a prompt (`warn`); if the system could not do it, or the data may not have been
+saved, it is a failure (`error`). 🔴 **error stays on screen on purpose**: a failed write that
+disappears by itself leaves someone who looked away believing it saved. Don't give `error` a
+default duration — reach for `warn` instead.
 
 `opts`: `{ duration?: number|null, action?: { label, onClick }, key?: string }`
 - `action` renders an in-toast button (e.g. "Undo") and **exempts the toast from dedupe and the
@@ -114,7 +126,7 @@ own project's conventions doc.
 |---|-----------|---------|----------|
 | 1 | Success / confirmation (saved, completed, undo succeeded…) | `toast.success` | Dark gray, green dot, 3.5s auto-dismiss |
 | 2 | Delete (single row, zero external references, destructive) | `toast.success` with `action: { label: 'Undo' }` | 8s (pauses on hover), clickable undo |
-| 3 | Form validation error (required field, invalid amount) | **inline** field-level error (not part of this package) | Persistent until the field is fixed |
+| 3 | Form validation error (required field, invalid amount) | **inline** field-level error where the layout allows it, otherwise `toast.warn` | Inline: persistent until fixed. Toast: amber dot, 4s auto-dismiss |
 | 4 | Operation failure (save/delete/submit/batch failed) | `toast.error` | Red dot, never auto-dismisses, manual ✕ close |
 | 5 | Real confirmation (logout, rename-sync, clearing form data) | `confirm({...})` | OK / Cancel |
 | 6 | Multi-choice confirmation (apply to whole series vs. one item) | `confirm({ actions: [...] })` | Series / Single / Cancel |

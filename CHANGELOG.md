@@ -2,6 +2,24 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.3] — 2026-09-15
+
+Adds a third toast level. Driven by a real consumer (inknock): of ~173 `toast.error` call sites,
+**78 were not failures at all** — they were form prompts ("please pick a designer") that, because
+`error` is persistent by design, sat on screen until the user dismissed them by hand.
+
+- **Added `toast.warn(message, opts?)`** — 4s auto-dismiss, amber dot
+  (`--fbk-warn` / `--fbk-warn-border`), `role="alert"` like error.
+  The rule: *can the user fix this right now?* → yes: `warn`; no, or the data may not have been
+  saved: `error`. `error` remains persistent by design and that is not a bug.
+- Repeated identical warns collapse into one toast with a ×N counter, same as errors.
+- **Fixed: the default dedupe key ignored the toast type.** Emitting the same sentence as
+  `warn` and then as `error` within the 300ms dedupe window silently dropped the error — the one
+  message that must never be swallowed. The default key is now `type:message`; an explicit `key`
+  still wins, so callers deduping by row id are unaffected.
+- `warn` is click-to-close on the toast body (it auto-dismisses anyway); `error` still requires
+  the ✕, so a stray click can't discard a failure notice.
+
 ## [0.1.2] — 2026-07-12
 
 Docs-only release, informed by mh1491's first real consumer migration

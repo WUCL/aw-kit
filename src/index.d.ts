@@ -4,7 +4,7 @@
 
 import type { ComponentType, ReactNode } from 'react'
 
-export type ToastVariant = 'success' | 'error'
+export type ToastVariant = 'success' | 'warn' | 'error'
 export type ButtonVariant = 'primary' | 'secondary' | 'danger'
 
 export interface ToastAction {
@@ -13,7 +13,7 @@ export interface ToastAction {
 }
 
 export interface ToastOptions {
-  /** ms until auto-dismiss; null = persistent (manual close only). Default: 3500 (success), null (error). */
+  /** ms until auto-dismiss; null = persistent (manual close only). Default: 3500 (success), 4000 (warn), null (error). */
   duration?: number | null
   /** Renders an in-toast button (e.g. "Undo"). Exempts the toast from dedupe and the 3-item eviction cap. */
   action?: ToastAction
@@ -23,6 +23,15 @@ export interface ToastOptions {
 
 export const toast: {
   success(message: string, opts?: ToastOptions): void
+  /**
+   * The user can fix this himself, right now: form validation, a required field,
+   * a number out of range. Auto-dismisses after 4s.
+   */
+  warn(message: string, opts?: ToastOptions): void
+  /**
+   * The system could not do it, or the data may not have been saved.
+   * **Persistent by design** — see src/toast.js.
+   */
   error(message: string, opts?: ToastOptions): void
   /** Internal: used by <ToastHost>. Returns an unsubscribe function. */
   subscribe(handler: (item: unknown) => void): () => void

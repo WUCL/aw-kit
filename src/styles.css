@@ -10,6 +10,8 @@
   --fbk-success: #4ade80;       /* green-400 */
   --fbk-error: #f87171;         /* red-400 */
   --fbk-error-border: rgba(248, 113, 113, 0.35);
+  --fbk-warn: #fbbf24;          /* amber-400 */
+  --fbk-warn-border: rgba(251, 191, 36, 0.35);
   --fbk-z-toast: 850;
   --fbk-z-dialog: 1000;
 }
@@ -49,9 +51,11 @@
 .fbk-toast--shown { opacity: 1; transform: translateY(0); }
 .fbk-toast--clickable { cursor: pointer; }
 .fbk-toast--error { border: 1px solid var(--fbk-error-border); }
+.fbk-toast--warn { border: 1px solid var(--fbk-warn-border); }
 
 .fbk-toast__dot { width: 8px; height: 8px; border-radius: 999px; flex-shrink: 0; background: var(--fbk-success); }
 .fbk-toast--error .fbk-toast__dot { background: var(--fbk-error); }
+.fbk-toast--warn .fbk-toast__dot { background: var(--fbk-warn); }
 
 .fbk-toast__message { flex: 1; line-height: 1.4; word-break: break-word; }
 

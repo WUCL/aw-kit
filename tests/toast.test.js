@@ -20,6 +20,32 @@ describe('toast', () => {
     unsub()
   })
 
+  it('warn auto-dismisses after 4000ms (it is a prompt, not a failure)', () => {
+    const received = []
+    const unsub = toast.subscribe(item => received.push(item))
+    toast.warn('請選擇設計師')
+    expect(received[0]).toMatchObject({ type: 'warn', message: '請選擇設計師', duration: 4000 })
+    unsub()
+  })
+
+  it('warn and error are separate types, so a prompt never renders as a failure', () => {
+    const received = []
+    const unsub = toast.subscribe(item => received.push(item))
+    toast.warn('同一句話')
+    toast.error('同一句話')
+    // dedupe is keyed on the message, so the second call must survive on its own type
+    expect(received.map(r => r.type)).toEqual(['warn', 'error'])
+    unsub()
+  })
+
+  it('an explicit duration still overrides the per-level default', () => {
+    const received = []
+    const unsub = toast.subscribe(item => received.push(item))
+    toast.warn('特例', { duration: null })
+    expect(received[0]).toMatchObject({ type: 'warn', duration: null })
+    unsub()
+  })
+
   it('dedupes same key within 300ms unless action is present', () => {
     vi.useFakeTimers()
     const received = []
