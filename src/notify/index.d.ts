@@ -78,3 +78,38 @@ export const ToastHost: ComponentType<Record<string, never>>
 
 /** Mount once at the app root. Renders dialogs requested via `confirm()`. */
 export const ConfirmDialogHost: ComponentType<Record<string, never>>
+
+// ── createNotify (project-level adapter) ────────────────────────────────
+
+export interface NotifyToast {
+  success(message: string, opts?: ToastOptions): void
+  /** The user can fix this themselves, right now. Auto-dismisses. */
+  warn(message: string, opts?: ToastOptions): void
+  /** The system couldn't do it / data may not be saved. Persistent by design. */
+  error(message: string, opts?: ToastOptions): void
+}
+
+export interface CreateNotifyOptions {
+  /**
+   * Error codes meaning "the database explicitly refused" (data untouched) → shown as `warn`.
+   * Anything else (no code, unknown code, network failure) → `error`, because the row may or
+   * may not have been saved. Which codes qualify is a project decision — see README.
+   */
+  refusalCodes: Iterable<string>
+  /** Used when `toastFromError` is called without a fallback and the error carries no text. Default: '操作失敗'. */
+  fallbackMessage?: string
+}
+
+export interface Notify {
+  toast: NotifyToast
+  /** Feed the caught error in; it picks warn vs error. Don't re-decide at call sites. */
+  toastFromError(err: unknown, fallback?: string, opts?: ToastOptions): void
+}
+
+export function createNotify(options: CreateNotifyOptions): Notify
+
+/**
+ * Displayable text for "whatever was thrown": string → message → details → hint →
+ * `錯誤代碼 {code}` → fallback. Handles both Error instances and Supabase's plain error objects.
+ */
+export function errText(err: unknown, fallback: string): string

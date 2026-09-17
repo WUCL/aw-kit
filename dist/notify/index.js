@@ -1,39 +1,39 @@
-import { jsx as c, jsxs as x, Fragment as I } from "react/jsx-runtime";
-import { useState as T, useEffect as y, useCallback as w, useRef as h } from "react";
-const D = /* @__PURE__ */ new Set();
+import { jsx as l, jsxs as y, Fragment as I } from "react/jsx-runtime";
+import { useState as S, useEffect as x, useCallback as w, useRef as h } from "react";
+const j = /* @__PURE__ */ new Set();
 let R = 0;
-const j = /* @__PURE__ */ new Map(), F = 300;
-function S(n, t, { duration: d = 3500, action: s = null, key: o = null } = {}) {
-  const a = o ?? `${n}:${t}`;
+const q = /* @__PURE__ */ new Map(), $ = 300;
+function N(n, t, { duration: d = 3500, action: s = null, key: r = null } = {}) {
+  const e = r ?? `${n}:${t}`;
   if (!s) {
-    const r = Date.now(), e = j.get(a);
-    if (e != null && r - e < F) return;
-    j.set(a, r);
+    const a = Date.now(), o = q.get(e);
+    if (o != null && a - o < $) return;
+    q.set(e, a);
   }
-  const f = { id: ++R, type: n, message: t, duration: d, action: s, key: a };
-  D.forEach((r) => r(f));
+  const i = { id: ++R, type: n, message: t, duration: d, action: s, key: e };
+  j.forEach((a) => a(i));
 }
-const P = {
+const T = {
   success(n, t) {
-    S("success", n, t);
+    N("success", n, t);
   },
   warn(n, t) {
-    S("warn", n, { duration: 4e3, ...t });
+    N("warn", n, { duration: 4e3, ...t });
   },
   error(n, t) {
-    S("error", n, { duration: null, ...t });
+    N("error", n, { duration: null, ...t });
   },
   subscribe(n) {
-    return D.add(n), () => D.delete(n);
+    return j.add(n), () => j.delete(n);
   }
 };
 let v = null;
-function $(n) {
+function P(n) {
   return v = n, () => {
     v === n && (v = null);
   };
 }
-function X(n) {
+function W(n) {
   return v ? new Promise((t) => v(n, t)) : Promise.resolve(n != null && n.actions ? null : !1);
 }
 const B = `/* src/notify/styles.css — aw-kit/notify default theme.
@@ -217,33 +217,33 @@ const B = `/* src/notify/styles.css — aw-kit/notify default theme.
 @media (prefers-reduced-motion: reduce) {
   .fbk-toast, .fbk-dialog-backdrop, .fbk-dialog-panel { transition: none; }
 }
-`, q = "fbk-styles";
-function V() {
-  if (typeof document > "u" || document.getElementById(q)) return;
+`, F = "fbk-styles";
+function G() {
+  if (typeof document > "u" || document.getElementById(F)) return;
   const n = document.createElement("style");
-  n.id = q, n.textContent = B, document.head.appendChild(n);
+  n.id = F, n.textContent = B, document.head.appendChild(n);
 }
 const K = 3;
-let N = 0;
+let A = 0;
 function Y({ item: n, onClose: t }) {
-  const [d, s] = T(!1), o = h(null), a = h(n.duration), f = h(0), r = n.duration == null, e = w(() => {
-    r || (f.current = Date.now(), o.current = setTimeout(() => t(n.id), a.current));
-  }, [n.id, t, r]), i = w(() => {
-    r || (clearTimeout(o.current), a.current -= Date.now() - f.current);
-  }, [r]);
-  y(() => {
+  const [d, s] = S(!1), r = h(null), e = h(n.duration), i = h(0), a = n.duration == null, o = w(() => {
+    a || (i.current = Date.now(), r.current = setTimeout(() => t(n.id), e.current));
+  }, [n.id, t, a]), c = w(() => {
+    a || (clearTimeout(r.current), e.current -= Date.now() - i.current);
+  }, [a]);
+  x(() => {
     const p = requestAnimationFrame(() => s(!0));
-    return e(), () => {
-      cancelAnimationFrame(p), clearTimeout(o.current);
+    return o(), () => {
+      cancelAnimationFrame(p), clearTimeout(r.current);
     };
-  }, [e]);
+  }, [o]);
   const k = n.type === "error", _ = n.type === "warn", C = !!n.action, E = !C && !k;
-  return /* @__PURE__ */ x(
+  return /* @__PURE__ */ y(
     "div",
     {
       role: k || _ ? "alert" : "status",
-      onMouseEnter: i,
-      onMouseLeave: e,
+      onMouseEnter: c,
+      onMouseLeave: o,
       onClick: E ? () => t(n.id) : void 0,
       className: [
         "fbk-toast",
@@ -253,13 +253,13 @@ function Y({ item: n, onClose: t }) {
         d && "fbk-toast--shown"
       ].filter(Boolean).join(" "),
       children: [
-        /* @__PURE__ */ c("div", { className: "fbk-toast__dot" }),
-        /* @__PURE__ */ c("span", { className: "fbk-toast__message", children: n.message }),
-        n.count > 1 && /* @__PURE__ */ x("span", { className: "fbk-toast__count", children: [
+        /* @__PURE__ */ l("div", { className: "fbk-toast__dot" }),
+        /* @__PURE__ */ l("span", { className: "fbk-toast__message", children: n.message }),
+        n.count > 1 && /* @__PURE__ */ y("span", { className: "fbk-toast__count", children: [
           "×",
           n.count
         ] }),
-        C && /* @__PURE__ */ c(
+        C && /* @__PURE__ */ l(
           "button",
           {
             type: "button",
@@ -270,7 +270,7 @@ function Y({ item: n, onClose: t }) {
             children: n.action.label
           }
         ),
-        /* @__PURE__ */ c(
+        /* @__PURE__ */ l(
           "button",
           {
             type: "button",
@@ -286,120 +286,155 @@ function Y({ item: n, onClose: t }) {
     }
   );
 }
-function W() {
-  const [n, t] = T([]);
-  y(() => {
-    N > 0 && console.warn("[aw-kit/notify] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), N += 1;
-    const s = P.subscribe((o) => {
-      t((a) => {
-        if (o.type === "error" || o.type === "warn") {
-          const e = a.findIndex((i) => i.type === o.type && i.message === o.message);
-          if (e !== -1) {
-            const i = [...a];
-            return i[e] = { ...i[e], count: (i[e].count || 1) + 1 }, i;
+function J() {
+  const [n, t] = S([]);
+  x(() => {
+    A > 0 && console.warn("[aw-kit/notify] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), A += 1;
+    const s = T.subscribe((r) => {
+      t((e) => {
+        if (r.type === "error" || r.type === "warn") {
+          const o = e.findIndex((c) => c.type === r.type && c.message === r.message);
+          if (o !== -1) {
+            const c = [...e];
+            return c[o] = { ...c[o], count: (c[o].count || 1) + 1 }, c;
           }
         }
-        const f = [...a, { ...o, count: 1 }], r = f.filter((e) => e.type === "success" && !e.action);
-        if (r.length > K) {
-          const e = r[0].id;
-          return f.filter((i) => i.id !== e);
+        const i = [...e, { ...r, count: 1 }], a = i.filter((o) => o.type === "success" && !o.action);
+        if (a.length > K) {
+          const o = a[0].id;
+          return i.filter((c) => c.id !== o);
         }
-        return f;
+        return i;
       });
     });
     return () => {
-      s(), N -= 1;
+      s(), A -= 1;
     };
   }, []);
-  const d = w((s) => t((o) => o.filter((a) => a.id !== s)), []);
-  return /* @__PURE__ */ c("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ c(Y, { item: s, onClose: d }, s.id)) });
+  const d = w((s) => t((r) => r.filter((e) => e.id !== s)), []);
+  return /* @__PURE__ */ l("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ l(Y, { item: s, onClose: d }, s.id)) });
 }
 const H = {
   primary: "fbk-btn--primary",
   secondary: "fbk-btn--secondary",
   danger: "fbk-btn--danger"
 };
-function A({ variant: n = "secondary", onClick: t, children: d, ...s }) {
-  const o = H[n] || H.secondary;
-  return /* @__PURE__ */ c("button", { type: "button", className: `fbk-btn ${o}`, onClick: t, ...s, children: d });
+function z({ variant: n = "secondary", onClick: t, children: d, ...s }) {
+  const r = H[n] || H.secondary;
+  return /* @__PURE__ */ l("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...s, children: d });
 }
-let z = 0;
-function G() {
+let D = 0;
+function Q() {
   var M;
-  const [n, t] = T(null), [d, s] = T(!1), o = h(null), a = h(null);
-  y(() => {
-    z > 0 && console.warn("[aw-kit/notify] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), z += 1;
-    const l = $((b, u) => t({ opts: b, resolve: u }));
+  const [n, t] = S(null), [d, s] = S(!1), r = h(null), e = h(null);
+  x(() => {
+    D > 0 && console.warn("[aw-kit/notify] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), D += 1;
+    const f = P((u, b) => t({ opts: u, resolve: b }));
     return () => {
-      l(), z -= 1;
+      f(), D -= 1;
     };
   }, []);
-  const f = !!((M = n == null ? void 0 : n.opts) != null && M.actions), r = w((l) => {
-    n == null || n.resolve(l), s(!1), setTimeout(() => t(null), 150);
-  }, [n]), e = w(() => r(f ? null : !1), [r, f]);
-  if (y(() => {
+  const i = !!((M = n == null ? void 0 : n.opts) != null && M.actions), a = w((f) => {
+    n == null || n.resolve(f), s(!1), setTimeout(() => t(null), 150);
+  }, [n]), o = w(() => a(i ? null : !1), [a, i]);
+  if (x(() => {
     if (!n) return;
-    a.current = document.activeElement;
-    const l = requestAnimationFrame(() => s(!0)), b = document.body.style.overflow;
+    e.current = document.activeElement;
+    const f = requestAnimationFrame(() => s(!0)), u = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    const u = setTimeout(() => {
+    const b = setTimeout(() => {
       var m, g;
-      (g = (m = o.current) == null ? void 0 : m.querySelector("button:not([disabled])")) == null || g.focus();
+      (g = (m = r.current) == null ? void 0 : m.querySelector("button:not([disabled])")) == null || g.focus();
     }, 60);
     return () => {
-      cancelAnimationFrame(l), clearTimeout(u), document.body.style.overflow = b, a.current instanceof HTMLElement && document.body.contains(a.current) && a.current.focus();
+      cancelAnimationFrame(f), clearTimeout(b), document.body.style.overflow = u, e.current instanceof HTMLElement && document.body.contains(e.current) && e.current.focus();
     };
-  }, [n]), y(() => {
+  }, [n]), x(() => {
     if (!n) return;
-    const l = (b) => {
+    const f = (u) => {
       var L;
-      if (b.key === "Escape") {
-        e();
+      if (u.key === "Escape") {
+        o();
         return;
       }
-      if (b.key !== "Tab") return;
-      const u = (L = o.current) == null ? void 0 : L.querySelectorAll("button:not([disabled])");
-      if (!u || u.length === 0) return;
-      const m = u[0], g = u[u.length - 1];
-      b.shiftKey && document.activeElement === m ? (b.preventDefault(), g.focus()) : !b.shiftKey && document.activeElement === g && (b.preventDefault(), m.focus());
+      if (u.key !== "Tab") return;
+      const b = (L = r.current) == null ? void 0 : L.querySelectorAll("button:not([disabled])");
+      if (!b || b.length === 0) return;
+      const m = b[0], g = b[b.length - 1];
+      u.shiftKey && document.activeElement === m ? (u.preventDefault(), g.focus()) : !u.shiftKey && document.activeElement === g && (u.preventDefault(), m.focus());
     };
-    return document.addEventListener("keydown", l), () => document.removeEventListener("keydown", l);
-  }, [n, e]), !n) return null;
-  const { title: i, body: k, confirmLabel: _ = "確定", cancelLabel: C = "取消", variant: E = "primary", actions: p } = n.opts;
-  return /* @__PURE__ */ x("div", { className: "fbk-dialog-overlay", children: [
-    /* @__PURE__ */ c(
+    return document.addEventListener("keydown", f), () => document.removeEventListener("keydown", f);
+  }, [n, o]), !n) return null;
+  const { title: c, body: k, confirmLabel: _ = "確定", cancelLabel: C = "取消", variant: E = "primary", actions: p } = n.opts;
+  return /* @__PURE__ */ y("div", { className: "fbk-dialog-overlay", children: [
+    /* @__PURE__ */ l(
       "div",
       {
-        onClick: e,
+        onClick: o,
         "aria-hidden": "true",
         className: `fbk-dialog-backdrop ${d ? "fbk-dialog-backdrop--shown" : ""}`
       }
     ),
-    /* @__PURE__ */ x(
+    /* @__PURE__ */ y(
       "div",
       {
-        ref: o,
+        ref: r,
         role: "alertdialog",
         "aria-modal": "true",
-        "aria-label": i,
+        "aria-label": c,
         className: `fbk-dialog-panel ${d ? "fbk-dialog-panel--shown" : ""}`,
         children: [
-          i && /* @__PURE__ */ c("h2", { className: "fbk-dialog-title", children: i }),
-          k && /* @__PURE__ */ c("p", { className: "fbk-dialog-body", children: k }),
-          /* @__PURE__ */ c("div", { className: "fbk-dialog-actions", children: p ? p.map((l) => /* @__PURE__ */ c(A, { variant: l.variant || "secondary", onClick: () => r(l.key), children: l.label }, l.key)) : /* @__PURE__ */ x(I, { children: [
-            /* @__PURE__ */ c(A, { variant: "secondary", onClick: () => r(!1), children: C }),
-            /* @__PURE__ */ c(A, { variant: E, onClick: () => r(!0), children: _ })
+          c && /* @__PURE__ */ l("h2", { className: "fbk-dialog-title", children: c }),
+          k && /* @__PURE__ */ l("p", { className: "fbk-dialog-body", children: k }),
+          /* @__PURE__ */ l("div", { className: "fbk-dialog-actions", children: p ? p.map((f) => /* @__PURE__ */ l(z, { variant: f.variant || "secondary", onClick: () => a(f.key), children: f.label }, f.key)) : /* @__PURE__ */ y(I, { children: [
+            /* @__PURE__ */ l(z, { variant: "secondary", onClick: () => a(!1), children: C }),
+            /* @__PURE__ */ l(z, { variant: E, onClick: () => a(!0), children: _ })
           ] }) })
         ]
       }
     )
   ] });
 }
+function O(n, t) {
+  if (typeof n == "string" && n.trim()) return n;
+  if (typeof n == "object" && n !== null) {
+    if (typeof n.message == "string" && n.message.trim()) return n.message;
+    if (typeof n.details == "string" && n.details.trim()) return n.details;
+    if (typeof n.hint == "string" && n.hint.trim()) return n.hint;
+    if (typeof n.code == "string" && n.code.trim()) return `錯誤代碼 ${n.code}`;
+  }
+  return t;
+}
+function U(n) {
+  return typeof n == "object" && n !== null && typeof n.code == "string" && n.code.trim() ? n.code.trim() : null;
+}
+function Z({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
+  const d = new Set(n), s = {
+    success(e, i) {
+      T.success(e, i);
+    },
+    /** The user can fix this themselves, right now. Auto-dismisses. */
+    warn(e, i) {
+      T.warn(e, i);
+    },
+    /** The system couldn't do it / data may not be saved. **Persistent by design.** */
+    error(e, i) {
+      T.error(e, i);
+    }
+  };
+  function r(e, i = t, a) {
+    const o = U(e), c = O(e, i);
+    o && d.has(o) ? s.warn(c, a) : s.error(c, a);
+  }
+  return { toast: s, toastFromError: r };
+}
 export {
-  G as ConfirmDialogHost,
-  W as ToastHost,
-  X as confirm,
-  V as injectStyles,
-  $ as registerConfirmHost,
-  P as toast
+  Q as ConfirmDialogHost,
+  J as ToastHost,
+  W as confirm,
+  Z as createNotify,
+  O as errText,
+  G as injectStyles,
+  P as registerConfirmHost,
+  T as toast
 };
