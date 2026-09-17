@@ -84,6 +84,6 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態
 
-- 2026-09-17：v0.2.0 完整實作（更名 aw-kit、子路徑匯出、`createNotify` adapter、三條 ESLint 規則含 TS unwrap、`aw-check-rpc-types` bin、README／CHANGELOG 重寫），5 個本機 commit，**尚未 push、尚未打 v0.2.0 tag**（等使用者）。隔離消費端安裝驗證通過（三個 subpath 可解析、根 `.` 正確拒絕、bin 可執行）。
+- 2026-09-17：v0.2.0 完整實作（更名 aw-kit、子路徑匯出、`createNotify` adapter、三條 ESLint 規則含 TS unwrap、`aw-check-rpc-types` bin、README／CHANGELOG 重寫），6 個本機 commit（含 Codex review 修正 `e6811a4`：ChainExpression、ratchet 只縮＋`--init-baseline`），**尚未 push、尚未打 v0.2.0 tag**（等使用者）。隔離消費端安裝驗證通過（三個 subpath 可解析、根 `.` 正確拒絕、bin 可執行、git 安裝不跑 build script）。
 
 2026-07-12：v0.1.0 完整實作完成（scaffold → port toast/confirmDialog emitter → Button → styles/injectStyles → ToastHost/ConfirmDialogHost with Strict Mode + focus-restore guard → barrel export + dist build → README → 2 輪 code review 修正含 refcount guard fix 與警告文案修正）。已 push 到 GitHub，尚未打 tag。
