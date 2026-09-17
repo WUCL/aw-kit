@@ -2,7 +2,7 @@
 
 ## 待使用者
 
-- [ ] push `main`（`772baa4`→`ca895ab`）並打 `v0.2.0` tag（C `aw-admin_starter` 等此 tag）
+- [x] push `main` 並打 `v0.2.0`／`v0.2.1` tag（2026-09-17 完成）
 
 ## 消費端跟進（各自 repo，不在本 repo 做）
 
@@ -12,6 +12,7 @@
 ## 套件本身（有需求再做）
 
 - [ ] `aw-check-rpc-types` 不抓 `Promise<Array<Row>>` 形狀、不支援 `--root=dir` 寫法（Codex P2，刻意保守；出現實際漏抓再補）
+- [ ] `aw-check-rpc-types`：`listTsFiles` 目錄項目未排序，多檔違規時診斷輸出順序可能因檔案系統而異（基線檔本身已排序、不受影響）。下次改 CLI 順手加 `.sort()`。（Codex review 2026-09-17，Low）
 - [ ] `no-hardcoded-design-token` 若小數誤傷（`fontSize: 0.875` 之類合法用法）再收窄回整數
 
 ## 地基回饋候選（base-promotion-candidate，需使用者確認後另開段落改 `aw-cc_workflow`）
@@ -21,4 +22,5 @@
 
 ## 已完成
 
+- [x] 2026-09-17 v0.2.1：`aw-check-rpc-types` 遞迴掃描（aw-admin_starter Codex P1）
 - [x] 2026-09-17 v0.2.0：更名、子路徑匯出、createNotify、三條規則、bin、docs、Codex review 修正

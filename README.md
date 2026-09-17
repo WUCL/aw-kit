@@ -17,7 +17,7 @@ from scratch for the package. This repo used to be `aw-notify-kit` (≤ v0.1.3).
 ## Install
 
 ```bash
-npm install github:WUCL/aw-kit#v0.2.0
+npm install github:WUCL/aw-kit#v0.2.1
 ```
 
 ## Migrating from `aw-notify-kit` ≤ 0.1.3
@@ -29,7 +29,7 @@ sed -i '' "s#from 'aw-notify-kit'#from 'aw-kit/notify'#g" $(grep -rl "aw-notify-
 sed -i '' "s#aw-notify-kit/dist/style.css#aw-kit/notify/style.css#g" $(grep -rl "aw-notify-kit" src)
 ```
 
-then `npm install github:WUCL/aw-kit#v0.2.0` and drop the old dependency. The root import is
+then `npm install github:WUCL/aw-kit#v0.2.1` and drop the old dependency. The root import is
 gone on purpose — a stale `from 'aw-notify-kit'` fails to resolve rather than silently working
 against an old copy. Don't forget `vi.mock('aw-notify-kit', …)` in tests (see
 "Migrating from an in-house implementation" below for why a stale mock target stays green).
@@ -369,6 +369,6 @@ installed — it would break every consumer's install. Build locally, commit `di
 
 ## Versioning
 
-Install a specific tag: `npm install github:WUCL/aw-kit#v0.2.0`. Tags can technically be
+Install a specific tag: `npm install github:WUCL/aw-kit#v0.2.1`. Tags can technically be
 moved; if you need reproducibility guarantees, pin a commit hash instead:
 `npm install github:WUCL/aw-kit#<commit-sha>`.
