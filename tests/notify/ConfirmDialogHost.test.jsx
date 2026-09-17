@@ -2,8 +2,8 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render, screen, cleanup, fireEvent, waitFor } from '@testing-library/react'
 import { useState } from 'react'
-import ConfirmDialogHost from '../src/ConfirmDialogHost.jsx'
-import { confirm } from '../src/confirmDialog.js'
+import ConfirmDialogHost from '../../src/notify/ConfirmDialogHost.jsx'
+import { confirm } from '../../src/notify/confirmDialog.js'
 
 afterEach(() => {
   cleanup()

@@ -1,4 +1,4 @@
-/* src/styles.css — aw-notify-kit default theme.
+/* src/notify/styles.css — aw-kit/notify default theme.
    All rules are scoped under the fbk- prefix to avoid colliding with consumer styles.
    Override --fbk-* custom properties to re-theme without touching these rules. */
 

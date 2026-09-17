@@ -1,5 +1,5 @@
 // src/injectStyles.js
-// Fallback CSS injector for consumers who can't `import 'aw-notify-kit/dist/style.css'`
+// Fallback CSS injector for consumers who can't `import 'aw-kit/notify/style.css'`
 // directly (e.g. certain SSR/CSS-module-only setups).
 //
 // ⚠️ This is NOT the recommended path. In environments with a strict Content-Security-Policy

@@ -1,6 +1,6 @@
 // tests/toast.test.js
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { toast } from '../src/toast.js'
+import { toast } from '../../src/notify/toast.js'
 
 describe('toast', () => {
   it('success emits an item with default duration 3500 and type success', () => {

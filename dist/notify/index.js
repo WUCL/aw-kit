@@ -36,7 +36,7 @@ function $(n) {
 function X(n) {
   return v ? new Promise((t) => v(n, t)) : Promise.resolve(n != null && n.actions ? null : !1);
 }
-const B = `/* src/styles.css — aw-notify-kit default theme.
+const B = `/* src/notify/styles.css — aw-kit/notify default theme.
    All rules are scoped under the fbk- prefix to avoid colliding with consumer styles.
    Override --fbk-* custom properties to re-theme without touching these rules. */
 
@@ -289,7 +289,7 @@ function Y({ item: n, onClose: t }) {
 function W() {
   const [n, t] = T([]);
   y(() => {
-    N > 0 && console.warn("[aw-notify-kit] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), N += 1;
+    N > 0 && console.warn("[aw-kit/notify] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), N += 1;
     const s = P.subscribe((o) => {
       t((a) => {
         if (o.type === "error" || o.type === "warn") {
@@ -328,7 +328,7 @@ function G() {
   var M;
   const [n, t] = T(null), [d, s] = T(!1), o = h(null), a = h(null);
   y(() => {
-    z > 0 && console.warn("[aw-notify-kit] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), z += 1;
+    z > 0 && console.warn("[aw-kit/notify] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), z += 1;
     const l = $((b, u) => t({ opts: b, resolve: u }));
     return () => {
       l(), z -= 1;

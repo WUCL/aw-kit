@@ -1,20 +1,24 @@
 {
-  "name": "aw-notify-kit",
-  "version": "0.1.3",
+  "name": "aw-kit",
+  "version": "0.2.0",
   "type": "module",
-  "description": "Zero-dependency toast + confirm-dialog emitter/host pair for React 18, extracted from MH1491.",
-  "main": "./dist/aw-notify-kit.js",
-  "module": "./dist/aw-notify-kit.js",
-  "types": "./dist/index.d.ts",
+  "description": "Allen Wu's shared front-end kit: toast/confirm notify (React 18+), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",
   "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "default": "./dist/aw-notify-kit.js"
+    "./notify": {
+      "types": "./dist/notify/index.d.ts",
+      "default": "./dist/notify/index.js"
     },
-    "./dist/style.css": "./dist/style.css"
+    "./notify/style.css": "./dist/notify/style.css",
+    "./eslint-rules": {
+      "types": "./src/eslint-rules/index.d.ts",
+      "default": "./src/eslint-rules/index.js"
+    }
   },
-  "files": ["dist"],
+  "bin": {
+    "aw-check-rpc-types": "./bin/aw-check-rpc-types.mjs"
+  },
+  "files": ["dist", "src/eslint-rules", "bin"],
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
@@ -23,7 +27,13 @@
   },
   "peerDependencies": {
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "eslint": ">=9"
+  },
+  "peerDependenciesMeta": {
+    "react": { "optional": true },
+    "react-dom": { "optional": true },
+    "eslint": { "optional": true }
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",

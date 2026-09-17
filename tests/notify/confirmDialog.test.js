@@ -1,6 +1,6 @@
 // tests/confirmDialog.test.js
 import { describe, it, expect } from 'vitest'
-import { confirm, registerConfirmHost } from '../src/confirmDialog.js'
+import { confirm, registerConfirmHost } from '../../src/notify/confirmDialog.js'
 
 describe('confirmDialog', () => {
   it('resolves false when host is not mounted (two-button safe default)', async () => {

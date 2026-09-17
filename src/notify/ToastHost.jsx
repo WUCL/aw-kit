@@ -73,7 +73,7 @@ export default function ToastHost() {
 
   useEffect(() => {
     if (_hostMountCount > 0) {
-      console.warn('[aw-notify-kit] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次')
+      console.warn('[aw-kit/notify] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次')
     }
     _hostMountCount += 1
     const unsubscribe = toast.subscribe(incoming => {

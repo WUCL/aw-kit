@@ -1,5 +1,5 @@
-// Hand-written type declarations for aw-notify-kit's public API.
-// This file is copied to dist/index.d.ts at build time (not compiler-generated —
+// Hand-written type declarations for aw-kit/notify's public API.
+// This file is copied to dist/notify/index.d.ts at build time (not compiler-generated —
 // the package is plain JS/JSX).
 
 import type { ComponentType, ReactNode } from 'react'
@@ -67,7 +67,7 @@ export function confirm(opts: ConfirmOptionsMultiButton): Promise<string | null>
 export function registerConfirmHost(fn: (opts: unknown, resolve: (value: unknown) => void) => void): () => void
 
 /**
- * Fallback CSS injector for setups that can't `import 'aw-notify-kit/dist/style.css'` directly.
+ * Fallback CSS injector for setups that can't `import 'aw-kit/notify/style.css'` directly.
  * Idempotent — safe to call multiple times (including under React 18 Strict Mode).
  * Prefer the CSS import; this is blocked by a strict CSP (style-src without 'unsafe-inline').
  */

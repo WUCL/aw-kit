@@ -1,6 +1,6 @@
 // tests/injectStyles.test.js
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { injectStyles } from '../src/injectStyles.js'
+import { injectStyles } from '../../src/notify/injectStyles.js'
 
 describe('injectStyles', () => {
   beforeEach(() => {
