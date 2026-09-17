@@ -1,6 +1,6 @@
 {
   "name": "aw-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "type": "module",
   "description": "Allen Wu's shared front-end kit: toast/confirm notify (React 18+), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",

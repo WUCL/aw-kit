@@ -333,7 +333,7 @@ via a whitelist in this package.
 "scripts": { "check:rpc-types": "aw-check-rpc-types --root src/infrastructure/supabase --baseline scripts/check-rpc-types.baseline.json" }
 ```
 
-In every `*.ts` under `--root` (that directory only, not recursive) that calls `.rpc('…')`, an
+In every `*.ts` under `--root` (recursive, `node_modules` skipped) that calls `.rpc('…')`, an
 `export interface X {` / `export type X = {` that is then used as the RPC's return
 (`as X[]`, `as unknown as X`, `Promise<X>`) is a hand-copied return type — it must derive from
 the generated `Database['public']['Functions']['<rpc>']['Returns']` instead. A

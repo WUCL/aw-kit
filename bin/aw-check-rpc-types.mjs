@@ -26,7 +26,7 @@
  *   · 第一次導入用 `--init-baseline` 把現況全部登記（只在基線檔不存在時允許）
  *
  * 用法：aw-check-rpc-types [--root <dir>] [--baseline <file>] [--update-baseline | --init-baseline]
- *   --root      掃描目錄（預設 src/infrastructure/supabase；只掃該層 *.ts，不遞迴）
+ *   --root      掃描目錄（預設 src/infrastructure/supabase；遞迴掃 *.ts，跳過 node_modules）
  *   --baseline  基線檔（預設 scripts/check-rpc-types.baseline.json；不存在＝全部都是新的）
  * Exit：0 通過／1 有違規或基線需收縮／2 參數或路徑錯誤
  */
@@ -47,10 +47,16 @@ function parseArgs(argv) {
   return opts
 }
 
+// 遞迴掃 *.ts（v0.2.1 前只掃 --root 直接一層，子目錄的手抄型別會悄悄放行——
+// aw-admin_starter 2026-09-17 Codex review P1）。跳過 node_modules。
 function listTsFiles(dir) {
-  return readdirSync(dir, { withFileTypes: true })
-    .filter((e) => e.isFile() && e.name.endsWith('.ts'))
-    .map((e) => join(dir, e.name))
+  const out = []
+  for (const e of readdirSync(dir, { withFileTypes: true })) {
+    const p = join(dir, e.name)
+    if (e.isDirectory()) { if (e.name !== 'node_modules') out.push(...listTsFiles(p)) }
+    else if (e.isFile() && e.name.endsWith('.ts')) out.push(p)
+  }
+  return out
 }
 
 function findViolations(file, root) {

@@ -16,7 +16,7 @@ export const rules = {
 }
 
 const plugin = {
-  meta: { name: 'aw-kit', version: '0.2.0' },
+  meta: { name: 'aw-kit', version: '0.2.1' },
   rules,
   configs: {},
 }

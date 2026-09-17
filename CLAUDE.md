@@ -84,6 +84,7 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態（更新：2026-09-17）
 
+- 2026-09-17：v0.2.1 — `aw-check-rpc-types` 改為遞迴掃 `--root`（Codex P1），加 `nested/` 負例 fixture；**待使用者 push 並打 `v0.2.1` tag**。
 - 2026-09-17：v0.2.0 實作＋Codex review 修正完成（7 個本機 commit `772baa4`→`ca895ab`），**待使用者 push 並打 `v0.2.0` tag**；C（aw-admin_starter）等 tag。
 
 **待辦：** 見 `TODO.md`

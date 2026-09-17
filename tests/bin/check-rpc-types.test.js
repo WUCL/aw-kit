@@ -38,6 +38,13 @@ describe('aw-check-rpc-types', () => {
     expect(r.out).toContain('OrderRow')
   })
 
+  it('巢狀子目錄內的違規也要抓（不遞迴＝閘門悄悄失效）→ exit 1，key 為相對 root 的 posix 路徑', () => {
+    const r = run(['--root', join(FX, 'nested'), '--baseline', NOWHERE])
+    expect(r.code).toBe(1)
+    expect(r.out).toContain('orders/queries/orders.ts:1')
+    expect(r.out).toContain('OrderRow')
+  })
+
   it('// rpc-type-ok: 白名單放行', () => {
     expect(run(['--root', join(FX, 'whitelisted'), '--baseline', NOWHERE]).code).toBe(0)
   })

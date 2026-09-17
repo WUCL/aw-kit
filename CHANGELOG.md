@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.1] — 2026-09-17
+
+### Fixed
+
+- **`aw-check-rpc-types` now scans `--root` recursively** (`node_modules` skipped). v0.2.0 only
+  listed the top-level `*.ts`, so a hand-written RPC return type in any subdirectory passed the
+  gate silently. Baseline keys are still paths relative to `--root` (posix separators), so a
+  nested hit reads `orders/queries/orders.ts:OrderRow`. Found by the aw-admin_starter
+  `/codex-full-review` (2026-09-17, P1); regression fixture `tests/bin/fixtures/rpc-types/nested/`.
+
 ## [0.2.0] — 2026-09-17
 
 **Renamed `aw-notify-kit` → `aw-kit`** and widened from one mechanism to a kit. Driven by the
