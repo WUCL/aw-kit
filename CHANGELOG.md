@@ -2,6 +2,47 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.0] — 2026-09-17
+
+**Renamed `aw-notify-kit` → `aw-kit`** and widened from one mechanism to a kit. Driven by the
+`aw-admin_starter` plan (aw-cc_workflow `docs/plans/2026-09-17-aw-admin_starter.md`): the starter
+needs notify, the Supabase-safety lint rules and the RPC-type gate from one pinned dependency.
+
+### Breaking
+
+- **Subpath exports only; the root `.` export is gone.** `from 'aw-notify-kit'` →
+  `from 'aw-kit/notify'`; `aw-notify-kit/dist/style.css` → `aw-kit/notify/style.css`.
+  Deliberate: a stale import fails to resolve instead of silently working against an old copy.
+  README has the two-line sed.
+- `dist/aw-notify-kit.js` → `dist/notify/index.js`; console warnings now prefixed
+  `[aw-kit/notify]`.
+- `react` / `react-dom` peers are now **optional** (a lint-only consumer needs neither);
+  `eslint >= 9` added as an optional peer.
+
+### Added
+
+- **`aw-kit/notify`: `createNotify({ refusalCodes, fallbackMessage? })`** → `{ toast, toastFromError }`,
+  and `errText(err, fallback)`. Ported from inknock `shared/ui/notify.ts` + `shared/errors.ts`.
+  `toastFromError` puts the warn/error boundary in one place: a code in `refusalCodes` = the DB
+  explicitly refused, data untouched → `warn`; anything else = unknown whether the row saved →
+  persistent `error`. `refusalCodes` is a consumer decision (inknock's list is in the README as a
+  starting point, not a default). Every refusal code is tested individually.
+- **`aw-kit/eslint-rules`** flat-config plugin (`awKit.configs.recommended`, all `error`):
+  - `verified-supabase-write` — ported from mh1491. Now TS-aware: `as` / `satisfies` / `!` are
+    transparent while walking the chain (the verbatim JS rule false-positived on four TS shapes
+    under the TS parser — proven by RuleTester before the change). Options `clientNames`,
+    `verifyFnName`.
+  - `no-hardcoded-design-token` — inknock's three `no-restricted-syntax` selectors as a named
+    rule (flat config replaces same-name rules wholesale; the selectors silently died in
+    `src/features/**` when a fourth was added there). Also catches non-integer literals.
+  - `no-inline-date-format` — Date getter + `padStart` in one template literal. A shape guard
+    with documented blind spots; `message` option points at the project's formatter, no
+    whitelist file in the package.
+- **`aw-check-rpc-types` bin** — inknock's `scripts/check-rpc-types.mjs` with `--root` and
+  `--baseline` parameterised so negative fixtures never enter a real scan path. Baseline keys
+  are relative to `--root` (regenerate with `--update-baseline` when migrating). Exit 0/1/2.
+  Tested by subprocess against seven isolated fixture directories.
+
 ## [0.1.3] — 2026-09-15
 
 Adds a third toast level. Driven by a real consumer (inknock): of ~173 `toast.error` call sites,
