@@ -39,6 +39,11 @@ ruleTester.run('verified-supabase-write', rule, {
     // 轉型後再交給 verifyWrite
     "await verifyWrite(supabase.from('t').update({ a: 1 }).eq('id', id) as any, '更新')",
     "const q = supabase.from('t').update({ a: 1 }).eq('id', id) as any\nawait verifyWrite(q, '更新')",
+    // ── optional chaining（Codex 2026-09-17 review P1）：ESTree 把 `a?.b()` 包成 ChainExpression，
+    //    向上走到 verifyWrite 引數時必須穿透它 ──
+    "await verifyWrite(supabase.from('orders')?.update({ status: 'done' }).eq('id', id), '更新')",
+    "await supabase.from('t')?.update({ a: 1 }).eq('id', id).select()",
+    "const q = supabase.from('t')?.update({ a: 1 })\nawait verifyWrite(q, 'x')",
     // ── options：改名 ──
     {
       code: "await ensureRows(db.from('t').update({ a: 1 }).eq('id', id))",
@@ -96,6 +101,11 @@ ruleTester.run('verified-supabase-write', rule, {
     },
     {
       code: "await supabase!.from('t').update({ a: 1 }).eq('id', id)!",
+      errors: [{ messageId: 'unverified' }],
+    },
+    {
+      // optional chaining 不是逃生門
+      code: "await supabase.from('t')?.update({ a: 1 }).eq('id', id)",
       errors: [{ messageId: 'unverified' }],
     },
     {

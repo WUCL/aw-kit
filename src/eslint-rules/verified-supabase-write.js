@@ -19,7 +19,7 @@
 // verifyWrite 這類形狀，不會換到任何實質保護。
 //
 // TS：向上／向下穿越鏈時把 `as`／`satisfies`／`!`／括號視為透明（TSAsExpression、
-// TSSatisfiesExpression、TSNonNullExpression）。沒有這一層，`(x.update() as any).eq().select()`
+// TSSatisfiesExpression、TSNonNullExpression），ESTree 為 `a?.b()` 包的 ChainExpression 同樣透明。沒有這一層，`(x.update() as any).eq().select()`
 // 會被截斷成「沒有 select」而誤報——Codex 2026-09-17 以 TS parser 實測。
 //
 // Options：
@@ -27,7 +27,8 @@
 //   verifyFnName  形式 1／3 的 helper 名稱（預設 'verifyWrite'）
 
 const WRITE_METHODS = new Set(['update', 'delete'])
-const TS_WRAPPERS = new Set(['TSAsExpression', 'TSSatisfiesExpression', 'TSNonNullExpression', 'TSTypeAssertion'])
+// 對鏈而言是透明的包裝節點：TS 型別包裝＋optional chaining 的 ChainExpression
+const TS_WRAPPERS = new Set(['TSAsExpression', 'TSSatisfiesExpression', 'TSNonNullExpression', 'TSTypeAssertion', 'ChainExpression'])
 
 // 往內剝掉 TS wrapper：`(expr as T)!` → expr
 function unwrap(node) {

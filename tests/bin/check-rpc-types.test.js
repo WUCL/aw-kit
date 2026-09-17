@@ -59,15 +59,36 @@ describe('aw-check-rpc-types', () => {
     expect(r.out).toContain('orders.ts:OrderRow')
   })
 
-  it('--update-baseline 把目前命中寫進基線（key 是相對 root 的路徑）', () => {
+  it('--update-baseline 首次建立基線（--init-baseline）：key 是相對 root 的路徑', () => {
     const tmp = mkdtempSync(join(tmpdir(), 'rpc-types-'))
     cpSync(join(FX, 'violation'), tmp, { recursive: true })
     const baseline = join(tmp, 'baseline.json')
-    const r = run(['--root', tmp, '--baseline', baseline, '--update-baseline'])
+    // 沒有 --init-baseline 時，新命中會被拒絕
+    expect(run(['--root', tmp, '--baseline', baseline, '--update-baseline']).code).toBe(1)
+    const r = run(['--root', tmp, '--baseline', baseline, '--init-baseline'])
     expect(r.code).toBe(0)
     expect(JSON.parse(readFileSync(baseline, 'utf8'))).toEqual(['orders.ts:OrderRow'])
     // 寫完再跑一次就是綠的
     expect(run(['--root', tmp, '--baseline', baseline]).code).toBe(0)
+  })
+
+  it('--update-baseline 在有新增命中時拒絕（基線只能縮、不能長）→ exit 1，基線不變', () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'rpc-types-'))
+    cpSync(join(FX, 'violation'), tmp, { recursive: true })
+    const baseline = join(tmp, 'baseline.json')
+    writeFileSync(baseline, '[]\n')
+    const r = run(['--root', tmp, '--baseline', baseline, '--update-baseline'])
+    expect(r.code).toBe(1)
+    expect(r.out).toMatch(/orders\.ts:1\s+OrderRow/)
+    expect(readFileSync(baseline, 'utf8')).toBe('[]\n')
+  })
+
+  it('--update-baseline 只收縮：基線有已清項目時重寫為目前命中', () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'rpc-types-'))
+    cpSync(join(FX, 'cleared'), tmp, { recursive: true })
+    const baseline = join(tmp, 'baseline.json')
+    expect(run(['--root', tmp, '--baseline', baseline, '--update-baseline']).code).toBe(0)
+    expect(JSON.parse(readFileSync(baseline, 'utf8'))).toEqual([])
   })
 
   it('--root 不存在 → exit 2 並說明', () => {

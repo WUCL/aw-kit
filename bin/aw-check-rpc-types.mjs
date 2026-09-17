@@ -20,9 +20,12 @@
  * Ratchet：`--baseline` 檔記錄「已知、待清」的 `<相對 root 路徑>:<Name>`；
  *   · 命中不在基線內 → 新增的手抄型別 → exit 1（CI 擋）
  *   · 基線內的項目已不再命中 → exit 1 要人收縮（`--update-baseline` 自動收縮）
- *   · 基線只能變短，不能變長——要加新項目必須改這個檔，diff 會被 review 看到
+ *   · 基線只能變短，不能變長——`--update-baseline` 在有新命中時**拒絕**寫入（exit 1）；
+ *     要加新項目必須手改這個檔，diff 會被 review 看到。（inknock 原版會無條件重寫，等於
+ *     一個旗標就能把新違規洗白；Codex 2026-09-17 review 指出與「只縮不長」契約矛盾。）
+ *   · 第一次導入用 `--init-baseline` 把現況全部登記（只在基線檔不存在時允許）
  *
- * 用法：aw-check-rpc-types [--root <dir>] [--baseline <file>] [--update-baseline]
+ * 用法：aw-check-rpc-types [--root <dir>] [--baseline <file>] [--update-baseline | --init-baseline]
  *   --root      掃描目錄（預設 src/infrastructure/supabase；只掃該層 *.ts，不遞迴）
  *   --baseline  基線檔（預設 scripts/check-rpc-types.baseline.json；不存在＝全部都是新的）
  * Exit：0 通過／1 有違規或基線需收縮／2 參數或路徑錯誤
@@ -31,12 +34,13 @@ import { readdirSync, readFileSync, writeFileSync, existsSync, statSync } from '
 import { join, relative, resolve } from 'node:path'
 
 function parseArgs(argv) {
-  const opts = { root: 'src/infrastructure/supabase', baseline: 'scripts/check-rpc-types.baseline.json', update: false }
+  const opts = { root: 'src/infrastructure/supabase', baseline: 'scripts/check-rpc-types.baseline.json', update: false, init: false }
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]
     if (a === '--root') opts.root = argv[++i]
     else if (a === '--baseline') opts.baseline = argv[++i]
     else if (a === '--update-baseline') opts.update = true
+    else if (a === '--init-baseline') opts.init = true
     else { console.error(`未知參數：${a}`); process.exit(2) }
   }
   if (!opts.root || !opts.baseline) { console.error('--root／--baseline 需要值'); process.exit(2) }
@@ -101,9 +105,28 @@ function main() {
   const fresh = allViolations.filter((v) => !baselineSet.has(key(v)))
   const cleared = baseline.filter((k) => !allViolations.some((v) => key(v) === k))
 
-  if (opts.update) {
+  const writeBaseline = () => {
     writeFileSync(opts.baseline, JSON.stringify(allViolations.map(key).sort(), null, 2) + '\n')
-    console.log(`基線已更新：${allViolations.length} 筆 → ${opts.baseline}`)
+    console.log(`基線已寫入：${allViolations.length} 筆 → ${opts.baseline}`)
+  }
+
+  if (opts.init) {
+    if (existsSync(opts.baseline)) {
+      console.error(`❌ --init-baseline 只用於第一次導入；${opts.baseline} 已存在，請改用 --update-baseline（只縮不長）`)
+      process.exit(2)
+    }
+    writeBaseline()
+    process.exit(0)
+  }
+
+  if (opts.update) {
+    if (fresh.length > 0) {
+      console.error('❌ --update-baseline 只能收縮基線，不能把新命中洗進去。以下為新增的手抄型別，請先修掉：\n')
+      for (const v of fresh) console.error(`  ${v.file}:${v.line}  ${v.name}`)
+      console.error('\n（若確定要登記為既有債務，手動編輯基線檔讓 review 看到 diff。）')
+      process.exit(1)
+    }
+    writeBaseline()
     process.exit(0)
   }
 

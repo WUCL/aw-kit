@@ -55,7 +55,7 @@ CLI 的 scan root／baseline 參數化。
 - **`verified-supabase-write` 鏈上有 `.from()` 一律算 supabase 鏈**，與 `clientNames` 無關——這是抓 `const db = supabase` 別名的手段，不是 bug。TS wrapper 只是透明層，不能變逃生門：`(await q.update(v)) as any` 仍要報。
 - **設計代幣規則是具名規則不是 `no-restricted-syntax`**：flat config 同名 rule 後者整段取代前者，inknock 因此在 `src/features` 三條全滅。不要「為了省事」改回 selector。
 - **`no-inline-date-format` 是形狀防呆，不是完整禁止**：helper／中間變數是已知盲點，刻意不擴大 selector；套件不放 formatter 白名單檔，專案用 `files`／`ignores` 排除自己的 formatter。
-- **CLI 的負例只能放隔離 fixture、透過 `--root` 掃**：放進正常路徑會讓消費端 CI 必紅。baseline key 是相對 `--root` 的路徑（與 inknock 舊版不同，遷移要 `--update-baseline` 一次）。
+- **CLI 的負例只能放隔離 fixture、透過 `--root` 掃**：放進正常路徑會讓消費端 CI 必紅。baseline key 是相對 `--root` 的路徑（與 inknock 舊版不同，遷移要刪舊基線再 `--init-baseline` 一次；`--update-baseline` 有新命中時拒絕寫入（只縮不長））。
 - **RuleTester 一律用 TS parser**（`tests/eslint-rules/_ruleTester.js`）：規則出貨給 TS 專案，JS parser 看不到 `TSAsExpression` 等節點，會漏掉真實誤報。
 - **`undoDelete` 之類綁定資料庫的邏輯刻意不進套件**；`format`（日期／金額）也不進套件（plan §8），由 starter 複製。
 - **`package-lock.json` 已 commit**：只服務套件開發者。

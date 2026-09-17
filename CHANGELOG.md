@@ -30,8 +30,8 @@ needs notify, the Supabase-safety lint rules and the RPC-type gate from one pinn
 - **`aw-kit/eslint-rules`** flat-config plugin (`awKit.configs.recommended`, all `error`):
   - `verified-supabase-write` — ported from mh1491. Now TS-aware: `as` / `satisfies` / `!` are
     transparent while walking the chain (the verbatim JS rule false-positived on four TS shapes
-    under the TS parser — proven by RuleTester before the change). Options `clientNames`,
-    `verifyFnName`.
+    under the TS parser — proven by RuleTester before the change), and optional chaining
+    (`ChainExpression`) is transparent too. Options `clientNames`, `verifyFnName`.
   - `no-hardcoded-design-token` — inknock's three `no-restricted-syntax` selectors as a named
     rule (flat config replaces same-name rules wholesale; the selectors silently died in
     `src/features/**` when a fourth was added there). Also catches non-integer literals.
@@ -40,8 +40,10 @@ needs notify, the Supabase-safety lint rules and the RPC-type gate from one pinn
     whitelist file in the package.
 - **`aw-check-rpc-types` bin** — inknock's `scripts/check-rpc-types.mjs` with `--root` and
   `--baseline` parameterised so negative fixtures never enter a real scan path. Baseline keys
-  are relative to `--root` (regenerate with `--update-baseline` when migrating). Exit 0/1/2.
-  Tested by subprocess against seven isolated fixture directories.
+  are relative to `--root` (delete the old file and `--init-baseline` once when migrating).
+  Unlike inknock's script, `--update-baseline` refuses to write while there are new hits — the
+  ratchet really only shrinks (Codex review). Exit 0/1/2. Tested by subprocess against seven
+  isolated fixture directories.
 
 ## [0.1.3] — 2026-09-15
 

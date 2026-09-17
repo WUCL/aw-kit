@@ -30,7 +30,7 @@ sed -i '' "s#aw-notify-kit/dist/style.css#aw-kit/notify/style.css#g" $(grep -rl 
 ```
 
 then `npm install github:WUCL/aw-kit#v0.2.0` and drop the old dependency. The root import is
-gone on purpose — a stale `from 'aw-kit/notify'` fails to resolve rather than silently working
+gone on purpose — a stale `from 'aw-notify-kit'` fails to resolve rather than silently working
 against an old copy. Don't forget `vi.mock('aw-notify-kit', …)` in tests (see
 "Migrating from an in-house implementation" below for why a stale mock target stays green).
 
@@ -341,11 +341,14 @@ the generated `Database['public']['Functions']['<rpc>']['Returns']` instead. A
 
 Ratchet: the baseline lists known offenders as `<path relative to --root>:<Name>`. New hits →
 exit 1; baseline entries that no longer hit → exit 1 asking you to shrink it
-(`--update-baseline` rewrites it). The baseline only shrinks; growing it means editing the file
-by hand, where review sees it. Exit 2 = bad arguments or missing root.
+(`--update-baseline` rewrites it). **The baseline only shrinks**: `--update-baseline` refuses
+(exit 1) while there are new hits, so a flag can't launder a fresh violation into "known debt" —
+growing it means editing the file by hand, where review sees it. First adoption:
+`--init-baseline` records the current state, allowed only when the baseline file doesn't exist
+yet. Exit 2 = bad arguments, missing root, or `--init-baseline` over an existing file.
 
 Migrating from inknock's `scripts/check-rpc-types.mjs`: keys there were prefixed with the scan
-directory; run `--update-baseline` once to regenerate.
+directory; delete the old baseline and run `--init-baseline` once to regenerate.
 
 ---
 
