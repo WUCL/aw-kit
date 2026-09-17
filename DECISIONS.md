@@ -33,6 +33,7 @@
 
 | 日期 | 主題 | 結論 | 狀態 | 細節 |
 |------|------|------|------|------|
+| 2026-09-17 | `aw-check-rpc-types` 掃描範圍 | 遞迴掃 `--root`，只跳 `node_modules`；`.d.ts` 與 dotfolder **不**排除（保持逐層行為與 v0.2.0 一致，排除須另案論證） | 🔒 | v0.2.1 CHANGELOG；Codex review 2026-09-17 同意 |
 | 2026-09-17 | 套件形狀 | 單一套件、只有子路徑匯出（`./notify`／`./notify/style.css`／`./eslint-rules`＋bin），**不留根 `.`**、不做 workspaces | 🔒 | `aw-cc_workflow/DECISIONS.md` 2026-09-17；plan §0 |
 | 2026-09-17 | `build` script 與 git 安裝 | npm 對 git dependency **只跑 `prepare`**，`build` script 不會觸發；不改 script 名 | ✅ | Codex P1 以 marker 實測駁回，見 CLAUDE.md gotcha、plan Codex verdict |
 | 2026-09-17 | `aw-check-rpc-types` ratchet | `--update-baseline` 有新命中時拒寫（exit 1）；首次導入用 `--init-baseline`；基線只縮不長 | 🔒 | Codex P1；`bin/aw-check-rpc-types.mjs` 檔頭 |
