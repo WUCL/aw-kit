@@ -3,14 +3,14 @@ import { useState as S, useEffect as x, useCallback as w, useRef as h } from "re
 const j = /* @__PURE__ */ new Set();
 let R = 0;
 const q = /* @__PURE__ */ new Map(), $ = 300;
-function N(n, t, { duration: d = 3500, action: s = null, key: r = null } = {}) {
+function N(n, t, { duration: u = 3500, action: s = null, key: r = null } = {}) {
   const e = r ?? `${n}:${t}`;
   if (!s) {
     const a = Date.now(), o = q.get(e);
     if (o != null && a - o < $) return;
     q.set(e, a);
   }
-  const i = { id: ++R, type: n, message: t, duration: d, action: s, key: e };
+  const i = { id: ++R, type: n, message: t, duration: u, action: s, key: e };
   j.forEach((a) => a(i));
 }
 const T = {
@@ -226,7 +226,7 @@ function G() {
 const K = 3;
 let A = 0;
 function Y({ item: n, onClose: t }) {
-  const [d, s] = S(!1), r = h(null), e = h(n.duration), i = h(0), a = n.duration == null, o = w(() => {
+  const [u, s] = S(!1), r = h(null), e = h(n.duration), i = h(0), a = n.duration == null, o = w(() => {
     a || (i.current = Date.now(), r.current = setTimeout(() => t(n.id), e.current));
   }, [n.id, t, a]), c = w(() => {
     a || (clearTimeout(r.current), e.current -= Date.now() - i.current);
@@ -250,7 +250,7 @@ function Y({ item: n, onClose: t }) {
         k && "fbk-toast--error",
         _ && "fbk-toast--warn",
         E && "fbk-toast--clickable",
-        d && "fbk-toast--shown"
+        u && "fbk-toast--shown"
       ].filter(Boolean).join(" "),
       children: [
         /* @__PURE__ */ l("div", { className: "fbk-toast__dot" }),
@@ -311,57 +311,57 @@ function J() {
       s(), A -= 1;
     };
   }, []);
-  const d = w((s) => t((r) => r.filter((e) => e.id !== s)), []);
-  return /* @__PURE__ */ l("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ l(Y, { item: s, onClose: d }, s.id)) });
+  const u = w((s) => t((r) => r.filter((e) => e.id !== s)), []);
+  return /* @__PURE__ */ l("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ l(Y, { item: s, onClose: u }, s.id)) });
 }
 const H = {
   primary: "fbk-btn--primary",
   secondary: "fbk-btn--secondary",
   danger: "fbk-btn--danger"
 };
-function z({ variant: n = "secondary", onClick: t, children: d, ...s }) {
+function z({ variant: n = "secondary", onClick: t, children: u, ...s }) {
   const r = H[n] || H.secondary;
-  return /* @__PURE__ */ l("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...s, children: d });
+  return /* @__PURE__ */ l("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...s, children: u });
 }
 let D = 0;
 function Q() {
   var M;
-  const [n, t] = S(null), [d, s] = S(!1), r = h(null), e = h(null);
+  const [n, t] = S(null), [u, s] = S(!1), r = h(null), e = h(null);
   x(() => {
     D > 0 && console.warn("[aw-kit/notify] ConfirmDialogHost 已掛載超過一次——最後掛載的實例會接管 confirm() 呼叫，行為不可預期，請確認只在 App 根層掛載一次"), D += 1;
-    const f = P((u, b) => t({ opts: u, resolve: b }));
+    const f = P((d, b) => t({ opts: d, resolve: b }));
     return () => {
       f(), D -= 1;
     };
   }, []);
   const i = !!((M = n == null ? void 0 : n.opts) != null && M.actions), a = w((f) => {
-    n == null || n.resolve(f), s(!1), setTimeout(() => t(null), 150);
+    n == null || n.resolve(f), s(!1), setTimeout(() => t((d) => d === n ? null : d), 150);
   }, [n]), o = w(() => a(i ? null : !1), [a, i]);
   if (x(() => {
     if (!n) return;
     e.current = document.activeElement;
-    const f = requestAnimationFrame(() => s(!0)), u = document.body.style.overflow;
+    const f = requestAnimationFrame(() => s(!0)), d = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     const b = setTimeout(() => {
       var m, g;
       (g = (m = r.current) == null ? void 0 : m.querySelector("button:not([disabled])")) == null || g.focus();
     }, 60);
     return () => {
-      cancelAnimationFrame(f), clearTimeout(b), document.body.style.overflow = u, e.current instanceof HTMLElement && document.body.contains(e.current) && e.current.focus();
+      cancelAnimationFrame(f), clearTimeout(b), document.body.style.overflow = d, e.current instanceof HTMLElement && document.body.contains(e.current) && e.current.focus();
     };
   }, [n]), x(() => {
     if (!n) return;
-    const f = (u) => {
+    const f = (d) => {
       var L;
-      if (u.key === "Escape") {
+      if (d.key === "Escape") {
         o();
         return;
       }
-      if (u.key !== "Tab") return;
+      if (d.key !== "Tab") return;
       const b = (L = r.current) == null ? void 0 : L.querySelectorAll("button:not([disabled])");
       if (!b || b.length === 0) return;
       const m = b[0], g = b[b.length - 1];
-      u.shiftKey && document.activeElement === m ? (u.preventDefault(), g.focus()) : !u.shiftKey && document.activeElement === g && (u.preventDefault(), m.focus());
+      d.shiftKey && document.activeElement === m ? (d.preventDefault(), g.focus()) : !d.shiftKey && document.activeElement === g && (d.preventDefault(), m.focus());
     };
     return document.addEventListener("keydown", f), () => document.removeEventListener("keydown", f);
   }, [n, o]), !n) return null;
@@ -372,7 +372,7 @@ function Q() {
       {
         onClick: o,
         "aria-hidden": "true",
-        className: `fbk-dialog-backdrop ${d ? "fbk-dialog-backdrop--shown" : ""}`
+        className: `fbk-dialog-backdrop ${u ? "fbk-dialog-backdrop--shown" : ""}`
       }
     ),
     /* @__PURE__ */ y(
@@ -382,7 +382,7 @@ function Q() {
         role: "alertdialog",
         "aria-modal": "true",
         "aria-label": c,
-        className: `fbk-dialog-panel ${d ? "fbk-dialog-panel--shown" : ""}`,
+        className: `fbk-dialog-panel ${u ? "fbk-dialog-panel--shown" : ""}`,
         children: [
           c && /* @__PURE__ */ l("h2", { className: "fbk-dialog-title", children: c }),
           k && /* @__PURE__ */ l("p", { className: "fbk-dialog-body", children: k }),
@@ -409,7 +409,7 @@ function U(n) {
   return typeof n == "object" && n !== null && typeof n.code == "string" && n.code.trim() ? n.code.trim() : null;
 }
 function Z({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
-  const d = new Set(n), s = {
+  const u = new Set(n), s = {
     success(e, i) {
       T.success(e, i);
     },
@@ -424,7 +424,7 @@ function Z({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
   };
   function r(e, i = t, a) {
     const o = U(e), c = O(e, i);
-    o && d.has(o) ? s.warn(c, a) : s.error(c, a);
+    o && u.has(o) ? s.warn(c, a) : s.error(c, a);
   }
   return { toast: s, toastFromError: r };
 }

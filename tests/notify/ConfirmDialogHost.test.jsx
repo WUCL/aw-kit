@@ -92,4 +92,20 @@ describe('ConfirmDialogHost', () => {
     render(<ConfirmDialogHost />)
     expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('已掛載超過一次'))
   })
+
+  // inknock 2026-09-27「刪除供應商」兩段確認：第一個按下後立刻開第二個，
+  // 第一個的 150ms 收尾把第二個也清掉——畫面一閃而過，第二個 Promise 永遠不 resolve。
+  it('a confirm opened right after the previous one settles survives the close animation', async () => {
+    render(<ConfirmDialogHost />)
+    const first = confirm({ title: '第一次', confirmLabel: '刪除' })
+    fireEvent.click(await screen.findByText('刪除'))
+    await expect(first).resolves.toBe(true)
+    const second = confirm({ title: '第二次', confirmLabel: '確定永久刪除' })
+    await screen.findByText('確定永久刪除')
+    await new Promise(r => setTimeout(r, 250))  // 越過上一個的 150ms 收尾
+    const btn = screen.queryByText('確定永久刪除')
+    expect(btn).not.toBeNull()
+    fireEvent.click(btn)
+    await expect(second).resolves.toBe(true)
+  })
 })

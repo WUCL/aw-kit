@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [0.2.2] — 2026-09-27
+
+### Fixed
+
+- **A `confirm()` opened right after another one settles no longer vanishes.** `settle()` cleared
+  the dialog unconditionally 150ms later (after the close animation), so a two-step confirm
+  (`await confirm(); await confirm()`) had its second dialog wiped mid-open: it flashed and
+  disappeared, and its Promise never resolved. The deferred clear now only removes the dialog it
+  belongs to. Found in inknock (delete-supplier double confirmation); regression test in
+  `tests/notify/ConfirmDialogHost.test.jsx`.
+
 ## [0.2.1] — 2026-09-17
 
 ### Fixed

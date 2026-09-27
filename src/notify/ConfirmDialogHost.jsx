@@ -28,7 +28,9 @@ export default function ConfirmDialogHost() {
   const settle = useCallback((result) => {
     dialog?.resolve(result)
     setShow(false)
-    setTimeout(() => setDialog(null), 150)
+    // 只清掉「自己」：resolve 之後呼叫端可能立刻開下一個 confirm（兩段確認），
+    // 無條件 setDialog(null) 會把那個新的也清掉——畫面一閃而過、新的 Promise 永不 resolve。
+    setTimeout(() => setDialog(cur => (cur === dialog ? null : cur)), 150)
   }, [dialog])
 
   const dismiss = useCallback(() => settle(isMulti ? null : false), [settle, isMulti])
