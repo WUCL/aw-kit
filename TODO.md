@@ -4,6 +4,10 @@
 
 - [x] push `main` 並打 `v0.2.0`／`v0.2.1` tag（2026-09-17 完成）
 
+## 待修
+
+- [ ] 🟡 **`ConfirmDialogHost` 的 Esc 未排除中文輸入法組字中按鍵**（2026-10-08 自 inflorify 代驗 P2）：`dist/notify/index.js:356`（原始碼對應處）。判準 `isComposing || keyCode === 229`（全域〈中文輸入法陷阱〉）；風險低（對話框只有按鈕、開啟 60ms 後焦點移到按鈕），下次開 aw-kit 時一併修並發版
+
 ## 消費端跟進（各自 repo，不在本 repo 做）
 
 - [ ] inknock：`aw-notify-kit` → `aw-kit/notify` sed；`shared/ui/notify.ts` 改用 `createNotify`；`scripts/check-rpc-types.mjs` 改用 `aw-check-rpc-types` bin（刪舊基線、`--init-baseline`）；eslint 三條 selector 改 `aw-kit/eslint-rules`（存量多，severity 自行降 warn）
