@@ -2,6 +2,12 @@
 
 > 各次對話的工作紀錄，依時間倒序排列。最新狀態請見 CLAUDE.md。（npm 發版紀錄在 `CHANGELOG.md`，兩檔用途不同。）
 
+## 2026-10-15（v0.3.0：新增 aw-kit/panel）
+
+- 2026-10-15：v0.3.0 — 自 inknock `src/shared/ui/panel/` 抽出 `aw-kit/panel`（TS→JS 只搬不改行為；路由改 `router` adapter prop、外觀改 `--aw-panel-*` CSS 變數、`zBase`／`mobileQuery`／`onMaxDepth` 改 Provider prop），搬 7 支面板殼測試（57 項）＋型別編譯測試（`test:types`）；L1–L3 變異皆確認會紅。`vite build` 改為 notify＋panel 兩段（notify 產出不變）。**未 commit／未打 tag**（待指揮官驗收）。
+
+---
+
 ## 2026-09-17（v0.2.1：aw-check-rpc-types 遞迴掃描＋Codex review）
 
 - 2026-09-17：v0.2.1 — `aw-check-rpc-types` 改為遞迴掃 `--root`（Codex P1），加 `nested/` 負例 fixture，已 push＋tag；Codex review 後補 README 釘版 → v0.2.1。

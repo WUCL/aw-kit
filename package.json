@@ -1,8 +1,8 @@
 {
   "name": "aw-kit",
-  "version": "0.2.2",
+  "version": "0.3.0",
   "type": "module",
-  "description": "Allen Wu's shared front-end kit: toast/confirm notify (React 18+), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
+  "description": "Allen Wu's shared front-end kit: toast/confirm notify and QuickView/slide-over panel shell (React 18+), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",
   "exports": {
     "./notify": {
@@ -10,6 +10,11 @@
       "default": "./dist/notify/index.js"
     },
     "./notify/style.css": "./dist/notify/style.css",
+    "./panel": {
+      "types": "./dist/panel/index.d.ts",
+      "default": "./dist/panel/index.js"
+    },
+    "./panel/style.css": "./dist/panel/style.css",
     "./eslint-rules": {
       "types": "./src/eslint-rules/index.d.ts",
       "default": "./src/eslint-rules/index.js"
@@ -25,9 +30,10 @@
   ],
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "build": "vite build && vite build --mode panel",
+    "test": "vitest run && npm run test:types",
+    "test:watch": "vitest",
+    "test:types": "tsc --noEmit -p tests/panel/tsconfig.json"
   },
   "peerDependencies": {
     "eslint": ">=9",
@@ -47,12 +53,15 @@
   },
   "devDependencies": {
     "@testing-library/react": "^16.0.1",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "@typescript-eslint/parser": "^8.70.0",
     "@vitejs/plugin-react": "^4.3.4",
     "eslint": "^9.39.5",
     "jsdom": "^25.0.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-router-dom": "^6.30.6",
     "typescript": "^5.9.3",
     "vite": "^6.0.1",
     "vitest": "^4.0.0"

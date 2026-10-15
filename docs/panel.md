@@ -1,6 +1,6 @@
 # aw-kit/panel 規格（草案，2026-10-15）
 
-> **狀態：規格先行，程式碼尚未抽取。** 本檔是 QuickView／slide-over 面板跨專案的**唯一真相**；
+> **狀態：v0.3.0 已抽取（2026-10-15，未發 tag）；inknock 尚未改引用（遷移 step 2）。** 本檔是 QuickView／slide-over 面板跨專案的**唯一真相**；
 > `aw-cc_workflow/skills/admin-ui-conventions` §3 只留原則並指向這裡。
 > 來源實作：inknock `src/shared/ui/panel/`（2026-10-15 全站上線，26 檔面板）。
 > 定案紀錄：inknock `DECISIONS.md` 2026-10-14／10-15 QuickView 各列、2026-10-15「aw-kit/panel 抽取範圍」grilling。
@@ -67,9 +67,9 @@
 
 | # | 教訓 | 失敗形狀 | 必附測試（自 inknock 搬） |
 |---|---|---|---|
-| L1 | **路由攔截（`useBlocker`）必須排除面板自身的移動**：同 pathname＋search、只有 `state.awPanel` 不同者放行；殼關閉後呼叫頁面 `onClosed` 的導航以 `withPanelNavigationAllowed` 包住 | 頁面有未存變更時，開／關面板誤跳「離開前確認」；殼的 `navigate(-n)` 被攔 | `tests/panel-history.test.tsx`、`panel-review-fixes.test.tsx`：拿掉排除條件須紅 |
-| L2 | **守門每層可登記多支**（`usePanelCloseGuard` 回傳各自解除函式），依登記順序逐支問、第一支回 false 即停 | 一層一支時，子分頁的守門覆蓋掉主表單的，未存內容靜默丟失 | `tests/panel-multi-guard.test.tsx`：改成單支須紅 |
-| L3 | **下層保留掛載**才保得住未存狀態 | 單殼換內容會卸載下層，返回後輸入、分頁、捲動全丟，且不報錯 | `tests/panel-stacked-layers.test.tsx`：疊兩層返回後同一節點、分頁與輸入仍在；改成卸載須紅 |
+| L1 | **路由攔截（`useBlocker`）必須排除面板自身的移動**：同 pathname＋search、只有 `state.awPanel` 不同者放行；殼關閉後呼叫頁面 `onClosed` 的導航以 `withPanelNavigationAllowed` 包住 | 頁面有未存變更時，開／關面板誤跳「離開前確認」；殼的 `navigate(-n)` 被攔 | `tests/panel/panel-round2.test.jsx` A 組與 7/8：拿掉 awPanel 比較或 allowDepth 須紅（已實證） |
+| L2 | **守門每層可登記多支**（`usePanelCloseGuard` 回傳各自解除函式），依登記順序逐支問、第一支回 false 即停 | 一層一支時，子分頁的守門覆蓋掉主表單的，未存內容靜默丟失 | `tests/panel/panel-multi-guard.test.jsx`：改成單支須紅（已實證） |
+| L3 | **下層保留掛載**才保得住未存狀態 | 單殼換內容會卸載下層，返回後輸入、分頁、捲動全丟，且不報錯 | `tests/panel/panel-stacked-layers.test.jsx`：疊兩層返回後同一節點、分頁與輸入仍在；改成卸載須紅 |
 
 另：多條關閉路徑（Esc、遮罩、內容 closeAll／back）共用**單一 transitioning 鎖**，async 守門未決前第二條路徑不得放行（inflorify 4-B Codex 第 3 輪）。
 
@@ -97,6 +97,18 @@
 | `--aw-panel-motion` | `220ms` | 滑動時長 |
 | `--aw-panel-easing` | `cubic-bezier(0.32, 0.72, 0, 1)` | 滑動曲線 |
 | `--aw-panel-offset-bottom` | `0px` | 底部讓位（如 SP 檢視提示列） |
+| `--aw-panel-meta-size` | `13px` | 標題後 meta 與「‹ 來源名」字級（v0.3.0 抽取時補） |
+| `--aw-panel-meta-color` | `var(--aw-panel-ink-subtle)` | meta 文字色；inknock 的 meta 比 ✕ 淡一階，需要分開時覆寫（v0.3.0 補） |
+| `--aw-panel-title-line-height` | `1.35` | 標題行高（v0.3.0 補） |
+| `--aw-panel-body-size` | `15px` | 內容區內建文字（如「未註冊的面板型別」）字級（v0.3.0 補） |
+| `--aw-panel-danger` | `#b42318` | 內建錯誤文字色（v0.3.0 補） |
+| `--aw-panel-space-sm` | `8px` | meta 左距、「‹ 來源名」內距（v0.3.0 補） |
+| `--aw-panel-space-lg` | `16px` | 頭部上內距（v0.3.0 補） |
+
+骨架常數（不開放覆寫）：頂列高 20px、點擊區 44px、細列／標題間距 4px。
+`--aw-panel-focus` 套用在頭部兩顆按鈕的 `:focus-visible`（class `aw-panel-hit`）；`--aw-panel-notice-bg` 目前殼內無元件使用（提示列屬專案內容），僅保留預設值供專案引用。
+
+Provider props（非 CSS）：`router`（必填）、`zBase`（預設 160）、`mobileQuery`（預設 `(max-width: 767px)`）、`onMaxDepth`。
 
 **有品牌主色時建議換掉的只有這幾項**：`--aw-panel-back-color`、`--aw-panel-focus`、`--aw-panel-notice-bg`（主色淺底）、以及固定底部列的主要按鈕（按鈕本身由專案提供）。其餘維持中性——換了容易與專案自己的代幣分岔。
 

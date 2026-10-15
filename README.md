@@ -7,6 +7,8 @@ Allen Wu's shared front-end kit, consumed via git tag. One package, **subpath ex
 |---|---|---|
 | `aw-kit/notify` | Zero-dependency toast + confirm-dialog emitter/host pair, plus `createNotify` adapter factory | React ≥ 18 |
 | `aw-kit/notify/style.css` | The notify stylesheet | — |
+| `aw-kit/panel` | QuickView / slide-over panel shell: stacked layers, `openPanel` registry, back-closes-top, close guards. Router injected via adapter, look via `--aw-panel-*` CSS variables (spec: `docs/panel.md`) | React ≥ 18 + your own router (react-router v6/v7) |
+| `aw-kit/panel/style.css` | The panel default theme variables | — |
 | `aw-kit/eslint-rules` | Flat-config ESLint plugin: `verified-supabase-write`, `no-hardcoded-design-token`, `no-inline-date-format` | ESLint ≥ 9 |
 | `aw-check-rpc-types` (bin) | Ratchet CLI against hand-written Supabase RPC return types | Node ≥ 18 |
 
@@ -33,6 +35,36 @@ then `npm install github:WUCL/aw-kit#v0.2.1` and drop the old dependency. The ro
 gone on purpose — a stale `from 'aw-notify-kit'` fails to resolve rather than silently working
 against an old copy. Don't forget `vi.mock('aw-notify-kit', …)` in tests (see
 "Migrating from an in-house implementation" below for why a stale mock target stays green).
+
+---
+
+# `aw-kit/panel`
+
+Spec and rules: [`docs/panel.md`](docs/panel.md). aw-kit imports **no router**: pass your router's hooks in.
+
+```jsx
+import { useLocation, useNavigate, useNavigationType } from 'react-router-dom' // or react-router v7
+import { PanelStackProvider, PanelHost, usePanel, usePanelHeader } from 'aw-kit/panel'
+import 'aw-kit/panel/style.css' // defines --aw-panel-* on :root; override them to re-theme
+
+const router = { useLocation, useNavigate, useNavigationType }
+const registry = { order: { component: OrderPanel, ariaLabel: 'Order' } }
+
+// inside <RouterProvider> / <BrowserRouter>:
+<PanelStackProvider router={router} onMaxDepth={() => toast.error('Too many panels')}>
+  <App />
+  <PanelHost registry={registry} />
+</PanelStackProvider>
+
+function OrderPanel({ seed }) {            // content components get { seed, openPanel, back, closeAll, canBack }
+  usePanelHeader({ title: 'Order', meta: seed.no })
+  return <div>...</div>
+}
+// anywhere below the provider: const { openPanel } = usePanel(); openPanel('order', { id, no })
+```
+
+Provider props: `router` (required), `zBase` (default 160), `mobileQuery` (default `(max-width: 767px)`), `onMaxDepth`.
+Page-level `useBlocker` guards must exclude the shell's own moves: `shouldBlock: ({ currentLocation, nextLocation }) => dirty && !isPanelOnlyNavigation(currentLocation, nextLocation)`.
 
 ---
 
