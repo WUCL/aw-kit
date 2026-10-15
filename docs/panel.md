@@ -18,7 +18,9 @@
 
 判準：**改了會破壞規範的歸 aw-kit 骨架；只是品牌外觀的走 CSS 變數。**
 
-形狀照 `aw-kit/notify`：JS 原始碼＋手寫 `index.d.ts`、子路徑 `aw-kit/panel`、`aw-kit/panel/style.css`（＋`injectStyles`），無建置步驟。另加一支型別檔編譯測試（以 `tsc --noEmit` 編譯一個照 `.d.ts` 呼叫 API 的範例），防手寫型別與實作脫節。
+形狀照 `aw-kit/notify`：JS／JSX 原始碼＋手寫 `index.d.ts`，**以 vite 建置、`dist/` 進版控**（JSX 需編譯；2026-10-15 更正：grilling Q10 曾誤述為無建置），子路徑 `aw-kit/panel`、`aw-kit/panel/style.css`。另加一支型別檔編譯測試（`tsc --noEmit` 編譯照 `.d.ts` 呼叫 API 的範例），防手寫型別與實作脫節。
+
+**路由以 adapter 注入，aw-kit 不 import 任何 router**：`<PanelStackProvider router={{ useLocation, useNavigate, useNavigationType }}>`。理由：inknock 用 react-router-dom v6、inflorify 用 react-router v7，直接 import 等於替使用端選版本、錯了靜默。`useBlocker` 留在專案的頁面守門（aw-kit 只輸出 `isPanelOnlyNavigation` 供其排除）。
 
 ---
 
@@ -122,5 +124,5 @@
 | 0 | inknock 建 baseline：現有面板測試全綠＋主要面板截圖（桌機／iPad／手機，各 1–2 層） | 九綠 |
 | 1 | 抽 `aw-kit/panel`（TS→JS＋`.d.ts`，**只搬不改**），搬 §3 測試到 aw-kit，加型別編譯測試；發 tag | aw-kit 測試全綠；§3 每條變異須紅 |
 | 2 | inknock 改引用 `aw-kit/panel`，CSS 變數指向 `theme.ts` 代幣，刪 `src/shared/ui/panel/` 對應檔 | 九綠＋截圖與 step 0 逐張比對**零差異** |
-| 3 | inflorify 改引用：手機改左留 40px（原全螢幕）、頭部改兩列結構（原標題列帶 actions＋文字「關閉」）、動作改分流、`StatusMenuBadge` 留在標題後 | inflorify 閘門全綠＋實機 |
+| 3 | （另開段落）inflorify 改引用：手機改左留 40px（原全螢幕）、頭部改兩列結構（原標題列帶 actions＋文字「關閉」）、動作改分流、`StatusMenuBadge` 留在標題後 | inflorify 閘門全綠＋實機 |
 | 4 | admin-ui-conventions §3 確認只剩原則＋連結 | — |
