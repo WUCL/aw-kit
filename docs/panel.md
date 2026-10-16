@@ -88,13 +88,14 @@
 | `--aw-panel-ink` | `#1a1a1a` | 標題 |
 | `--aw-panel-ink-subtle` | `#616161` | ✕、單號、meta |
 | `--aw-panel-back-color` | `#4a4a4a` | 「‹ 來源名」 |
-| `--aw-panel-focus` | `#303030` | 焦點框 |
+| `--aw-panel-focus` | `#303030` | 焦點框（`.aw-panel-hit:focus-visible` 的 outline 顏色；專案可把它指到自己的焦點環變數，例 `var(--focus-ring-color)`） |
+| `--aw-panel-hit` | `44px` | 頂列兩顆按鈕的點擊區（高、右 ✕ 的寬、負 margin 偏移皆以 calc() 引用此變數） |
 | `--aw-panel-notice-bg` | `#f0f0f0`（sunken） | 提示列底 |
 | `--aw-panel-title-size` | `20px` | 標題字級 |
 | `--aw-panel-radius` | `0` | 面板左緣圓角 |
 | `--aw-panel-pad` | `24px` | 外緣（桌機） |
 | `--aw-panel-pad-mobile` | `16px` | 外緣（手機） |
-| `--aw-panel-motion` | `220ms` | 滑動時長 |
+| `--aw-panel-motion` | `220ms` | 滑動時長（須帶單位：`ms` 或 `s`；解析不了退 220ms） |
 | `--aw-panel-easing` | `cubic-bezier(0.32, 0.72, 0, 1)` | 滑動曲線 |
 | `--aw-panel-offset-bottom` | `0px` | 底部讓位（如 SP 檢視提示列） |
 | `--aw-panel-meta-size` | `13px` | 標題後 meta 與「‹ 來源名」字級（v0.3.0 抽取時補） |
@@ -105,7 +106,7 @@
 | `--aw-panel-space-sm` | `8px` | meta 左距、「‹ 來源名」內距（v0.3.0 補） |
 | `--aw-panel-space-lg` | `16px` | 頭部上內距（v0.3.0 補） |
 
-骨架常數（不開放覆寫）：頂列高 20px、點擊區 44px、細列／標題間距 4px。
+骨架常數（不開放覆寫）：頂列高 20px、細列／標題間距 4px。點擊區預設 44px，可用 `--aw-panel-hit` 覆寫。
 `--aw-panel-focus` 套用在頭部兩顆按鈕的 `:focus-visible`（class `aw-panel-hit`）；`--aw-panel-notice-bg` 目前殼內無元件使用（提示列屬專案內容），僅保留預設值供專案引用。
 
 Provider props（非 CSS）：`router`（必填）、`zBase`（預設 160）、`mobileQuery`（預設 `(max-width: 767px)`）、`onMaxDepth`。

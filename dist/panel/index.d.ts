@@ -1,7 +1,7 @@
 // Hand-written type declarations for aw-kit/panel's public API.
 // Copied to dist/panel/index.d.ts at build time (not compiler-generated — the package is plain JS/JSX).
 
-import type { ComponentType, ReactNode } from 'react'
+import type { ComponentType, ReactElement, ReactNode } from 'react'
 
 /** Minimal location shape the panel shell reads (a v6/v7 router Location satisfies it). */
 export interface PanelLocation {
@@ -29,7 +29,7 @@ export interface PanelStackProviderProps {
   /** Called when openPanel hits MAX_DEPTH (inknock shows a toast here). Omitted = silent. */
   onMaxDepth?: () => void
 }
-export function PanelStackProvider(props: PanelStackProviderProps): JSX.Element
+export function PanelStackProvider(props: PanelStackProviderProps): ReactElement
 
 export type CloseGuard = () => boolean | Promise<boolean>
 
@@ -81,7 +81,7 @@ export type PanelRegistry = Record<string, {
   width?: number | string
 }>
 
-export function PanelHost(props: { registry: PanelRegistry }): JSX.Element
+export function PanelHost(props: { registry: PanelRegistry }): ReactElement
 
 /** Register a close guard for the current panel layer; null = no guard. Several per layer are allowed. */
 export function usePanelCloseGuard(guard: CloseGuard | null): void
@@ -97,7 +97,7 @@ export function PanelHeader(props: {
   onClose: () => void
   /** Horizontal padding as a CSS length, e.g. 'var(--aw-panel-pad)' */
   padX: string
-}): JSX.Element
+}): ReactElement
 
 export function usePanelHeader(info: { title: string; meta?: string }): void
 

@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.3.1] — 2026-10-16
+
+### Fixed
+
+- `aw-kit/panel` review fixes: `--aw-panel-motion` now honours `s` as well as `ms` (`.22s` used to parse as 0.22 ms and unmount the exiting layer at once); header hit area is the `--aw-panel-hit` variable (default 44px); `matchMedia` lists are cached per query instead of created on every snapshot; `index.d.ts` no longer relies on the global `JSX` namespace (uses `ReactElement`); docs note that `--aw-panel-focus` can point at a project focus-ring variable.
+
 ## [0.2.2] — 2026-09-27
 
 ### Fixed

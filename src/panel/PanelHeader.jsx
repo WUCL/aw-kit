@@ -4,9 +4,9 @@ import { CloseIcon } from './close-icon.jsx'
 //   頂列 20px：‹ 來源名（depth>1 才有）……✕（點擊區 44×44，視覺小）
 //   4px → 標題（獨佔一列靠左）＋ 可選 meta（單號／狀態，淡一階、可換行）→ 4px → 分隔線
 // 頂列不放任何動作；不提供「全部關閉」。
-// 骨架常數（規格 §2.4，不開放覆寫）：頂列高 20、點擊區 44、細列／標題間距 4。
+// 骨架常數（規格 §2.4，不開放覆寫）：頂列高 20、點擊區（--aw-panel-hit，預設 44）、細列／標題間距 4。
 const TOP_ROW_H = 20
-const HIT = 44        // inknock T.controlH.lg
+const HIT = 'var(--aw-panel-hit)'   // 預設 44px（styles.css）；專案可覆寫，所有計算用 calc() 引用
 const GAP_XS = 4      // inknock SPACING.xs
 
 /** padX：左右內距，CSS 長度字串（殼傳 var(--aw-panel-pad-mobile)／var(--aw-panel-pad)） */
@@ -27,7 +27,7 @@ export function PanelHeader({ title, meta, backLabel, onBack, onClose, padX }) {
           </button>
         )}
         <button type="button" className="aw-panel-hit" onClick={onClose} aria-label="關閉"
-          style={{ ...hitBtn, right: -(hit - TOP_ROW_H) / 2, width: hit, color: 'var(--aw-panel-ink-subtle)' }}>
+          style={{ ...hitBtn, right: `calc(-1 * (${hit} - ${TOP_ROW_H}px) / 2)`, width: hit, color: 'var(--aw-panel-ink-subtle)' }}>
           <CloseIcon size={16} />
         </button>
       </div>

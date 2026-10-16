@@ -17,8 +17,11 @@ const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), texta
  */
 export function getPanelExitMs() {
   if (typeof document === 'undefined') return 220
-  const v = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--aw-panel-motion'))
-  return Number.isFinite(v) && v >= 0 ? v : 220
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--aw-panel-motion').trim()
+  const m = /^(\d*\.?\d+)(ms|s)$/i.exec(raw)   // 只認帶單位的 ms／s；'.22s'、'0.2s'、'220ms' 皆可
+  if (!m) return 220
+  const ms = m[2].toLowerCase() === 's' ? parseFloat(m[1]) * 1000 : parseFloat(m[1])
+  return Number.isFinite(ms) ? ms : 220
 }
 export const DEFAULT_WIDTH = 'min(560px, calc((100vw - var(--app-shell-sidebar-width, 0px)) * 0.52))'
 

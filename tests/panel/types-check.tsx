@@ -61,3 +61,5 @@ export const App = () => (
 export const NoRouter = () => <PanelStackProvider />
 // @ts-expect-error padX is a CSS string, not a number
 export const BadPad = () => <PanelHeader title="t" onClose={() => {}} padX={16} />
+// @ts-expect-error PanelHost returns a ReactElement, not any (a global-JSX d.ts would make this silently pass)
+export const NotANumber: number = PanelHost({ registry })

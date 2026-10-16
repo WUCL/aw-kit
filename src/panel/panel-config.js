@@ -19,15 +19,25 @@ export function usePanelConfig() {
   return useContext(PanelConfigContext)
 }
 
-// Own matchMedia subscription (no shared cache): reads window.matchMedia on every snapshot so a
-// replaced matchMedia (tests) is never stale. Same first-render-correct behaviour as inknock's useMediaQuery.
+// matchMedia 共用快取：每個 query 字串一個 MediaQueryList（模組層 Map），snapshot 讀快取的 mql.matches，
+// 不再每次 render／snapshot 都 new 一個。測試替換 window.matchMedia 時快取會失效：記住上次的 matchMedia
+// 函式參照，參照改變就清空（所以換掉 matchMedia 的測試永遠拿到新的）。
+const mqlCache = new Map()
+let cachedFor = null
+function getMql(query) {
+  if (cachedFor !== window.matchMedia) { mqlCache.clear(); cachedFor = window.matchMedia }
+  let mql = mqlCache.get(query)
+  if (!mql) { mql = window.matchMedia(query); mqlCache.set(query, mql) }
+  return mql
+}
+
 function useMediaQuery(query) {
   const subscribe = useCallback((cb) => {
-    const mql = window.matchMedia(query)
+    const mql = getMql(query)
     mql.addEventListener('change', cb)
     return () => mql.removeEventListener('change', cb)
   }, [query])
-  return useSyncExternalStore(subscribe, () => window.matchMedia(query).matches, () => false)
+  return useSyncExternalStore(subscribe, () => getMql(query).matches, () => false)
 }
 
 export function useIsMobile() {

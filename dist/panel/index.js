@@ -1,18 +1,18 @@
-import { jsx as S, jsxs as B, Fragment as Re } from "react/jsx-runtime";
-import { createContext as $, useContext as G, useCallback as C, useSyncExternalStore as He, useReducer as fe, useRef as p, useLayoutEffect as pe, useEffect as A, useMemo as K, useState as Y } from "react";
-import { createPortal as Te } from "react-dom";
-const Le = 8;
-let Ee = 0;
-function Ue(e, n, r = {}) {
-  return { key: `panel_${++Ee}`, type: e, seed: n, ownsHistory: !0, openedAtKey: "", openedAtPath: "", openedAtUrl: "", ...r };
+import { jsx as A, jsxs as _, Fragment as Ee } from "react/jsx-runtime";
+import { createContext as K, useContext as G, useCallback as S, useSyncExternalStore as Ue, useReducer as ve, useRef as p, useLayoutEffect as we, useEffect as R, useMemo as D, useState as Y } from "react";
+import { createPortal as Me } from "react-dom";
+const ze = 8;
+let Fe = 0;
+function Ie(e, n, r = {}) {
+  return { key: `panel_${++Fe}`, type: e, seed: n, ownsHistory: !0, openedAtKey: "", openedAtPath: "", openedAtUrl: "", ...r };
 }
-function he(e) {
-  return e.length >= Le;
+function ye(e) {
+  return e.length >= ze;
 }
-function le(e, n) {
+function ie(e, n) {
   switch (n.type) {
     case "open":
-      return he(e) ? e : [...e, n.entry];
+      return ye(e) ? e : [...e, n.entry];
     case "back":
       return e.slice(0, -1);
     case "closeAll":
@@ -23,141 +23,148 @@ function le(e, n) {
       return n.stack;
   }
 }
-const J = (e) => {
+const ee = (e) => {
   var r;
   const n = (r = e.state) == null ? void 0 : r.awPanel;
   return typeof n == "number" ? n : 0;
 };
-function on(e, n) {
-  return ee > 0 ? !0 : e.pathname === n.pathname && e.search === n.search && J(e) !== J(n);
+function sn(e, n) {
+  return ne > 0 ? !0 : e.pathname === n.pathname && e.search === n.search && ee(e) !== ee(n);
 }
-let ee = 0;
-function ze(e) {
-  ee++;
+let ne = 0;
+function Oe(e) {
+  ne++;
   try {
     return e();
   } finally {
-    ee--;
+    ne--;
   }
 }
-const me = $(null), ne = $(null), ve = 160, ye = "(max-width: 767px)", we = $({
+const ge = K(null), te = K(null), ke = 160, be = "(max-width: 767px)", xe = K({
   router: null,
-  zBase: ve,
-  mobileQuery: ye,
+  zBase: ke,
+  mobileQuery: be,
   onMaxDepth: void 0
 });
-function te() {
-  return G(we);
+function re() {
+  return G(xe);
 }
-function ge(e) {
-  const n = C((r) => {
-    const i = window.matchMedia(e);
+const Z = /* @__PURE__ */ new Map();
+let ue = null;
+function de(e) {
+  ue !== window.matchMedia && (Z.clear(), ue = window.matchMedia);
+  let n = Z.get(e);
+  return n || (n = window.matchMedia(e), Z.set(e, n)), n;
+}
+function Pe(e) {
+  const n = S((r) => {
+    const i = de(e);
     return i.addEventListener("change", r), () => i.removeEventListener("change", r);
   }, [e]);
-  return He(n, () => window.matchMedia(e).matches, () => !1);
+  return Ue(n, () => de(e).matches, () => !1);
 }
-function ke() {
-  return ge(te().mobileQuery);
+function Ce() {
+  return Pe(re().mobileQuery);
 }
-function be() {
-  return ge("(prefers-reduced-motion: reduce)");
+function Se() {
+  return Pe("(prefers-reduced-motion: reduce)");
 }
-const D = J, Ie = 1e3, Oe = (e) => !!e && typeof e == "object" && Object.values(e).some((n) => typeof n == "function"), Me = (e) => {
-  const n = e.findIndex((r, i) => !(i === 0 && !r.ownsHistory) && Oe(r.seed));
+const $ = ee, _e = 1e3, Be = (e) => !!e && typeof e == "object" && Object.values(e).some((n) => typeof n == "function"), Ne = (e) => {
+  const n = e.findIndex((r, i) => !(i === 0 && !r.ownsHistory) && Be(r.seed));
   return n < 0 ? e : e.slice(0, n);
-}, Z = (e, n) => {
-  const r = e.indexOf("?"), i = e.indexOf("#"), u = [r, i].filter((s) => s >= 0).sort((s, R) => s - R)[0] ?? e.length;
+}, V = (e, n) => {
+  const r = e.indexOf("?"), i = e.indexOf("#"), u = [r, i].filter((s) => s >= 0).sort((s, x) => s - x)[0] ?? e.length;
   return { ...n, pathname: e.slice(0, u), search: r >= 0 ? e.slice(r, i > r ? i : void 0) : "", hash: i >= 0 ? e.slice(i) : "", state: null };
 };
-function an({ children: e, router: n, zBase: r = ve, mobileQuery: i = ye, onMaxDepth: u }) {
+function ln({ children: e, router: n, zBase: r = ke, mobileQuery: i = be, onMaxDepth: u }) {
   if (!n) throw new Error("<PanelStackProvider> 需要 router prop：{ useLocation, useNavigate, useNavigationType }");
-  const { useLocation: s, useNavigate: R, useNavigationType: m } = n, [y, U] = fe(le, []), l = p(y), h = C((t) => {
-    l.current = le(l.current, t), U(t);
-  }, []), a = s(), H = m(), w = R(), E = p(a);
-  pe(() => {
+  const { useLocation: s, useNavigate: x, useNavigationType: m } = n, [w, U] = ve(ie, []), l = p(w), h = S((t) => {
+    l.current = ie(l.current, t), U(t);
+  }, []), a = s(), H = m(), y = x(), E = p(a);
+  we(() => {
     E.current = a;
   });
-  const T = p(null), P = p(null), I = p(!1), v = p(null), g = p(!1), L = C((t) => {
+  const T = p(null), P = p(null), z = p(!1), v = p(null), g = p(!1), L = S((t) => {
     T.current = t;
-  }, []), o = C((t, f) => {
-    w({ pathname: t.pathname, search: t.search, hash: t.hash }, { state: { ...t.state, awPanel: f } });
-  }, [w]), c = C((t, f = !0) => {
+  }, []), o = S((t, f) => {
+    y({ pathname: t.pathname, search: t.search, hash: t.hash }, { state: { ...t.state, awPanel: f } });
+  }, [y]), c = S((t, f = !0) => {
     const k = l.current.slice(t);
-    k.length !== 0 && (h({ type: "closeTo", depth: t }), f && k.forEach((x) => {
+    k.length !== 0 && (h({ type: "closeTo", depth: t }), f && k.forEach((C) => {
       var b;
-      return (b = x.onClosed) == null ? void 0 : b.call(x);
+      return (b = C.onClosed) == null ? void 0 : b.call(C);
     }));
-  }, [h]), d = C((t, f) => {
+  }, [h]), d = S((t, f) => {
     v.current && clearTimeout(v.current), P.current = f, v.current = setTimeout(() => {
       P.current = null;
-    }, Ie), w(-t);
-  }, [w]);
-  A(() => () => {
+    }, _e), y(-t);
+  }, [y]);
+  R(() => () => {
     v.current && clearTimeout(v.current);
   }, []);
-  const z = C((t, f, k) => {
-    if (he(l.current)) {
+  const M = S((t, f, k) => {
+    if (ye(l.current)) {
       u == null || u();
       return;
     }
-    const x = E.current, b = (k == null ? void 0 : k.ownsHistory) !== !1;
-    h({ type: "open", entry: Ue(t, f, { ownsHistory: b, onClosed: k == null ? void 0 : k.onClosed, openedAtKey: x.key, openedAtPath: x.pathname, openedAtUrl: x.pathname + x.search + x.hash }) }), b && o(x, l.current.length);
-  }, [h, o, u]), F = C(() => {
+    const C = E.current, b = (k == null ? void 0 : k.ownsHistory) !== !1;
+    h({ type: "open", entry: Ie(t, f, { ownsHistory: b, onClosed: k == null ? void 0 : k.onClosed, openedAtKey: C.key, openedAtPath: C.pathname, openedAtUrl: C.pathname + C.search + C.hash }) }), b && o(C, l.current.length);
+  }, [h, o, u]), B = S(() => {
     if (P.current !== null) return;
     const t = l.current, f = t[t.length - 1];
     f && (f.ownsHistory ? d(1, t.length - 1) : c(t.length - 1));
-  }, [d, c]), re = C(() => {
+  }, [d, c]), oe = S(() => {
     if (P.current !== null) return !1;
     const t = l.current;
     if (t.length === 0) return !0;
     const f = t.filter((k) => k.ownsHistory).length;
     return f > 0 ? d(f, 0) : c(0), !0;
-  }, [d, c]), oe = C(async (t) => {
+  }, [d, c]), ae = S(async (t) => {
     if (l.current.length === 0)
       return t == null || t(), !0;
     if (!(T.current ? await T.current(0) : !0)) {
-      const x = l.current[0];
-      if (x) {
-        const b = Z(x.replacedFrom ?? x.openedAtUrl, E.current), M = l.current.length;
-        w({ pathname: b.pathname, search: b.search, hash: b.hash }, { replace: !0, state: M > 1 ? { awPanel: M } : null });
+      const C = l.current[0];
+      if (C) {
+        const b = V(C.replacedFrom ?? C.openedAtUrl, E.current), I = l.current.length;
+        y({ pathname: b.pathname, search: b.search, hash: b.hash }, { replace: !0, state: I > 1 ? { awPanel: I } : null });
       }
       return !1;
     }
     return t == null || t(), c(0), !0;
-  }, [w, c]), Ce = K(() => ({ openPanel: z, back: F, closeAll: re, dismissAll: oe, registerGate: L }), [z, F, re, oe, L]), Se = K(() => ({ stack: y, dispatch: U }), [y]), N = p(/* @__PURE__ */ new Map()), ae = p(a), ce = p(y), W = p(null);
-  A(() => {
-    const t = ae.current;
+  }, [y, c]), He = D(() => ({ openPanel: M, back: B, closeAll: oe, dismissAll: ae, registerGate: L }), [M, B, oe, ae, L]), Te = D(() => ({ stack: w, dispatch: U }), [w]), N = p(/* @__PURE__ */ new Map()), ce = p(a), se = p(w), W = p(null);
+  R(() => {
+    const t = ce.current;
     if (a.key !== t.key) {
-      const f = a.pathname === t.pathname && D(a) !== D(t);
+      const f = a.pathname === t.pathname && $(a) !== $(t);
       if (W.current = null, H === "REPLACE" && a.pathname === t.pathname) {
-        const k = t.pathname + t.search + t.hash, x = a.pathname + a.search + a.hash;
+        const k = t.pathname + t.search + t.hash, C = a.pathname + a.search + a.hash;
         l.current.forEach((b) => {
-          b.openedAtUrl === k && (b.replacedFrom = b.replacedFrom ?? k, b.openedAtUrl = x);
+          b.openedAtUrl === k && (b.replacedFrom = b.replacedFrom ?? k, b.openedAtUrl = C);
         });
       }
       if (!f && !g.current) {
-        const k = Me(ce.current);
+        const k = Ne(se.current);
         k.length > 0 ? N.current.set(t.key, k) : N.current.delete(t.key);
       }
-      ae.current = a;
+      ce.current = a;
     }
-    ce.current = y;
-  }, [a, y]), A(() => {
+    se.current = w;
+  }, [a, w]), R(() => {
     if (g.current && H === "PUSH") {
       g.current = !1, l.current.forEach((f) => {
         f.openedAtKey = a.key;
       });
       return;
     }
-    if (H !== "PUSH" || D(a) !== 0) return;
+    if (H !== "PUSH" || $(a) !== 0) return;
     const t = l.current;
     t.length === 0 || t.every((f) => f.openedAtKey === a.key) || h({ type: "closeAll" });
   }, [a, H, h]);
-  const j = C(() => {
+  const j = S(() => {
     const t = W.current, f = l.current;
     !t || t.key !== E.current.key || f.length !== 1 || f[0].ownsHistory || (W.current = null, N.current.delete(t.key), h({ type: "restore", stack: [f[0], ...t.rest] }));
   }, [h]);
-  A(() => {
+  R(() => {
     if (H !== "POP") return;
     const t = N.current.get(a.key);
     if (l.current.length > 0) {
@@ -171,42 +178,42 @@ function an({ children: e, router: n, zBase: r = ve, mobileQuery: i = ye, onMaxD
       }
       N.current.delete(a.key), h({ type: "restore", stack: t });
     }
-  }, [a.key, H, h, j]), A(() => {
+  }, [a.key, H, h, j]), R(() => {
     j();
-  }, [y, j]), A(() => {
-    var se;
+  }, [w, j]), R(() => {
+    var le;
     if (H !== "POP") return;
     const t = l.current;
     if (P.current !== null) {
-      const X = P.current;
-      P.current = null, v.current && clearTimeout(v.current), c(X);
+      const q = P.current;
+      P.current = null, v.current && clearTimeout(v.current), c(q);
       return;
     }
     if (t.length === 0) {
-      if (!I.current) {
-        I.current = !0;
+      if (!z.current) {
+        z.current = !0;
         return;
       }
-      D(a) > 0 && !((se = N.current.get(a.key)) != null && se.length) && w(-1);
+      $(a) > 0 && !((le = N.current.get(a.key)) != null && le.length) && y(-1);
       return;
     }
-    if (I.current = !0, a.pathname !== t[0].openedAtPath) {
+    if (z.current = !0, a.pathname !== t[0].openedAtPath) {
       (async () => {
-        const X = t.length;
+        const q = t.length;
         if (T.current ? await T.current(0) : !0) {
           c(0);
           return;
         }
-        const O = t[0], _ = Z(O.openedAtUrl, a);
-        g.current = !0, w({ pathname: _.pathname, search: _.search, hash: _.hash });
-        for (let Q = O.ownsHistory ? 1 : 2; Q <= X; Q++) o(_, Q);
+        const F = t[0], O = V(F.openedAtUrl, a);
+        g.current = !0, y({ pathname: O.pathname, search: O.search, hash: O.hash });
+        for (let Q = F.ownsHistory ? 1 : 2; Q <= q; Q++) o(O, Q);
       })();
       return;
     }
-    const f = D(a), k = a.pathname + a.search + a.hash, x = !t[0].ownsHistory && t[0].openedAtUrl === k, b = f > 0 ? f : x ? 1 : 0, M = t.length;
-    if (b !== M) {
-      if (b > M) {
-        w(-1);
+    const f = $(a), k = a.pathname + a.search + a.hash, C = !t[0].ownsHistory && t[0].openedAtUrl === k, b = f > 0 ? f : C ? 1 : 0, I = t.length;
+    if (b !== I) {
+      if (b > I) {
+        y(-1);
         return;
       }
       (async () => {
@@ -214,128 +221,130 @@ function an({ children: e, router: n, zBase: r = ve, mobileQuery: i = ye, onMaxD
           c(b);
           return;
         }
-        const q = t[0];
-        if (!q.ownsHistory && q.openedAtUrl !== k) {
-          const O = Z(q.openedAtUrl, a);
-          g.current = !0, M < 2 && w({ pathname: O.pathname, search: O.search, hash: O.hash });
-          for (let _ = Math.max(b, 1) + 1; _ <= M; _++) o(O, _);
+        const X = t[0];
+        if (!X.ownsHistory && X.openedAtUrl !== k) {
+          const F = V(X.openedAtUrl, a);
+          g.current = !0, I < 2 && y({ pathname: F.pathname, search: F.search, hash: F.hash });
+          for (let O = Math.max(b, 1) + 1; O <= I; O++) o(F, O);
           return;
         }
-        for (let O = b + 1; O <= M; O++) o(a, O);
+        for (let F = b + 1; F <= I; F++) o(a, F);
       })();
     }
   }, [a.key, H]);
-  const Ae = K(() => ({ router: n, zBase: r, mobileQuery: i, onMaxDepth: u }), [n, r, i, u]);
-  return /* @__PURE__ */ S(we.Provider, { value: Ae, children: /* @__PURE__ */ S(me.Provider, { value: Se, children: /* @__PURE__ */ S(ne.Provider, { value: Ce, children: e }) }) });
+  const Le = D(() => ({ router: n, zBase: r, mobileQuery: i, onMaxDepth: u }), [n, r, i, u]);
+  return /* @__PURE__ */ A(xe.Provider, { value: Le, children: /* @__PURE__ */ A(ge.Provider, { value: Te, children: /* @__PURE__ */ A(te.Provider, { value: He, children: e }) }) });
 }
-function _e() {
-  const e = G(ne);
+function Ge() {
+  const e = G(te);
   if (!e) throw new Error("usePanel 必須在 <PanelStackProvider> 內使用");
   return e;
 }
-function Be() {
-  const e = G(me);
+function We() {
+  const e = G(ge);
   if (!e) throw new Error("usePanelStack 必須在 <PanelStackProvider> 內使用");
   return e;
 }
-async function Fe(e) {
+async function $e(e) {
   for (const n of [...e]) if (!await n()) return !1;
   return !0;
 }
-const Pe = $(null);
-function cn(e) {
-  const n = G(Pe), r = p(e);
-  A(() => {
+const Ae = K(null);
+function un(e) {
+  const n = G(Ae), r = p(e);
+  R(() => {
     r.current = e;
   });
   const i = e !== null;
-  A(() => {
+  R(() => {
     if (!(!n || !i))
       return n.add(() => r.current ? r.current() : !0);
   }, [n, i]);
 }
-function Ne(e) {
+function De(e) {
   var n;
   return !!(((n = e.nativeEvent) == null ? void 0 : n.isComposing) ?? e.isComposing) || e.keyCode === 229;
 }
-function Ge(e) {
-  return e.key === "Escape" && !Ne(e);
+function Ke(e) {
+  return e.key === "Escape" && !De(e);
 }
-const ie = "calc(100% - 40px)";
-function We(e) {
+const fe = "calc(100% - 40px)";
+function je(e) {
   for (let n = e; n && n !== document.body; n = n.parentElement) {
     const r = parseInt(getComputedStyle(n).zIndex, 10);
     if (!Number.isNaN(r)) return r;
   }
   return 0;
 }
-function De(e) {
-  return [...document.querySelectorAll('[aria-modal="true"]')].some((n) => We(n) > e);
+function qe(e) {
+  return [...document.querySelectorAll('[aria-modal="true"]')].some((n) => je(n) > e);
 }
-const ue = "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled])";
-function Ke() {
+const pe = "a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled])";
+function Xe() {
   if (typeof document > "u") return 220;
-  const e = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--aw-panel-motion"));
-  return Number.isFinite(e) && e >= 0 ? e : 220;
+  const e = getComputedStyle(document.documentElement).getPropertyValue("--aw-panel-motion").trim(), n = /^(\d*\.?\d+)(ms|s)$/i.exec(e);
+  if (!n) return 220;
+  const r = n[2].toLowerCase() === "s" ? parseFloat(n[1]) * 1e3 : parseFloat(n[1]);
+  return Number.isFinite(r) ? r : 220;
 }
-const $e = "min(560px, calc((100vw - var(--app-shell-sidebar-width, 0px)) * 0.52))", je = (e, n = 160) => n + e * 2, Xe = (e, n) => {
+const Ye = "min(560px, calc((100vw - var(--app-shell-sidebar-width, 0px)) * 0.52))", Qe = (e, n = 160) => n + e * 2, Ze = (e, n) => {
   const r = typeof e == "number" ? `${e}px` : e;
   return n === 0 ? r : `max(360px, calc(${r} * 0.93))`;
 };
-function qe({ open: e, index: n, isTop: r, ariaLabel: i, children: u, onRequestClose: s, width: R = $e }) {
-  const [m, y] = Y(!1), U = p(null), l = p(null), h = p(null), a = p(r);
-  A(() => {
+function Ve({ open: e, index: n, isTop: r, ariaLabel: i, children: u, onRequestClose: s, width: x = Ye }) {
+  const [m, w] = Y(!1), U = p(null), l = p(null), h = p(null), a = p(r);
+  R(() => {
     a.current = r;
   });
-  const H = ke(), w = be(), E = je(n, te().zBase);
-  pe(() => {
+  const H = Ce(), y = Se(), E = Qe(n, re().zBase);
+  we(() => {
     const v = l.current;
     v && (r ? v.removeAttribute("inert") : v.setAttribute("inert", ""));
-  }, [r]), A(() => {
+  }, [r]), R(() => {
     h.current = document.activeElement;
-    const v = requestAnimationFrame(() => y(!0)), g = setTimeout(() => {
+    const v = requestAnimationFrame(() => w(!0)), g = setTimeout(() => {
       var L, o;
-      a.current && ((o = (L = U.current) == null ? void 0 : L.querySelector(ue)) == null || o.focus({ preventScroll: !0 }));
+      a.current && ((o = (L = U.current) == null ? void 0 : L.querySelector(pe)) == null || o.focus({ preventScroll: !0 }));
     }, 60);
     return () => {
       cancelAnimationFrame(v), clearTimeout(g), h.current instanceof HTMLElement && h.current.isConnected && h.current.focus({ preventScroll: !0 });
     };
   }, []);
   const T = p(s);
-  A(() => {
+  R(() => {
     T.current = s;
-  }), A(() => {
+  }), R(() => {
     if (!r || !e) return;
     const v = (g) => {
       var d;
       if (g.defaultPrevented) return;
-      if (Ge(g)) {
-        if (De(E + 1)) return;
+      if (Ke(g)) {
+        if (qe(E + 1)) return;
         T.current();
         return;
       }
       if (g.key !== "Tab") return;
-      const L = (d = U.current) == null ? void 0 : d.querySelectorAll(ue);
+      const L = (d = U.current) == null ? void 0 : d.querySelectorAll(pe);
       if (!L || L.length === 0) return;
       const o = L[0], c = L[L.length - 1];
       g.shiftKey && document.activeElement === o ? (g.preventDefault(), c.focus()) : !g.shiftKey && document.activeElement === c && (g.preventDefault(), o.focus());
     };
     return document.addEventListener("keydown", v), () => document.removeEventListener("keydown", v);
   }, [r, e, E]);
-  const P = e && m, I = w ? "none" : void 0;
-  return Te(
-    /* @__PURE__ */ B("div", { ref: l, "aria-hidden": r ? void 0 : !0, style: { position: "fixed", inset: 0, zIndex: E, pointerEvents: e ? void 0 : "none" }, children: [
-      /* @__PURE__ */ S(
+  const P = e && m, z = y ? "none" : void 0;
+  return Me(
+    /* @__PURE__ */ _("div", { ref: l, "aria-hidden": r ? void 0 : !0, style: { position: "fixed", inset: 0, zIndex: E, pointerEvents: e ? void 0 : "none" }, children: [
+      /* @__PURE__ */ A(
         "div",
         {
           onClick: () => {
             r && s();
           },
           "aria-hidden": "true",
-          style: { position: "absolute", inset: 0, background: "var(--aw-panel-scrim)", opacity: P ? 1 : 0, transition: I ?? "opacity var(--aw-panel-motion) ease-out" }
+          style: { position: "absolute", inset: 0, background: "var(--aw-panel-scrim)", opacity: P ? 1 : 0, transition: z ?? "opacity var(--aw-panel-motion) ease-out" }
         }
       ),
-      /* @__PURE__ */ S(
+      /* @__PURE__ */ A(
         "div",
         {
           ref: U,
@@ -351,14 +360,14 @@ function qe({ open: e, index: n, isTop: r, ariaLabel: i, children: u, onRequestC
             flexDirection: "column",
             overflowY: "auto",
             zIndex: E + 1,
-            width: H ? n === 0 ? ie : `calc(${ie} * 0.93)` : Xe(R, n),
+            width: H ? n === 0 ? fe : `calc(${fe} * 0.93)` : Ze(x, n),
             // 手機同規則、不設 360 下限（會比螢幕寬）
             maxWidth: "100%",
             background: "var(--aw-panel-bg)",
             boxShadow: "var(--aw-panel-shadow)",
             borderRadius: "var(--aw-panel-radius)",
             transform: P ? "translateX(0)" : "translateX(100%)",
-            transition: I ?? "transform var(--aw-panel-motion) var(--aw-panel-easing)"
+            transition: z ?? "transform var(--aw-panel-motion) var(--aw-panel-easing)"
           },
           children: u
         }
@@ -367,20 +376,20 @@ function qe({ open: e, index: n, isTop: r, ariaLabel: i, children: u, onRequestC
     document.body
   );
 }
-function Ye({ size: e = 14 }) {
-  return /* @__PURE__ */ B("svg", { width: e, height: e, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": !0, children: [
-    /* @__PURE__ */ S("line", { x1: "18", y1: "6", x2: "6", y2: "18" }),
-    /* @__PURE__ */ S("line", { x1: "6", y1: "6", x2: "18", y2: "18" })
+function Je({ size: e = 14 }) {
+  return /* @__PURE__ */ _("svg", { width: e, height: e, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: "2", strokeLinecap: "round", strokeLinejoin: "round", "aria-hidden": !0, children: [
+    /* @__PURE__ */ A("line", { x1: "18", y1: "6", x2: "6", y2: "18" }),
+    /* @__PURE__ */ A("line", { x1: "6", y1: "6", x2: "18", y2: "18" })
   ] });
 }
-const Qe = 20, Ze = 44, V = 4;
-function Ve({ title: e, meta: n, backLabel: r, onBack: i, onClose: u, padX: s }) {
-  const R = Ze, m = {
+const he = 20, en = "var(--aw-panel-hit)", J = 4;
+function nn({ title: e, meta: n, backLabel: r, onBack: i, onClose: u, padX: s }) {
+  const x = en, m = {
     position: "absolute",
     top: "50%",
     transform: "translateY(-50%)",
-    height: R,
-    minWidth: R,
+    height: x,
+    minWidth: x,
     display: "grid",
     placeItems: "center",
     border: "none",
@@ -389,9 +398,9 @@ function Ve({ title: e, meta: n, backLabel: r, onBack: i, onClose: u, padX: s })
     padding: 0,
     fontFamily: "inherit"
   };
-  return /* @__PURE__ */ B("header", { style: { padding: `var(--aw-panel-space-lg) ${s} ${V}px`, borderBottom: "1px solid var(--aw-panel-rule)", background: "var(--aw-panel-bg)" }, children: [
-    /* @__PURE__ */ B("div", { style: { position: "relative", height: Qe, marginBottom: V }, children: [
-      r !== void 0 && /* @__PURE__ */ B(
+  return /* @__PURE__ */ _("header", { style: { padding: `var(--aw-panel-space-lg) ${s} ${J}px`, borderBottom: "1px solid var(--aw-panel-rule)", background: "var(--aw-panel-bg)" }, children: [
+    /* @__PURE__ */ _("div", { style: { position: "relative", height: he, marginBottom: J }, children: [
+      r !== void 0 && /* @__PURE__ */ _(
         "button",
         {
           type: "button",
@@ -405,87 +414,87 @@ function Ve({ title: e, meta: n, backLabel: r, onBack: i, onClose: u, padX: s })
           ]
         }
       ),
-      /* @__PURE__ */ S(
+      /* @__PURE__ */ A(
         "button",
         {
           type: "button",
           className: "aw-panel-hit",
           onClick: u,
           "aria-label": "關閉",
-          style: { ...m, right: -24 / 2, width: R, color: "var(--aw-panel-ink-subtle)" },
-          children: /* @__PURE__ */ S(Ye, { size: 16 })
+          style: { ...m, right: `calc(-1 * (${x} - ${he}px) / 2)`, width: x, color: "var(--aw-panel-ink-subtle)" },
+          children: /* @__PURE__ */ A(Je, { size: 16 })
         }
       )
     ] }),
-    /* @__PURE__ */ B("h2", { style: { margin: 0, paddingBottom: V, fontSize: "var(--aw-panel-title-size)", fontWeight: 600, color: "var(--aw-panel-ink)", lineHeight: "var(--aw-panel-title-line-height)" }, children: [
+    /* @__PURE__ */ _("h2", { style: { margin: 0, paddingBottom: J, fontSize: "var(--aw-panel-title-size)", fontWeight: 600, color: "var(--aw-panel-ink)", lineHeight: "var(--aw-panel-title-line-height)" }, children: [
       e,
-      n && /* @__PURE__ */ S("span", { style: { marginLeft: "var(--aw-panel-space-sm)", fontSize: "var(--aw-panel-meta-size)", fontWeight: 400, color: "var(--aw-panel-meta-color)" }, children: n })
+      n && /* @__PURE__ */ A("span", { style: { marginLeft: "var(--aw-panel-space-sm)", fontSize: "var(--aw-panel-meta-size)", fontWeight: 400, color: "var(--aw-panel-meta-color)" }, children: n })
     ] })
   ] });
 }
-const xe = $(null);
-function sn({ title: e, meta: n }) {
-  const r = G(xe);
-  A(() => {
+const Re = K(null);
+function dn({ title: e, meta: n }) {
+  const r = G(Re);
+  R(() => {
     r == null || r.set({ title: e, meta: n });
   }, [r, e, n]);
 }
-function ln({ registry: e }) {
-  const { stack: n } = Be(), r = G(ne), i = be(), u = p(n);
+function fn({ registry: e }) {
+  const { stack: n } = We(), r = G(te), i = Se(), u = p(n);
   u.current = n;
-  const s = n.length, [R, m] = Y(n), [y, U] = Y([]);
-  if (R !== n) {
-    const o = new Set(n.map((d) => d.key)), c = R.map((d, z) => ({ entry: d, index: z })).filter((d) => !o.has(d.entry.key));
-    m(n), U([...y.filter((d) => !o.has(d.entry.key)), ...c]);
+  const s = n.length, [x, m] = Y(n), [w, U] = Y([]);
+  if (x !== n) {
+    const o = new Set(n.map((d) => d.key)), c = x.map((d, M) => ({ entry: d, index: M })).filter((d) => !o.has(d.entry.key));
+    m(n), U([...w.filter((d) => !o.has(d.entry.key)), ...c]);
   }
   const l = p(/* @__PURE__ */ new Map());
-  A(() => {
-    if (y.length === 0) return;
-    const o = y.map((d) => d.entry.key), c = setTimeout(() => {
-      U((d) => d.filter((z) => !o.includes(z.entry.key))), o.forEach((d) => {
-        u.current.some((z) => z.key === d) || l.current.delete(d);
+  R(() => {
+    if (w.length === 0) return;
+    const o = w.map((d) => d.entry.key), c = setTimeout(() => {
+      U((d) => d.filter((M) => !o.includes(M.entry.key))), o.forEach((d) => {
+        u.current.some((M) => M.key === d) || l.current.delete(d);
       });
-    }, i ? 0 : Ke());
+    }, i ? 0 : Xe());
     return () => clearTimeout(c);
-  }, [y, i]);
-  const h = s > 0 || y.length > 0;
-  A(() => {
+  }, [w, i]);
+  const h = s > 0 || w.length > 0;
+  R(() => {
     if (!h) return;
     const o = document.body.style.overflow;
     return document.body.style.overflow = "hidden", () => {
       document.body.style.overflow = o;
     };
   }, [h]);
-  const [, a] = fe((o) => o + 1, 0), H = C((o, c) => {
-    const d = u.current.find((z) => z.key === o);
+  const [, a] = ve((o) => o + 1, 0), H = S((o, c) => {
+    const d = u.current.find((M) => M.key === o);
     !d || d.title === c || (d.title = c, a());
-  }, []), w = C((o) => {
+  }, []), y = S((o) => {
     let c = l.current.get(o);
     return c || (c = /* @__PURE__ */ new Set(), l.current.set(o, c)), c;
-  }, []), E = p(!1), T = C(async (o) => {
+  }, []), E = p(!1), T = S(async (o) => {
     if (E.current) return !1;
     E.current = !0;
     try {
-      const c = u.current, d = Math.max(0, Math.min(o ?? c.length - 1, c.length)), z = [];
-      for (let F = c.length - 1; F >= d; F--) z.push(...l.current.get(c[F].key) ?? []);
-      return await Fe(z);
+      const c = u.current, d = Math.max(0, Math.min(o ?? c.length - 1, c.length)), M = [];
+      for (let B = c.length - 1; B >= d; B--) M.push(...l.current.get(c[B].key) ?? []);
+      return await $e(M);
     } finally {
       E.current = !1;
     }
   }, []);
-  A(() => (r.registerGate(T), () => r.registerGate(null)), [r, T]);
-  const P = C(async (o, c) => {
+  R(() => (r.registerGate(T), () => r.registerGate(null)), [r, T]);
+  const P = S(async (o, c) => {
     await T(o) && c();
-  }, [T]), I = C(() => P(void 0, r.back), [P, r]), v = C(() => P(0, r.closeAll), [P, r]), g = C(() => {
-    u.current.length > 1 ? I() : v();
-  }, [I, v]), L = [
-    ...y.map((o) => ({ ...o, open: !1 })),
+  }, [T]), z = S(() => P(void 0, r.back), [P, r]), v = S(() => P(0, r.closeAll), [P, r]), g = S(() => {
+    u.current.length > 1 ? z() : v();
+  }, [z, v]), L = [
+    ...w.map((o) => ({ ...o, open: !1 })),
     ...n.map((o, c) => ({ entry: o, index: c, open: !0 }))
   ];
-  return /* @__PURE__ */ S(Re, { children: L.map((o) => {
+  return /* @__PURE__ */ A(Ee, { children: L.map((o) => {
     var c;
-    return /* @__PURE__ */ S(
-      Je,
+    return /* @__PURE__ */ A(
+      tn,
       {
         entry: o.entry,
         index: o.index,
@@ -494,54 +503,54 @@ function ln({ registry: e }) {
         backLabel: o.index > 0 ? ((c = u.current[o.index - 1]) == null ? void 0 : c.title) || "返回" : void 0,
         registryEntry: e[o.entry.type],
         actions: r,
-        guards: w(o.entry.key),
+        guards: y(o.entry.key),
         setTitle: H,
         closeTop: g,
-        guardedBack: I,
+        guardedBack: z,
         guardedCloseAll: v
       },
       o.entry.key
     );
   }) });
 }
-function Je({ entry: e, index: n, open: r, isTop: i, backLabel: u, registryEntry: s, actions: R, guards: m, setTitle: y, closeTop: U, guardedBack: l, guardedCloseAll: h }) {
-  const H = ke() ? "var(--aw-panel-pad-mobile)" : "var(--aw-panel-pad)", [w, E] = Y(null), T = K(() => ({ add: (o) => {
+function tn({ entry: e, index: n, open: r, isTop: i, backLabel: u, registryEntry: s, actions: x, guards: m, setTitle: w, closeTop: U, guardedBack: l, guardedCloseAll: h }) {
+  const H = Ce() ? "var(--aw-panel-pad-mobile)" : "var(--aw-panel-pad)", [y, E] = Y(null), T = D(() => ({ add: (o) => {
     const c = () => o();
     return m.add(c), () => {
       m.delete(c);
     };
-  } }), [m]), P = e.key, I = K(() => ({ set: (o) => {
-    y(P, o.title), E(o);
-  } }), [P, y]), v = s == null ? void 0 : s.component, g = () => {
+  } }), [m]), P = e.key, z = D(() => ({ set: (o) => {
+    w(P, o.title), E(o);
+  } }), [P, w]), v = s == null ? void 0 : s.component, g = () => {
     r && l();
   }, L = () => {
     r && h();
   };
-  return /* @__PURE__ */ S(qe, { open: r, index: n, isTop: i, ariaLabel: (s == null ? void 0 : s.ariaLabel) ?? "詳情面板", width: s == null ? void 0 : s.width, onRequestClose: U, children: /* @__PURE__ */ S(Pe.Provider, { value: T, children: /* @__PURE__ */ S(xe.Provider, { value: I, children: /* @__PURE__ */ B("div", { style: { display: "flex", flexDirection: "column", flex: 1 }, children: [
-    /* @__PURE__ */ S(
-      Ve,
+  return /* @__PURE__ */ A(Ve, { open: r, index: n, isTop: i, ariaLabel: (s == null ? void 0 : s.ariaLabel) ?? "詳情面板", width: s == null ? void 0 : s.width, onRequestClose: U, children: /* @__PURE__ */ A(Ae.Provider, { value: T, children: /* @__PURE__ */ A(Re.Provider, { value: z, children: /* @__PURE__ */ _("div", { style: { display: "flex", flexDirection: "column", flex: 1 }, children: [
+    /* @__PURE__ */ A(
+      nn,
       {
-        title: (w == null ? void 0 : w.title) ?? (s == null ? void 0 : s.ariaLabel) ?? "詳情面板",
-        meta: w == null ? void 0 : w.meta,
+        title: (y == null ? void 0 : y.title) ?? (s == null ? void 0 : s.ariaLabel) ?? "詳情面板",
+        meta: y == null ? void 0 : y.meta,
         backLabel: u,
         onBack: g,
         onClose: u !== void 0 ? g : L,
         padX: H
       }
     ),
-    /* @__PURE__ */ S("div", { style: { flex: 1, padding: H }, children: v ? /* @__PURE__ */ S(v, { seed: e.seed, openPanel: R.openPanel, back: g, closeAll: L, canBack: u !== void 0 }) : /* @__PURE__ */ B("div", { style: { fontSize: "var(--aw-panel-body-size)", color: "var(--aw-panel-danger)" }, children: [
+    /* @__PURE__ */ A("div", { style: { flex: 1, padding: H }, children: v ? /* @__PURE__ */ A(v, { seed: e.seed, openPanel: x.openPanel, back: g, closeAll: L, canBack: u !== void 0 }) : /* @__PURE__ */ _("div", { style: { fontSize: "var(--aw-panel-body-size)", color: "var(--aw-panel-danger)" }, children: [
       "未註冊的面板型別：",
       e.type
     ] }) })
   ] }) }) }) });
 }
-function un(e, n, r) {
-  const i = _e(), u = p(i), s = p(r), R = p(n == null ? void 0 : n.seed), m = p(null), y = p(null), U = te().router.useNavigationType(), l = p(U);
-  A(() => {
-    u.current = i, s.current = r, R.current = n == null ? void 0 : n.seed, l.current = U;
+function pn(e, n, r) {
+  const i = Ge(), u = p(i), s = p(r), x = p(n == null ? void 0 : n.seed), m = p(null), w = p(null), U = re().router.useNavigationType(), l = p(U);
+  R(() => {
+    u.current = i, s.current = r, x.current = n == null ? void 0 : n.seed, l.current = U;
   });
   const h = (n == null ? void 0 : n.key) ?? null;
-  A(() => {
+  R(() => {
     if (h === null) {
       if (m.current && l.current === "POP") return;
       if (m.current) {
@@ -552,18 +561,18 @@ function un(e, n, r) {
       }
       return;
     }
-    if (m.current && y.current === h) return;
+    if (m.current && w.current === h) return;
     m.current && (m.current = null, u.current.closeAll());
     const a = {};
-    m.current = a, y.current = h, u.current.openPanel(e, R.current, {
+    m.current = a, w.current = h, u.current.openPanel(e, x.current, {
       ownsHistory: !1,
       onClosed: () => {
-        m.current === a && (m.current = null, ze(() => s.current()));
+        m.current === a && (m.current = null, Oe(() => s.current()));
       }
     });
   }, [h, e]);
 }
-const en = `/* aw-kit/panel — default appearance. Override any --aw-panel-* on :root (or a wrapper) to re-theme.
+const rn = `/* aw-kit/panel — default appearance. Override any --aw-panel-* on :root (or a wrapper) to re-theme.
    Defaults follow aw-cc_workflow/templates/design-system-baseline.md (neutral system); see docs/panel.md §4. */
 :root {
   --aw-panel-bg: #ffffff;
@@ -574,6 +583,7 @@ const en = `/* aw-kit/panel — default appearance. Override any --aw-panel-* on
   --aw-panel-ink-subtle: #616161;
   --aw-panel-back-color: #4a4a4a;
   --aw-panel-focus: #303030;
+  --aw-panel-hit: 44px;
   --aw-panel-notice-bg: #f0f0f0;
   --aw-panel-title-size: 20px;
   --aw-panel-radius: 0;
@@ -596,24 +606,24 @@ const en = `/* aw-kit/panel — default appearance. Override any --aw-panel-* on
   outline: 2px solid var(--aw-panel-focus);
   outline-offset: -2px;
 }
-`, de = "awp-styles";
-function dn() {
-  if (typeof document > "u" || document.getElementById(de)) return;
+`, me = "awp-styles";
+function hn() {
+  if (typeof document > "u" || document.getElementById(me)) return;
   const e = document.createElement("style");
-  e.id = de, e.textContent = en, document.head.appendChild(e);
+  e.id = me, e.textContent = rn, document.head.appendChild(e);
 }
 export {
-  Le as MAX_DEPTH,
-  Ve as PanelHeader,
-  ln as PanelHost,
-  an as PanelStackProvider,
-  J as awPanelOf,
-  dn as injectStyles,
-  on as isPanelOnlyNavigation,
-  _e as usePanel,
-  cn as usePanelCloseGuard,
-  sn as usePanelHeader,
-  Be as usePanelStack,
-  un as useUrlPanel,
-  ze as withPanelNavigationAllowed
+  ze as MAX_DEPTH,
+  nn as PanelHeader,
+  fn as PanelHost,
+  ln as PanelStackProvider,
+  ee as awPanelOf,
+  hn as injectStyles,
+  sn as isPanelOnlyNavigation,
+  Ge as usePanel,
+  un as usePanelCloseGuard,
+  dn as usePanelHeader,
+  We as usePanelStack,
+  pn as useUrlPanel,
+  Oe as withPanelNavigationAllowed
 };
