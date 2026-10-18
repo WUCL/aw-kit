@@ -97,9 +97,44 @@ export function PanelHeader(props: {
   onClose: () => void
   /** Horizontal padding as a CSS length, e.g. 'var(--aw-panel-pad)' */
   padX: string
+  /** Optional callback ref for the status-row container (PanelHost uses it for PanelHeaderStatus). Omitted = no status row. */
+  statusRef?: (el: HTMLDivElement | null) => void
 }): ReactElement
 
 export function usePanelHeader(info: { title: string; meta?: string }): void
+
+/**
+ * Renders children into the status row (third header row, under the title) of the layer this component lives in,
+ * via a portal. Use it anywhere in a content component's JSX; do not pass ReactNodes through usePanelHeader.
+ * Outside PanelHost it renders children inline. The row takes no height while empty.
+ */
+export function PanelHeaderStatus(props: { children?: ReactNode }): ReactElement | null
+
+export type StatusMenuBadgeTone =
+  | 'neutral' | 'info' | 'ok' | 'warn' | 'danger' | 'brand' | 'date' | 'box'
+  /** legacy aliases: success -> ok, warning -> warn, accent -> brand */
+  | 'success' | 'warning' | 'accent'
+
+export interface StatusMenuOption<V extends string = string> {
+  value: V
+  label: string
+  /** Shown but not selectable (aria-disabled, greyed). */
+  disabled?: boolean
+  /** Why it is disabled; shown next to the label. */
+  reason?: string
+}
+
+/** Clickable status badge with a dropdown menu. Omitted tone = plain white badge. */
+export function StatusMenuBadge<V extends string>(props: {
+  label: string
+  tone?: StatusMenuBadgeTone
+  value: V
+  options: StatusMenuOption<V>[]
+  /** Not called when the current value is picked again. */
+  onSelect: (value: V) => void
+  /** Trigger aria-label becomes `${ariaLabel}：${label}`; the menu is labelled ariaLabel. */
+  ariaLabel: string
+}): ReactElement
 
 export function useUrlPanel(
   type: string,

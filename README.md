@@ -63,6 +63,8 @@ function OrderPanel({ seed }) {            // content components get { seed, ope
 // anywhere below the provider: const { openPanel } = usePanel(); openPanel('order', { id, no })
 ```
 
+Since v0.4.0: `<PanelHeaderStatus>…</PanelHeaderStatus>` (anywhere in a content component) portals interactive elements into an optional status row under the title, and `StatusMenuBadge` is a clickable status badge with a dropdown menu (themed via `--aw-badge-*`); see `docs/panel.md` §2.4 / §4.
+
 Provider props: `router` (required), `zBase` (default 160), `mobileQuery` (default `(max-width: 767px)`), `onMaxDepth`.
 Page-level `useBlocker` guards must exclude the shell's own moves: `shouldBlock: ({ currentLocation, nextLocation }) => dirty && !isPanelOnlyNavigation(currentLocation, nextLocation)`.
 

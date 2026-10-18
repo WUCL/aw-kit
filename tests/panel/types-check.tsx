@@ -3,6 +3,7 @@
 import { useLocation, useNavigate, useNavigationType } from 'react-router-dom'
 import {
   PanelStackProvider, PanelHost, PanelHeader, usePanel, usePanelStack, usePanelCloseGuard, usePanelHeader,
+  PanelHeaderStatus, StatusMenuBadge, type StatusMenuOption, type StatusMenuBadgeTone,
   useUrlPanel, MAX_DEPTH, isPanelOnlyNavigation, awPanelOf, withPanelNavigationAllowed, injectStyles,
   type PanelRegistry, type PanelRenderProps, type CloseGuard, type PanelEntry, type OpenOptions,
   type PanelActions, type PanelRouterAdapter, type PanelLocation, type PanelStackProviderProps,
@@ -16,10 +17,13 @@ function Content({ seed, openPanel, back, closeAll, canBack }: PanelRenderProps<
   usePanelCloseGuard(guard)
   usePanelCloseGuard(null)
   usePanelHeader({ title: seed.id, meta: 'NO-1' })
+  const status: StatusMenuOption<'a' | 'b'>[] = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B', disabled: true, reason: 'x' }]
+  const tone: StatusMenuBadgeTone = 'warn'
+  const badge = <StatusMenuBadge ariaLabel="進度" label="A" tone={tone} value="a" options={status} onSelect={(v: 'a' | 'b') => void v} />
   const opts: OpenOptions = { ownsHistory: false, onClosed: () => {} }
   openPanel('c', { id: 'x' }, opts)
   back(); closeAll()
-  return <i>{String(canBack)}</i>
+  return <i>{String(canBack)}<PanelHeaderStatus>{badge}</PanelHeaderStatus><PanelHeaderStatus /></i>
 }
 
 const registry: PanelRegistry = {
@@ -63,3 +67,5 @@ export const NoRouter = () => <PanelStackProvider />
 export const BadPad = () => <PanelHeader title="t" onClose={() => {}} padX={16} />
 // @ts-expect-error PanelHost returns a ReactElement, not any (a global-JSX d.ts would make this silently pass)
 export const NotANumber: number = PanelHost({ registry })
+// @ts-expect-error onSelect value must be one of the option values
+export const BadSelect = () => <StatusMenuBadge ariaLabel="x" label="A" value="a" options={[{ value: 'a' as const, label: 'A' }]} onSelect={(v: 'zzz') => void v} />

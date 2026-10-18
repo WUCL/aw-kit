@@ -26,7 +26,32 @@
   --aw-panel-danger: #b42318;
   --aw-panel-space-sm: 8px;
   --aw-panel-space-lg: 16px;
+  /* v0.4.0 StatusMenuBadge（每個 tone 三個變數：-bg／-text／-border；預設取中性系統 + 狀態色） */
+  --aw-badge-neutral-bg: #f4f5f6;   --aw-badge-neutral-text: #374151; --aw-badge-neutral-border: #e5e7eb;
+  --aw-badge-info-bg: #eff6ff;      --aw-badge-info-text: #1d4ed8;    --aw-badge-info-border: #bfdbfe;
+  --aw-badge-ok-bg: #f0fdf4;        --aw-badge-ok-text: #15803d;      --aw-badge-ok-border: #bbf7d0;
+  --aw-badge-warn-bg: #fffbeb;      --aw-badge-warn-text: #b45309;    --aw-badge-warn-border: #fbbf24;
+  --aw-badge-danger-bg: #fef2f2;    --aw-badge-danger-text: #b91c1c;  --aw-badge-danger-border: #fecaca;
+  --aw-badge-brand-bg: #f0f0f0;     --aw-badge-brand-text: #303030;   --aw-badge-brand-border: #c8c8c8;
+  --aw-badge-date-bg: #f0f0f0;      --aw-badge-date-text: #1a1a1a;    --aw-badge-date-border: transparent;
+  --aw-badge-box-bg: #ffffff;       --aw-badge-box-text: #1a1a1a;     --aw-badge-box-border: #e3e3e3;
+  --aw-badge-plain-bg: #ffffff;     --aw-badge-plain-text: #4a4a4a;   --aw-badge-plain-border: #e3e3e3;
+  --aw-badge-radius: 6px;
+  --aw-badge-menu-z: 20;
+  --aw-badge-menu-shadow: 0 4px 16px rgba(20, 24, 28, 0.10);
+  --aw-badge-menu-hover-bg: #f0f0f0;
+  --aw-badge-menu-check: #1a1a1a;
 }
+
+/* 標頭狀態列（PanelHeaderStatus 的 portal 容器）：沒有內容時不佔高度 */
+.aw-panel-status {
+  padding-bottom: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--aw-panel-space-sm);
+}
+.aw-panel-status:empty { display: none; }
 
 .aw-panel-hit:focus-visible {
   outline: 2px solid var(--aw-panel-focus);

@@ -4,7 +4,7 @@ import { SlideOver, getPanelExitMs } from './SlideOver.jsx'
 import { usePanelStack } from './use-panel.js'
 import { PanelActionsContext } from './panel-context.js'
 import { PanelHeader } from './PanelHeader.jsx'
-import { PanelHeaderContext } from './header-context.js'
+import { PanelHeaderContext, PanelHeaderSlotContext } from './header-context.js'
 import { useIsMobile, useReducedMotion } from './panel-config.js'
 
 // PanelRenderProps（每個面板內容元件收到的統一 context）與 PanelRegistry（type → 內容元件）的型別見 index.d.ts。
@@ -115,6 +115,7 @@ function HostLayer({ entry, index, open, isTop, backLabel, registryEntry, action
   const mobile = useIsMobile()
   const padX = mobile ? 'var(--aw-panel-pad-mobile)' : 'var(--aw-panel-pad)'
   const [hdr, setHdr] = useState(null)
+  const [statusEl, setStatusEl] = useState(null)   // 本層標頭的狀態列容器（callback ref）；經 PanelHeaderSlotContext 給 PanelHeaderStatus
   const guardReg = useMemo(() => ({ add: (g) => { const w = () => g(); guards.add(w); return () => { guards.delete(w) } } }), [guards])
   const key = entry.key
   const hdrReg = useMemo(() => ({ set: (h) => { setTitle(key, h.title); setHdr(h) } }), [key, setTitle])
@@ -124,16 +125,16 @@ function HostLayer({ entry, index, open, isTop, backLabel, registryEntry, action
   const onClose = () => { if (open) void guardedCloseAll() }
   return (
     <SlideOver open={open} index={index} isTop={isTop} ariaLabel={registryEntry?.ariaLabel ?? '詳情面板'} width={registryEntry?.width} onRequestClose={closeTop}>
-      <PanelCloseGuardContext.Provider value={guardReg}><PanelHeaderContext.Provider value={hdrReg}><div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
+      <PanelCloseGuardContext.Provider value={guardReg}><PanelHeaderContext.Provider value={hdrReg}><PanelHeaderSlotContext.Provider value={statusEl}><div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
         <PanelHeader title={hdr?.title ?? registryEntry?.ariaLabel ?? '詳情面板'} meta={hdr?.meta}
-          backLabel={backLabel} onBack={onBack} onClose={backLabel !== undefined ? onBack : onClose} padX={padX} />
+          backLabel={backLabel} onBack={onBack} onClose={backLabel !== undefined ? onBack : onClose} padX={padX} statusRef={setStatusEl} />
         {/* 內容區內距統一由殼給（內容元件不再自帶外層 padding）：桌機 24／手機 16 */}
         <div style={{ flex: 1, padding: padX }}>
           {Content
             ? <Content seed={entry.seed} openPanel={actions.openPanel} back={onBack} closeAll={onClose} canBack={backLabel !== undefined} />
             : <div style={{ fontSize: 'var(--aw-panel-body-size)', color: 'var(--aw-panel-danger)' }}>未註冊的面板型別：{entry.type}</div>}
         </div>
-      </div></PanelHeaderContext.Provider></PanelCloseGuardContext.Provider>
+      </div></PanelHeaderSlotContext.Provider></PanelHeaderContext.Provider></PanelCloseGuardContext.Provider>
     </SlideOver>
   )
 }

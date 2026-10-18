@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [0.4.0] — 2026-10-18
+
+### Added
+
+- `aw-kit/panel`: `PanelHeaderStatus` — optional third header row (status row) under the title, filled by a portal from any place in a content component's JSX; per-layer, renders inline outside `PanelHost`, takes no height while empty (`.aw-panel-status:empty`). `PanelHeader` gets an optional `statusRef` prop.
+- `aw-kit/panel`: `StatusMenuBadge` (ported from inflorify) — clickable status badge with dropdown menu, keyboard support, IME-safe Esc that closes only the menu. New CSS variables `--aw-badge-*` (see `docs/panel.md` §4).
+- Additive only; no existing behaviour changed.
+
 ## [0.3.1] — 2026-10-16
 
 ### Fixed

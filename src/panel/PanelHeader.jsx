@@ -10,7 +10,7 @@ const HIT = 'var(--aw-panel-hit)'   // 預設 44px（styles.css）；專案可�
 const GAP_XS = 4      // inknock SPACING.xs
 
 /** padX：左右內距，CSS 長度字串（殼傳 var(--aw-panel-pad-mobile)／var(--aw-panel-pad)） */
-export function PanelHeader({ title, meta, backLabel, onBack, onClose, padX }) {
+export function PanelHeader({ title, meta, backLabel, onBack, onClose, padX, statusRef }) {
   const hit = HIT
   const hitBtn = {
     position: 'absolute', top: '50%', transform: 'translateY(-50%)', height: hit, minWidth: hit,
@@ -35,6 +35,8 @@ export function PanelHeader({ title, meta, backLabel, onBack, onClose, padX }) {
         {title}
         {meta && <span style={{ marginLeft: 'var(--aw-panel-space-sm)', fontSize: 'var(--aw-panel-meta-size)', fontWeight: 400, color: 'var(--aw-panel-meta-color)' }}>{meta}</span>}
       </h2>
+      {/* 狀態列（v0.4.0，可選）：內容以 PanelHeaderStatus portal 進來；沒有任何內容時 :empty 隱藏、不佔高度（styles.css） */}
+      {statusRef && <div ref={statusRef} className="aw-panel-status" />}
     </header>
   )
 }

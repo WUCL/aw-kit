@@ -1,6 +1,6 @@
-# aw-kit/panel 規格（草案，2026-10-15）
+# aw-kit/panel 規格（草案，2026-10-15；v0.4.0 更新 2026-10-18）
 
-> **狀態：v0.3.0 已抽取（2026-10-15，未發 tag）；inknock 尚未改引用（遷移 step 2）。** 本檔是 QuickView／slide-over 面板跨專案的**唯一真相**；
+> **狀態：v0.4.0（2026-10-18：新增標頭狀態列 `PanelHeaderStatus`、`StatusMenuBadge`；v0.3.0 為 2026-10-15 抽取）；inknock 尚未改引用（遷移 step 2）。** 本檔是 QuickView／slide-over 面板跨專案的**唯一真相**；
 > `aw-cc_workflow/skills/admin-ui-conventions` §3 只留原則並指向這裡。
 > 來源實作：inknock `src/shared/ui/panel/`（2026-10-15 全站上線，26 檔面板）。
 > 定案紀錄：inknock `DECISIONS.md` 2026-10-14／10-15 QuickView 各列、2026-10-15「aw-kit/panel 抽取範圍」grilling。
@@ -51,6 +51,12 @@
 2. **標題列**：標題獨佔、靠左；其後可接**單號、狀態標籤**（屬「這筆是什麼」）。
    - 狀態標籤**可以是可點的**（點了跳選單直接改狀態，不能選的灰掉並寫原因）——這不算「動作」，留在標題後。元件見 §5。
 3. 細列與標題、標題與分隔線各 4px。
+4. **狀態列（可選，v0.4.0）**：標題列下方、分隔線上方的第三列，放可互動元件（可點的狀態章、交貨日文字…）。
+   - 內容元件在自己 JSX 任意位置寫 `<PanelHeaderStatus>{任意 ReactNode}</PanelHeaderStatus>`，以 portal 畫進**所屬層**標頭的狀態列（疊多層時各層各自的，下層保留掛載故仍在下層）。
+   - 不走 `usePanelHeader`：ReactNode 每次渲染都是新參照，effect 登記會無限重登記。
+   - 容器 flex、wrap、垂直置中、間距 `--aw-panel-space-sm`；與標題 4px（沿用標題底距）、底部再留 4px 到分隔線。**沒有任何內容時 `:empty { display: none }`，不佔高度**（依賴 `aw-kit/panel/style.css` 已載入）。
+   - 在 `PanelHost` 之外使用（沒有 context）：直接 inline render children，方便單元測試內容元件。
+   - 與 §2.4 第 2 點的分工：單號、一般狀態文字仍用 `meta`；**需要互動的元件**才用狀態列。
 
 ### 2.5 動作分流（不放標題列）
 1. **提示列**：資料有待處理時才出現；一句說明＋主要按鈕（例：「3 項等到貨」＋登記到貨）。
@@ -105,6 +111,12 @@
 | `--aw-panel-danger` | `#b42318` | 內建錯誤文字色（v0.3.0 補） |
 | `--aw-panel-space-sm` | `8px` | meta 左距、「‹ 來源名」內距（v0.3.0 補） |
 | `--aw-panel-space-lg` | `16px` | 頭部上內距（v0.3.0 補） |
+| `--aw-badge-<tone>-bg／-text／-border` | 見 styles.css | `StatusMenuBadge` 各 tone 配色（v0.4.0）。tone：`neutral` `info` `ok` `warn` `danger` `brand` `date` `box`，不給 tone＝`plain`；舊名 `success`→`ok`、`warning`→`warn`、`accent`→`brand`。`warn／danger／date／box` 字重 600 |
+| `--aw-badge-radius` | `6px` | 狀態章與選單圓角（v0.4.0） |
+| `--aw-badge-menu-z` | `20` | 選單 z-index（absolute 於面板內，需高於面板內容；v0.4.0） |
+| `--aw-badge-menu-shadow` | `0 4px 16px rgba(20,24,28,.10)` | 選單陰影（v0.4.0） |
+| `--aw-badge-menu-hover-bg` | `#f0f0f0` | 選單項 hover／focus 底（v0.4.0） |
+| `--aw-badge-menu-check` | `#1a1a1a` | 目前項勾勾色（v0.4.0） |
 
 骨架常數（不開放覆寫）：頂列高 20px、細列／標題間距 4px。點擊區預設 44px，可用 `--aw-panel-hit` 覆寫。
 `--aw-panel-focus` 套用在頭部兩顆按鈕的 `:focus-visible`（class `aw-panel-hit`）；`--aw-panel-notice-bg` 目前殼內無元件使用（提示列屬專案內容），僅保留預設值供專案引用。
@@ -126,7 +138,7 @@ Provider props（非 CSS）：`router`（必填）、`zBase`（預設 160）、`
 
 | 元件 | 來源 | 狀態 |
 |---|---|---|
-| `StatusMenuBadge`（可點狀態標籤） | inflorify `src/shared/ui/StatusMenuBadge.tsx` | ⏳ 待 inflorify 上 prod 後提入；規格位置已在 §2.4 |
+| `StatusMenuBadge`（可點狀態標籤） | inflorify `src/shared/ui/StatusMenuBadge.tsx` | ✅ v0.4.0 已提入（來源 inflorify）；選單用 `--aw-panel-bg／-rule／-ink` 與 `--aw-badge-*`，Esc 以 capture＋`stopImmediatePropagation`＋`preventDefault` 只關選單、不連面板；通常放在 `PanelHeaderStatus` 內 |
 
 ---
 
