@@ -24,6 +24,8 @@
 - [ ] ratchet 型閘門通則：「`--update-baseline` 必須在有新命中時拒寫、基線只縮不長」——inknock 原版與本套件初版都能一個旗標洗白新違規（Codex 2026-09-17 P1）。建議落點：`aw-cc_workflow/CLAUDE.md`「高事故率規則要有可機械驗證的落地」段補一句；證據 `bin/aw-check-rpc-types.mjs` 檔頭、plan Codex verdict
 - [ ] 共用套件發版慣例：「git 安裝只跑 `prepare`、`build` 不會；`dist/` 進 git」目前只在本 repo CLAUDE.md，`shared-packages.json` 所列套件若再多一個就該升格。落點 `templates/`（套件 CLAUDE.md 骨架）
 
+- [ ] panel：首次載入（navType=POP）時，頁面 mount effect 以預設 ownsHistory:true 呼叫 openPanel，會被 PanelStackProvider 的 POP effect 當成「上一頁」立刻關掉（marker 0 < depth 1）。瀏覽器上一頁回到會在 effect 開面板的頁面也同型。建議：layout effect 於 location 變動時遞增序號，openPanel 記錄 openedAtSeq，POP effect 跳過本序號內才開的層；附「舊寫法會紅」測試。來源 inflorify 2026-10-19（FlowerReportPage 暫以 POP 時 ownsHistory:false 繞過）
+
 ## 已完成
 
 - [x] 2026-09-17 v0.2.1：`aw-check-rpc-types` 遞迴掃描（aw-admin_starter Codex P1）
