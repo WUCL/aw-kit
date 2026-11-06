@@ -1,5 +1,5 @@
 /* aw-kit/panel — default appearance. Override any --aw-panel-* on :root (or a wrapper) to re-theme.
-   Defaults follow aw-cc_workflow/templates/design-system-baseline.md (neutral system); see docs/panel.md §4. */
+   Defaults follow aw-workflow/templates/design-system-baseline.md (neutral system); see docs/panel.md §4. */
 :root {
   --aw-panel-bg: #ffffff;
   --aw-panel-scrim: rgba(0, 0, 0, 0.3);

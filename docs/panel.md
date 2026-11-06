@@ -1,7 +1,7 @@
 # aw-kit/panel 規格（草案，2026-10-15；v0.4.0 更新 2026-10-18）
 
 > **狀態：v0.4.0（2026-10-18：新增標頭狀態列 `PanelHeaderStatus`、`StatusMenuBadge`；v0.3.0 為 2026-10-15 抽取）；inknock 尚未改引用（遷移 step 2）。** 本檔是 QuickView／slide-over 面板跨專案的**唯一真相**；
-> `aw-cc_workflow/skills/admin-ui-conventions` §3 只留原則並指向這裡。
+> `aw-workflow/skills/admin-ui-conventions` §3 只留原則並指向這裡。
 > 來源實作：inknock `src/shared/ui/panel/`（2026-10-15 全站上線，26 檔面板）。
 > 定案紀錄：inknock `DECISIONS.md` 2026-10-14／10-15 QuickView 各列、2026-10-15「aw-kit/panel 抽取範圍」grilling。
 
@@ -83,7 +83,7 @@
 
 ## 4. 外觀：CSS 變數
 
-預設值取 `aw-cc_workflow/templates/design-system-baseline.md` 中性系統，缺項以 inknock 現值補。專案在根層覆寫一次即可。
+預設值取 `aw-workflow/templates/design-system-baseline.md` 中性系統，缺項以 inknock 現值補。專案在根層覆寫一次即可。
 
 | 變數 | 預設 | 用途 |
 |---|---|---|

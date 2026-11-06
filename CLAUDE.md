@@ -17,9 +17,9 @@ Allen Wu 的跨專案前端套件（更名自 `aw-notify-kit`，2026-09-17 起�
 | `eslint-rules/verified-supabase-write` | mh1491 `eslint-rules/verified-supabase-write.js`（2026-09-02） | 檔頭註解＋mh1491 ADR-0001 |
 | `eslint-rules/no-hardcoded-design-token`、`no-inline-date-format` | inknock `eslint.config.js` 的 `no-restricted-syntax` selectors（2026-08／09） | inknock `docs/design/style-plan.md` §8.3 |
 | bin `aw-check-rpc-types` | inknock `scripts/check-rpc-types.mjs`（2026-09-16） | 檔頭註解 |
-| v0.2.0 的套件形狀（子路徑、不留根 `.`、不做 workspaces） | `aw-cc_workflow/docs/plans/2026-09-17-aw-admin_starter.md` §0／§3／§4＋`DECISIONS.md` 2026-09-17 | 該 plan 檔 |
+| v0.2.0 的套件形狀（子路徑、不留根 `.`、不做 workspaces） | `aw-workflow/docs/plans/2026-09-17-aw-admin_starter.md` §0／§3／§4＋`DECISIONS.md` 2026-09-17 | 該 plan 檔 |
 
-本機路徑：`~/Documents/GitHub/ucdi/mh1491`、`~/Documents/GitHub/ucdi/inknock`、`~/Documents/GitHub/aw-cc_workflow`。
+本機路徑：`~/Documents/GitHub/ucdi/mh1491`、`~/Documents/GitHub/ucdi/inknock`、`~/Documents/GitHub/aw-workflow`。
 **動 mh1491／inknock 的來源檔只讀不改。**
 
 移植時的改動只有：拿掉 Tailwind → `fbk-*` class＋CSS variable；拿掉對消費端 Button 的依賴；
