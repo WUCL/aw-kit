@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { registerConfirmHost } from './confirmDialog.js'
 import Button from './Button.jsx'
+import { isCancelEscape } from '../panel/key-utils.js'
 
 let _confirmHostMountCount = 0 // Strict Mode / multi-instance guard: count of currently-mounted hosts
 
@@ -60,7 +61,8 @@ export default function ConfirmDialogHost() {
   useEffect(() => {
     if (!dialog) return
     const onKey = (e) => {
-      if (e.key === 'Escape') { dismiss(); return }
+      // 組字中的 Esc 是取消選字（注音／倉頡），不關對話框；判準與 panel 共用
+      if (isCancelEscape(e)) { dismiss(); return }
       if (e.key !== 'Tab') return
       const f = panelRef.current?.querySelectorAll('button:not([disabled])')
       if (!f || f.length === 0) return

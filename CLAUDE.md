@@ -82,8 +82,9 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ---
 
-## 目前狀態（更新：2026-09-27）
+## 目前狀態（更新：2026-11-15）
 
+- 2026-11-15：v0.4.1——confirm 對話框 Esc 排除中文輸入法組字（inflorify 代驗 P2）、rpc-types 掃描排序；已 commit，待使用者 push＋打 tag `v0.4.1`，之後 inknock／inflorify／mh1491 改釘
 - 2026-09-27：v0.2.2 修 confirm 連開時第二個被上一個的 150ms 收尾清掉（inknock 刪除供應商兩段確認）；已 commit，待使用者 push＋打 tag `v0.2.2`，inknock 再改釘。
 - 2026-09-17：checkpoint v0.2.1（遞迴掃描修正＋Codex review 收尾），tag 已推；下游 aw-admin_starter 待改釘 `#v0.2.1`。
 

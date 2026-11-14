@@ -108,4 +108,19 @@ describe('ConfirmDialogHost', () => {
     fireEvent.click(btn)
     await expect(second).resolves.toBe(true)
   })
+  // 中文輸入法：組字中的 Esc 是取消選字，不是關對話框（Safari 在 compositionend 後才補發 keydown，只剩 keyCode 229 可判）
+  it('Esc during IME composition does not dismiss (isComposing or keyCode 229)', async () => {
+    render(<ConfirmDialogHost />)
+    let settled = false
+    const promise = confirm({ title: '確定？' })
+    promise.then(() => { settled = true })
+    await screen.findByText('取消')
+    fireEvent.keyDown(document, { key: 'Escape', isComposing: true })
+    fireEvent.keyDown(document, { key: 'Escape', keyCode: 229 })
+    await new Promise(r => setTimeout(r, 20))
+    expect(settled).toBe(false)
+    expect(screen.queryByText('取消')).not.toBeNull()
+    fireEvent.keyDown(document, { key: 'Escape' })
+    await expect(promise).resolves.toBe(false)
+  })
 })

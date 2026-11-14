@@ -2,6 +2,14 @@
 
 All notable changes to this project are documented here.
 
+## [0.4.1] — 2026-11-15
+
+### Fixed
+
+- `aw-kit/notify`: `ConfirmDialogHost` no longer dismisses on an Escape pressed during IME composition (Zhuyin/Cangjie candidate cancel). Uses the same `isCancelEscape` check as `aw-kit/panel` (`isComposing` or `keyCode === 229` — Safari sends keydown after compositionend). Reported by the inflorify review (P2); regression test in `tests/notify/ConfirmDialogHost.test.jsx`.
+- `aw-check-rpc-types`: files are listed in sorted order, so diagnostics are stable across file systems.
+- `aw-kit/eslint-rules` `meta.version` now tracks the package version (was stuck at 0.2.2).
+
 ## [0.4.0] — 2026-10-18
 
 ### Added

@@ -6,7 +6,7 @@
 
 ## 待修
 
-- [ ] 🟡 **`ConfirmDialogHost` 的 Esc 未排除中文輸入法組字中按鍵**（2026-10-08 自 inflorify 代驗 P2）：`dist/notify/index.js:356`（原始碼對應處）。判準 `isComposing || keyCode === 229`（全域〈中文輸入法陷阱〉）；風險低（對話框只有按鈕、開啟 60ms 後焦點移到按鈕），下次開 aw-kit 時一併修並發版
+- [x] 🟡 **`ConfirmDialogHost` 的 Esc 未排除中文輸入法組字中按鍵**（✅ 2026-11-15 v0.4.1）（2026-10-08 自 inflorify 代驗 P2）：`dist/notify/index.js:356`（原始碼對應處）。判準 `isComposing || keyCode === 229`（全域〈中文輸入法陷阱〉）；風險低（對話框只有按鈕、開啟 60ms 後焦點移到按鈕），下次開 aw-kit 時一併修並發版
 
 ## 消費端跟進（各自 repo，不在本 repo 做）
 
@@ -16,7 +16,7 @@
 ## 套件本身（有需求再做）
 
 - [ ] `aw-check-rpc-types` 不抓 `Promise<Array<Row>>` 形狀、不支援 `--root=dir` 寫法（Codex P2，刻意保守；出現實際漏抓再補）
-- [ ] `aw-check-rpc-types`：`listTsFiles` 目錄項目未排序，多檔違規時診斷輸出順序可能因檔案系統而異（基線檔本身已排序、不受影響）。下次改 CLI 順手加 `.sort()`。（Codex review 2026-09-17，Low）
+- [x] `aw-check-rpc-types`：`listTsFiles` 目錄項目未排序（✅ 2026-11-15 v0.4.1），多檔違規時診斷輸出順序可能因檔案系統而異（基線檔本身已排序、不受影響）。下次改 CLI 順手加 `.sort()`。（Codex review 2026-09-17，Low）
 - [ ] `no-hardcoded-design-token` 若小數誤傷（`fontSize: 0.875` 之類合法用法）再收窄回整數
 
 ## 地基回饋候選（base-promotion-candidate，需使用者確認後另開段落改 `aw-workflow`）

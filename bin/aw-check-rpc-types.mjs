@@ -51,7 +51,8 @@ function parseArgs(argv) {
 // aw-admin_starter 2026-09-17 Codex review P1）。跳過 node_modules。
 function listTsFiles(dir) {
   const out = []
-  for (const e of readdirSync(dir, { withFileTypes: true })) {
+  // 排序：多檔違規時診斷輸出順序不隨檔案系統而變
+  for (const e of readdirSync(dir, { withFileTypes: true }).sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0))) {
     const p = join(dir, e.name)
     if (e.isDirectory()) { if (e.name !== 'node_modules') out.push(...listTsFiles(p)) }
     else if (e.isFile() && e.name.endsWith('.ts')) out.push(p)

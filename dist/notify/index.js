@@ -1,14 +1,14 @@
-import { jsx as l, jsxs as y, Fragment as I } from "react/jsx-runtime";
+import { jsx as l, jsxs as y, Fragment as H } from "react/jsx-runtime";
 import { useState as S, useEffect as x, useCallback as w, useRef as h } from "react";
 const j = /* @__PURE__ */ new Set();
 let R = 0;
-const q = /* @__PURE__ */ new Map(), $ = 300;
+const L = /* @__PURE__ */ new Map(), $ = 300;
 function N(n, t, { duration: u = 3500, action: s = null, key: r = null } = {}) {
   const e = r ?? `${n}:${t}`;
   if (!s) {
-    const a = Date.now(), o = q.get(e);
+    const a = Date.now(), o = L.get(e);
     if (o != null && a - o < $) return;
-    q.set(e, a);
+    L.set(e, a);
   }
   const i = { id: ++R, type: n, message: t, duration: u, action: s, key: e };
   j.forEach((a) => a(i));
@@ -33,7 +33,7 @@ function P(n) {
     v === n && (v = null);
   };
 }
-function W(n) {
+function J(n) {
   return v ? new Promise((t) => v(n, t)) : Promise.resolve(n != null && n.actions ? null : !1);
 }
 const B = `/* src/notify/styles.css — aw-kit/notify default theme.
@@ -217,11 +217,11 @@ const B = `/* src/notify/styles.css — aw-kit/notify default theme.
 @media (prefers-reduced-motion: reduce) {
   .fbk-toast, .fbk-dialog-backdrop, .fbk-dialog-panel { transition: none; }
 }
-`, F = "fbk-styles";
-function G() {
-  if (typeof document > "u" || document.getElementById(F)) return;
+`, q = "fbk-styles";
+function Q() {
+  if (typeof document > "u" || document.getElementById(q)) return;
   const n = document.createElement("style");
-  n.id = F, n.textContent = B, document.head.appendChild(n);
+  n.id = q, n.textContent = B, document.head.appendChild(n);
 }
 const K = 3;
 let A = 0;
@@ -286,7 +286,7 @@ function Y({ item: n, onClose: t }) {
     }
   );
 }
-function J() {
+function Z() {
   const [n, t] = S([]);
   x(() => {
     A > 0 && console.warn("[aw-kit/notify] ToastHost 已掛載超過一次——多個實例都會收到並各自渲染同一則通知（重複顯示），請確認只在 App 根層掛載一次"), A += 1;
@@ -314,17 +314,24 @@ function J() {
   const u = w((s) => t((r) => r.filter((e) => e.id !== s)), []);
   return /* @__PURE__ */ l("div", { "aria-live": "polite", className: "fbk-toast-container", children: n.map((s) => /* @__PURE__ */ l(Y, { item: s, onClose: u }, s.id)) });
 }
-const H = {
+const F = {
   primary: "fbk-btn--primary",
   secondary: "fbk-btn--secondary",
   danger: "fbk-btn--danger"
 };
 function z({ variant: n = "secondary", onClick: t, children: u, ...s }) {
-  const r = H[n] || H.secondary;
+  const r = F[n] || F.secondary;
   return /* @__PURE__ */ l("button", { type: "button", className: `fbk-btn ${r}`, onClick: t, ...s, children: u });
 }
+function O(n) {
+  var t;
+  return !!(((t = n.nativeEvent) == null ? void 0 : t.isComposing) ?? n.isComposing) || n.keyCode === 229;
+}
+function U(n) {
+  return n.key === "Escape" && !O(n);
+}
 let D = 0;
-function Q() {
+function nn() {
   var M;
   const [n, t] = S(null), [u, s] = S(!1), r = h(null), e = h(null);
   x(() => {
@@ -352,13 +359,13 @@ function Q() {
   }, [n]), x(() => {
     if (!n) return;
     const f = (d) => {
-      var L;
-      if (d.key === "Escape") {
+      var I;
+      if (U(d)) {
         o();
         return;
       }
       if (d.key !== "Tab") return;
-      const b = (L = r.current) == null ? void 0 : L.querySelectorAll("button:not([disabled])");
+      const b = (I = r.current) == null ? void 0 : I.querySelectorAll("button:not([disabled])");
       if (!b || b.length === 0) return;
       const m = b[0], g = b[b.length - 1];
       d.shiftKey && document.activeElement === m ? (d.preventDefault(), g.focus()) : !d.shiftKey && document.activeElement === g && (d.preventDefault(), m.focus());
@@ -386,7 +393,7 @@ function Q() {
         children: [
           c && /* @__PURE__ */ l("h2", { className: "fbk-dialog-title", children: c }),
           k && /* @__PURE__ */ l("p", { className: "fbk-dialog-body", children: k }),
-          /* @__PURE__ */ l("div", { className: "fbk-dialog-actions", children: p ? p.map((f) => /* @__PURE__ */ l(z, { variant: f.variant || "secondary", onClick: () => a(f.key), children: f.label }, f.key)) : /* @__PURE__ */ y(I, { children: [
+          /* @__PURE__ */ l("div", { className: "fbk-dialog-actions", children: p ? p.map((f) => /* @__PURE__ */ l(z, { variant: f.variant || "secondary", onClick: () => a(f.key), children: f.label }, f.key)) : /* @__PURE__ */ y(H, { children: [
             /* @__PURE__ */ l(z, { variant: "secondary", onClick: () => a(!1), children: C }),
             /* @__PURE__ */ l(z, { variant: E, onClick: () => a(!0), children: _ })
           ] }) })
@@ -395,7 +402,7 @@ function Q() {
     )
   ] });
 }
-function O(n, t) {
+function X(n, t) {
   if (typeof n == "string" && n.trim()) return n;
   if (typeof n == "object" && n !== null) {
     if (typeof n.message == "string" && n.message.trim()) return n.message;
@@ -405,10 +412,10 @@ function O(n, t) {
   }
   return t;
 }
-function U(n) {
+function V(n) {
   return typeof n == "object" && n !== null && typeof n.code == "string" && n.code.trim() ? n.code.trim() : null;
 }
-function Z({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
+function tn({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
   const u = new Set(n), s = {
     success(e, i) {
       T.success(e, i);
@@ -423,18 +430,18 @@ function Z({ refusalCodes: n, fallbackMessage: t = "操作失敗" }) {
     }
   };
   function r(e, i = t, a) {
-    const o = U(e), c = O(e, i);
+    const o = V(e), c = X(e, i);
     o && u.has(o) ? s.warn(c, a) : s.error(c, a);
   }
   return { toast: s, toastFromError: r };
 }
 export {
-  Q as ConfirmDialogHost,
-  J as ToastHost,
-  W as confirm,
-  Z as createNotify,
-  O as errText,
-  G as injectStyles,
+  nn as ConfirmDialogHost,
+  Z as ToastHost,
+  J as confirm,
+  tn as createNotify,
+  X as errText,
+  Q as injectStyles,
   P as registerConfirmHost,
   T as toast
 };
