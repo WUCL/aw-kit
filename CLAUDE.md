@@ -41,6 +41,7 @@ CLI 的 scan root／baseline 參數化。
 | `bin/aw-check-rpc-types.mjs` | ratchet CLI | **不 build** |
 | `tests/notify/`、`tests/eslint-rules/`、`tests/bin/` | jsdom 元件測試／RuleTester（TS parser）／subprocess＋fixture | `npm test` |
 | `src/ui/`（2026-11-19 起，inknock ADR 0002） | inknock＋inflorify 共用 UI 元件；**TS 原始碼交付、不 build**，每個模組一個子路徑匯出 | 原始碼直出；型別 `tsconfig.ui.json`（兩消費端最嚴聯集）、`tests/ui/` |
+| `src/ui/theme.ts`、`src/design-tokens/` | 代幣共用層（TS 常數＋`createThemeFactory`）與產生器（`BASE` 共用層＋專案 `DESIGN.md` 品牌層 → theme.css／名稱檔；純函式，讀寫檔由專案包裝腳本做） | 原始碼直出；`tests/design-tokens/` 驗 BASE↔theme.ts、品牌層負例 |
 | `.github/workflows/ci.yml` | React 19 全套＋React 18 重跑 notify／panel／規則／bin | push／PR |
 
 ---
@@ -63,6 +64,7 @@ CLI 的 scan root／baseline 參數化。
 - **`package-lock.json` 已 commit**：只服務套件開發者。
 - **`aw-kit/ui` 的檔案會被消費端的 tsc 直接檢查**（原始碼不是 .d.ts，`skipLibCheck` 管不到）：只用相對路徑 import、必須過 `tsconfig.ui.json`（inflorify 的嚴格旗標＋inknock 的 ES2020 lib，不可用 `.at()`／`Object.hasOwn`）。匯出表用逐條列舉而非 `./ui/*`（同資料夾有 .ts 與 .tsx），`tests/ui/exports.test.js` 驗一一對應。
 - **開發依賴是 React 19，精確釘在兩個消費端裡較低的版本**（2026-11-19：inknock 19.2.4／@types 19.2.14，inflorify 19.3.0）——`aw-kit/ui` 以原始碼交付，用到較新版才有的 API 時，舊版那邊的 tsc／執行期會壞；消費端升級後這裡才跟著升。notify／panel 仍宣稱 ≥18，靠 CI 的 react18 job 守住，不要在 notify／panel 用 19 才有的 API。
+- **代幣共用層有兩份表示（`src/design-tokens/index.js` 的 `BASE` 與 `src/ui/theme.ts`），改值兩邊一起改**，`tests/design-tokens/` 會擋不一致。`COLOR_ORDER` 決定 theme.css 的顏色順序，沿用 inknock 拆分前的順序，**不要重排**（inknock 的 theme.css 會整份變動）。專案 `DESIGN.md` 品牌層的名稱由 `BRAND_COLOR_NAMES` 定義，多一個或少一個都報錯——新增品牌色名稱＝所有消費端都要補值。
 - **不要加「dist 與 src 同步」的逐字比對閘門**：重建後只有壓縮變數名不同（2026-11-19 實測）。
 
 ---
@@ -75,7 +77,7 @@ npm test         # vitest run（notify jsdom／eslint-rules RuleTester／bin sub
 npm run build    # 只 build notify → dist/notify/{index.js,index.d.ts,style.css}
 ```
 
-發版：改 `package.json` version＋`src/eslint-rules/index.js` 的 `meta.version`＋CHANGELOG → `npm run build` → commit → **由使用者 push 與打 tag**。
+發版：改 `package.json` version＋`src/eslint-rules/index.js` 的 `meta.version`＋CHANGELOG → `npm run build`（notify／panel 原始碼有變才需要）→ commit → **AI 在本機打 tag，使用者 `git push --follow-tags`**（2026-11-19 起，inknock ADR 0002〈五〉）→ AI 改消費端釘版。
 
 ---
 
@@ -89,6 +91,7 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態（更新：2026-11-19）
 
+- 2026-11-19：`aw-kit/ui` B 批（代幣合約）——`aw-kit/ui/theme`（共用層常數＋`createThemeFactory`）、`aw-kit/design-tokens`（產生器：共用層 BASE＋專案品牌層驗證與合成）（不依賴 YAML 套件，解析函式由呼叫端傳入）；inknock 已改接（theme.css 逐位元組相同）；**v0.5.0**（A＋B 批）本機已打 tag，待使用者 push
 - 2026-11-19：`aw-kit/ui` A 批（工具鏈）——開發依賴升 React 19（釘在兩消費端較低的 19.2.x）、`tsconfig.ui.json`、`tests/ui`（管線＋匯出表一致）、GitHub Actions CI（React 19 全套＋React 18 重跑）；尚未匯出任何元件、未發版
 - 2026-11-15：v0.4.1——confirm 對話框 Esc 排除中文輸入法組字（inflorify 代驗 P2）、rpc-types 掃描排序；已 commit，待使用者 push＋打 tag `v0.4.1`，之後 inknock／inflorify／mh1491 改釘
 - 2026-09-27：v0.2.2 修 confirm 連開時第二個被上一個的 150ms 收尾清掉（inknock 刪除供應商兩段確認）；已 commit，待使用者 push＋打 tag `v0.2.2`，inknock 再改釘。

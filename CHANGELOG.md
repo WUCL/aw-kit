@@ -2,11 +2,13 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [0.5.0] — 2026-11-19
 
 ### Added
 
 - `aw-kit/ui` groundwork (inknock ADR 0002, batch A): `tsconfig.ui.json` (strictest union of the two consumers — inflorify's strict flags, inknock's ES2020 lib), `tests/ui/` (React 19 `.tsx` pipeline test; export-map ↔ `src/ui` files consistency check with fixed negative cases; `src/ui/internal/` is never exported), `src/ui` added to `files`. No modules exported yet.
+- `aw-kit/ui/theme` (batch B): the shared token layer (spacing／gap／pad, radius, shadow, motion, type scale, control and row heights, icons, interaction, breakpoints, layout, scrim, z-index, state colors) as TS constants, plus `createThemeFactory(brand)` and the `ThemeColors`／`BrandTokens`／`Theme` types. Moved verbatim from inknock `src/shared/theme.ts`.
+- `aw-kit/design-tokens` (batch B): DESIGN.md token generator. `BASE` holds the shared layer; a project's DESIGN.md frontmatter holds only the brand layer (`colors` with exactly `BRAND_COLOR_NAMES`, `font-family`) and is rejected if it adds, omits or overrides a name. `mergeDesign`／`readDesign`／`render`／`renderNames`／`tokenNames`; `components` references are checked after merging. No YAML dependency: callers pass their parser (`readDesign(md, yaml.load)`).
 - GitHub Actions CI (push to main／tags, PRs; read-only token; superseded runs cancelled): full test suite＋build on React 19, and everything except `tests/ui` re-run on React 18 (all four React packages verified to be 18).
 
 ### Changed

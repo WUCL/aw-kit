@@ -1,6 +1,6 @@
 {
   "name": "aw-kit",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "type": "module",
   "description": "Allen Wu's shared front-end kit: toast/confirm notify and QuickView/slide-over panel shell (React 18+; aw-kit/ui is React 19 only and ships as TS source), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",
@@ -18,7 +18,12 @@
     "./eslint-rules": {
       "types": "./src/eslint-rules/index.d.ts",
       "default": "./src/eslint-rules/index.js"
-    }
+    },
+    "./design-tokens": {
+      "types": "./src/design-tokens/index.d.ts",
+      "default": "./src/design-tokens/index.js"
+    },
+    "./ui/theme": "./src/ui/theme.ts"
   },
   "bin": {
     "aw-check-rpc-types": "./bin/aw-check-rpc-types.mjs"
@@ -27,7 +32,8 @@
     "dist",
     "src/eslint-rules",
     "bin",
-    "src/ui"
+    "src/ui",
+    "src/design-tokens"
   ],
   "scripts": {
     "dev": "vite build --watch",
