@@ -33,6 +33,7 @@
 
 | 日期 | 主題 | 結論 | 狀態 | 細節 |
 |------|------|------|------|------|
+| 2026-11-19 | **`aw-kit/ui` 工具鏈（A 批）** | ① 開發依賴 React 19 **精確釘在兩消費端較低的版本**（目前 19.2.4），消費端升級後才跟著升 ② 型別檢查 `tsconfig.ui.json`＝兩消費端最嚴聯集（inflorify 嚴格旗標＋inknock ES2020 lib） ③ 匯出表**逐條列舉**、目標只收 `./src/ui/` 開頭字串、`src/ui` 除 README 與 `internal/` 外每個檔案都要有匯出（`tests/ui/exports.test.js`，含固定負例） ④ CI：React 19 全套＋build；React 18 重跑 `tests/ui` 以外全部 ⑤ 🚫 不做「dist 與 src 逐字同步」閘門（重建只差壓縮變數名） | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-18 | **新增子路徑 `aw-kit/ui`：inknock 與 inflorify 共用的 UI 元件** | 使用者在 inknock grilling 確認。① **TS 原始碼交付、不 build**（`exports` 指 `src/ui/*.tsx`、`files` 含 `src/ui`；消費端 Vite／Tailwind 編譯、`@source` 掃套件目錄）——notify／panel 維持 JS＋dist，兩種交付並存，為 2026-09-17「只交付 dist」的例外 ② 新依賴（cva、lucide 等）一律**選用 peer**，dependencies 維持空，未 import `aw-kit/ui` 的消費端（mh1491、starter）不多裝任何東西 ③ `aw-kit/ui` 只支援 React 19；notify／panel 照舊 ≥18 ④ 不依賴 react-aria-components ⑤ 代幣名稱契約、產生器（bin）、頁面層閘門（eslint 規則／bin）也放這裡 ⑥ 補 CI（最嚴 tsconfig、元件測試、樣式閘門）；開發依賴 React 型別升 19 ⑦ 仍是單一套件、只有子路徑匯出、不做 workspaces（2026-09-17 套件形狀不變）。**尚未動工**：等 inknock 第一階段收尾 | 🔒 | inknock `docs/adr/0002-shared-ui-in-aw-kit.md` |
 
 ---

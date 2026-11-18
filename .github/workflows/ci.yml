@@ -1,0 +1,51 @@
+# aw-kit CI（inknock ADR 0002〈四〉：補 CI）。
+# - main：React 19（開發依賴，釘在兩消費端較低的版本）跑全部測試＋兩份型別檢查，並確認 build 跑得過。
+# - react18：除了 aw-kit/ui（只支援 19）以外，其餘子路徑宣稱支援 React ≥18（mh1491 仍是 18），用 18 重跑。
+#   執行期測試用「排除 tests/ui」而不是列目錄：之後新增的子路徑測試自動納入。
+#   型別檢查只有 panel 有（tests/panel/tsconfig.json）；notify 的 index.d.ts 從來沒有型別測試——既有缺口，見 TODO。
+#   新增非 ui 的型別檢查時，兩個 job 都要加。
+# 已知範圍：兩個 job 測的是 src，不是消費端實際 import 的 dist（notify／panel）；
+# 不檢查 dist 是否與 src 同步：重建後只有壓縮變數名不同（2026-11-19 實測），逐字比對會誤紅。
+name: ci
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+permissions:
+  contents: read
+concurrency:
+  group: ci-${{ github.ref }}
+  # 只取消 PR 上被新 push 取代的那次；main 每個 commit 都要有完整結果（之後可能對它打 tag）
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+  react18:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm i --no-save react@18 react-dom@18 @types/react@18 @types/react-dom@18
+      - name: 確認四個套件都真的是 18
+        run: |
+          node -e "
+            const bad = ['react','react-dom','@types/react','@types/react-dom']
+              .map(m => [m, require(m + '/package.json').version])
+              .filter(([, v]) => !v.startsWith('18.'));
+            if (bad.length) { console.error('不是 18：', bad); process.exit(1) }"
+      - run: npx vitest run --exclude 'tests/ui/**'
+      - run: npx tsc --noEmit -p tests/panel/tsconfig.json

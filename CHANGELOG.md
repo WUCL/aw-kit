@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Added
+
+- `aw-kit/ui` groundwork (inknock ADR 0002, batch A): `tsconfig.ui.json` (strictest union of the two consumers — inflorify's strict flags, inknock's ES2020 lib), `tests/ui/` (React 19 `.tsx` pipeline test; export-map ↔ `src/ui` files consistency check with fixed negative cases; `src/ui/internal/` is never exported), `src/ui` added to `files`. No modules exported yet.
+- GitHub Actions CI (push to main／tags, PRs; read-only token; superseded runs cancelled): full test suite＋build on React 19, and everything except `tests/ui` re-run on React 18 (all four React packages verified to be 18).
+
+### Changed
+
+- Dev dependencies: React／React DOM and their types 18 → 19, pinned exactly to the lower of the two consumers (19.2.4／@types 19.2.14／19.2.3). notify／panel still support React ≥18 (verified by the new React 18 CI job).
+
 ## [0.4.1] — 2026-11-15
 
 ### Fixed

@@ -15,6 +15,8 @@
 
 ## 套件本身（有需求再做）
 
+- [ ] notify 的 `src/notify/index.d.ts` 沒有任何型別測試（panel 有 `tests/panel/types-check.tsx`）：React 18／19 兩版型別都沒驗。補一支同形的 `tests/notify/types-check.tsx`，CI 兩個 job 都跑（2026-11-19 aw-kit/ui A 批補審發現，既有缺口）
+
 - [ ] `aw-check-rpc-types` 不抓 `Promise<Array<Row>>` 形狀、不支援 `--root=dir` 寫法（Codex P2，刻意保守；出現實際漏抓再補）
 - [x] `aw-check-rpc-types`：`listTsFiles` 目錄項目未排序（✅ 2026-11-15 v0.4.1），多檔違規時診斷輸出順序可能因檔案系統而異（基線檔本身已排序、不受影響）。下次改 CLI 順手加 `.sort()`。（Codex review 2026-09-17，Low）
 - [ ] `no-hardcoded-design-token` 若小數誤傷（`fontSize: 0.875` 之類合法用法）再收窄回整數

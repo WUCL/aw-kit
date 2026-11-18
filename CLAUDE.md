@@ -40,6 +40,8 @@ CLI 的 scan root／baseline 參數化。
 | `src/eslint-rules/*.js`、`index.js`、`index.d.ts` | 三條規則＋flat-config plugin 物件 | **不 build**，直接從 src 匯出 |
 | `bin/aw-check-rpc-types.mjs` | ratchet CLI | **不 build** |
 | `tests/notify/`、`tests/eslint-rules/`、`tests/bin/` | jsdom 元件測試／RuleTester（TS parser）／subprocess＋fixture | `npm test` |
+| `src/ui/`（2026-11-19 起，inknock ADR 0002） | inknock＋inflorify 共用 UI 元件；**TS 原始碼交付、不 build**，每個模組一個子路徑匯出 | 原始碼直出；型別 `tsconfig.ui.json`（兩消費端最嚴聯集）、`tests/ui/` |
+| `.github/workflows/ci.yml` | React 19 全套＋React 18 重跑 notify／panel／規則／bin | push／PR |
 
 ---
 
@@ -59,6 +61,9 @@ CLI 的 scan root／baseline 參數化。
 - **RuleTester 一律用 TS parser**（`tests/eslint-rules/_ruleTester.js`）：規則出貨給 TS 專案，JS parser 看不到 `TSAsExpression` 等節點，會漏掉真實誤報。
 - **`undoDelete` 之類綁定資料庫的邏輯刻意不進套件**；`format`（日期／金額）也不進套件（plan §8），由 starter 複製。
 - **`package-lock.json` 已 commit**：只服務套件開發者。
+- **`aw-kit/ui` 的檔案會被消費端的 tsc 直接檢查**（原始碼不是 .d.ts，`skipLibCheck` 管不到）：只用相對路徑 import、必須過 `tsconfig.ui.json`（inflorify 的嚴格旗標＋inknock 的 ES2020 lib，不可用 `.at()`／`Object.hasOwn`）。匯出表用逐條列舉而非 `./ui/*`（同資料夾有 .ts 與 .tsx），`tests/ui/exports.test.js` 驗一一對應。
+- **開發依賴是 React 19，精確釘在兩個消費端裡較低的版本**（2026-11-19：inknock 19.2.4／@types 19.2.14，inflorify 19.3.0）——`aw-kit/ui` 以原始碼交付，用到較新版才有的 API 時，舊版那邊的 tsc／執行期會壞；消費端升級後這裡才跟著升。notify／panel 仍宣稱 ≥18，靠 CI 的 react18 job 守住，不要在 notify／panel 用 19 才有的 API。
+- **不要加「dist 與 src 同步」的逐字比對閘門**：重建後只有壓縮變數名不同（2026-11-19 實測）。
 
 ---
 
@@ -82,8 +87,9 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ---
 
-## 目前狀態（更新：2026-11-15）
+## 目前狀態（更新：2026-11-19）
 
+- 2026-11-19：`aw-kit/ui` A 批（工具鏈）——開發依賴升 React 19（釘在兩消費端較低的 19.2.x）、`tsconfig.ui.json`、`tests/ui`（管線＋匯出表一致）、GitHub Actions CI（React 19 全套＋React 18 重跑）；尚未匯出任何元件、未發版
 - 2026-11-15：v0.4.1——confirm 對話框 Esc 排除中文輸入法組字（inflorify 代驗 P2）、rpc-types 掃描排序；已 commit，待使用者 push＋打 tag `v0.4.1`，之後 inknock／inflorify／mh1491 改釘
 - 2026-09-27：v0.2.2 修 confirm 連開時第二個被上一個的 150ms 收尾清掉（inknock 刪除供應商兩段確認）；已 commit，待使用者 push＋打 tag `v0.2.2`，inknock 再改釘。
 - 2026-09-17：checkpoint v0.2.1（遞迴掃描修正＋Codex review 收尾），tag 已推；下游 aw-admin_starter 待改釘 `#v0.2.1`。

@@ -1,0 +1,24 @@
+{
+  // aw-kit/ui 以 TS 原始碼交付：消費端的 tsc 會用「它自己的」tsconfig 檢查這些檔案（不是 .d.ts，skipLibCheck 管不到）。
+  // 所以這裡取兩個消費端的「最嚴聯集」：inflorify 的嚴格旗標＋inknock 較低的 lib（ES2020，不可用 .at()／Object.hasOwn）。
+  // 任一消費端加嚴旗標時，這裡跟著加（inknock ADR 0002〈四〉）。
+  "compilerOptions": {
+    "target": "ES2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowImportingTsExtensions": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "types": []
+  },
+  "include": ["src/ui", "tests/ui"]
+}
