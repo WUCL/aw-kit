@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [0.8.0] — 2026-11-19
+
+### Added
+
+- `aw-kit/ui/theme-context` (inknock ADR 0002 batch D2): `ThemeProvider({ theme })` and `useTheme()`. There is no default theme — `useTheme()` throws when no provider is mounted, so a missing provider fails loudly instead of rendering another brand's colours. The provider also keeps the `--focus-ring` CSS variable in step with `accent600`. Projects wrap their root (and tests) with `<ThemeProvider theme={createTheme()}>`.
+- 19 theme-reading components moved verbatim from inknock `src/shared/ui`: `annotated-section`, `condensed-row`, `data-table`, `em`, `export-button`, `filter-toggle`, `link-button`, `nav-count-badge`, `page-header`, `panel-action-row`, `panel-kpis`, `panel-section`, `rank-list`, `section-title`, `skeleton`, `table-shell`, `tabs`, `stat-card`, `timeline-list`. inknock's built CSS is byte-identical before and after.
+
 ## [0.7.0] — 2026-11-19
 
 ### Added
