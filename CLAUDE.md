@@ -95,7 +95,8 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態（更新：2026-11-19）
 
-- 2026-11-19：`aw-kit/ui` C 批——primitives 16 檔（拿掉從未渲染的 RAC 元件）、`cn`（名單由共用層產生）、submit-enter／interactive／menu-placement／breakpoints／sanitize-number、shadcn 基準版、`lint:ui`；inknock 建置 CSS 逐字相同；**v0.6.0** 本機已打 tag（含尚未 push 的 v0.5.0），待使用者 push
+- 2026-11-19：`aw-kit/ui` D1 批——葉子包裝層 14 檔（button、icon-button、card、checkbox、switch、chip、removable-chip、callout、empty-state、pressable 等，只依賴 aw-kit/ui）＋3 支測試；inknock 建置 CSS 逐字相同；**v0.7.0** 本機已打 tag
+- 2026-11-19：`aw-kit/ui` C 批——primitives 16 檔（拿掉從未渲染的 RAC 元件）、`cn`（名單由共用層產生）、submit-enter／interactive／menu-placement／breakpoints／sanitize-number、shadcn 基準版、`lint:ui`；inknock 建置 CSS 逐字相同；**v0.6.0** 已發版（CI 綠），inknock 已改釘
 - 2026-11-19：`aw-kit/ui` B 批（代幣合約）——`aw-kit/ui/theme`（共用層常數＋`createThemeFactory`）、`aw-kit/design-tokens`（產生器：共用層 BASE＋專案品牌層驗證與合成）（不依賴 YAML 套件，解析函式由呼叫端傳入）；inknock 已改接（theme.css 逐位元組相同）；**v0.5.0**（A＋B 批）本機已打 tag，待使用者 push
 - 2026-11-19：`aw-kit/ui` A 批（工具鏈）——開發依賴升 React 19（釘在兩消費端較低的 19.2.x）、`tsconfig.ui.json`、`tests/ui`（管線＋匯出表一致）、GitHub Actions CI（React 19 全套＋React 18 重跑）；尚未匯出任何元件、未發版
 - 2026-11-15：v0.4.1——confirm 對話框 Esc 排除中文輸入法組字（inflorify 代驗 P2）、rpc-types 掃描排序；已 commit，待使用者 push＋打 tag `v0.4.1`，之後 inknock／inflorify／mh1491 改釘

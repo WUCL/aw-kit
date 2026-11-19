@@ -2,6 +2,13 @@
 
 All notable changes to this project are documented here.
 
+## [0.7.0] — 2026-11-19
+
+### Added
+
+- `aw-kit/ui` batch D1 (inknock ADR 0002): leaf wrapper components moved verbatim from inknock `src/shared/ui` — `button`, `icon-button`, `card`, `checkbox`, `switch`, `chip`, `removable-chip`, `callout`, `empty-state`, `pressable`, `clamp-text`, `close-icon`, `field-description`, `use-trailing-dot`. They depend only on `aw-kit/ui` modules and its peers (`checkbox` uses `lucide-react` icons; no theme context yet). inknock's built CSS is byte-identical before and after.
+- Tests moved with them: `button`, `pressable`, `callout` (`tests/ui/helpers/match-media.ts` for jsdom).
+
 ## [0.6.0] — 2026-11-19
 
 ### Added
