@@ -1,7 +1,7 @@
 # aw-kit CI（inknock ADR 0002〈四〉：補 CI）。
 # - main：React 19（開發依賴，釘在兩消費端較低的版本）跑全部測試＋兩份型別檢查，並確認 build 跑得過。
 # - react18：除了 aw-kit/ui（只支援 19）以外，其餘子路徑宣稱支援 React ≥18（mh1491 仍是 18），用 18 重跑。
-#   執行期測試用「排除 tests/ui」而不是列目錄：之後新增的子路徑測試自動納入。
+#   執行期測試用「排除 tests/ui」而不是列目錄：之後新增的子路徑測試自動納入。tests/gates（Node 閘門、與 React 版本無關）也排除，只在 main 跑。
 #   型別檢查只有 panel 有（tests/panel/tsconfig.json）；notify 的 index.d.ts 從來沒有型別測試——既有缺口，見 TODO。
 #   新增非 ui 的型別檢查時，兩個 job 都要加。
 # 已知範圍：兩個 job 測的是 src，不是消費端實際 import 的 dist（notify／panel）；
@@ -47,5 +47,5 @@ jobs:
               .map(m => [m, require(m + '/package.json').version])
               .filter(([, v]) => !v.startsWith('18.'));
             if (bad.length) { console.error('不是 18：', bad); process.exit(1) }"
-      - run: npx vitest run --exclude 'tests/ui/**'
+      - run: npx vitest run --exclude 'tests/ui/**' --exclude 'tests/gates/**'
       - run: npx tsc --noEmit -p tests/panel/tsconfig.json

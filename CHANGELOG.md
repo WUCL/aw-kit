@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented here.
 
+## [0.10.0] — 2026-11-19
+
+### Added
+
+- `aw-kit/gates/*` (inknock ADR 0002 batch E1): the UI gate logic moved from inknock's `check:ui`／`check:style`／`check:controls`／`check:terms` scripts — pure functions, project specifics passed in. `class-gate` (page className rules, component-layer font sizes, alias／display clash, `@source` parsing), `style-gate` (`createStyleRules({ palette, owners, tagOwners, isComponentLayer })`, `UI_OWNERS`／`uiOwners(prefix)` for aw-kit/ui's own native-control and tag owners), `controls-gate` (hard-coded control heights, missing `hit-area`), `terms-gate` (`scanTerms` with a product dictionary — throws without one), `sources` (file listing, aw-kit/ui labels, ratchet baseline), `is-main` (the single copy; inknock's is deleted). Consumers call them with their own token names, palette, dictionary and scope; inknock's gate output is identical before and after (clean tree and a probe hitting every rule).
+- `npm run check:gates` (CI runs it through `tests/gates/self-scan.test.js` in `npm test`): aw-kit/ui is scanned by aw-kit itself — font sizes／design rules／control heights over every `src/ui` file. Before, only consumers scanned it, so a violation surfaced only after re-pinning and an inflorify-only setup would not scan it at all. `tests/gates/` holds the moved negative-case lists plus a fixed scope test and a positive control (a probe in a copy of `src/ui` makes the CLI exit 1).
+- Optional peers `typescript >=5` and `postcss ^8` — **required when you use the gate modules that parse code**: `class-gate` (typescript + postcss), `controls-gate` and `terms-gate` (typescript); `style-gate`, `sources` and `is-main` need neither; optional only because `aw-kit/ui`／`notify`／`panel` consumers don't need them.
+
+### Removed
+
+- `scripts/is-main.mjs` (moved to `src/gates/is-main.js`, exported as `aw-kit/gates/is-main`).
+
 ## [0.9.0] — 2026-11-19
 
 ### Added

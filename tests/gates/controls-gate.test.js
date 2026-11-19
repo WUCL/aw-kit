@@ -1,0 +1,99 @@
+// @vitest-environment node
+// controls-gate 的正反對照（閘門要先證明會亮）。2026-11-19 自 inknock tests/check-controls.test.ts 搬入（ADR 0002 E 批），案例不變。
+import { describe, it, expect } from 'vitest'
+import { scan, scanHit } from '../../src/gates/controls-gate.js'
+
+const hits = src => scan('x.tsx', src)
+
+describe('check:controls', () => {
+  it('寫死高度會亮——即使是合法階梯值 44', () => {
+    expect(hits(`const s = { width: 44, height: 44 }`)).toHaveLength(1)
+    expect(hits(`<button style={{ height: 40 }} />`)).toHaveLength(1)
+  })
+
+  it('「⋯」事件的形狀：修前（寫死 44）亮、修後（引用代幣）不亮', () => {
+    // 摘自 e8bd3f9 前後的 overflow-menu 觸發鈕（CI 是淺 clone，不能用 git show 取舊版）
+    const before = `<button style={{\n  width: 44, height: 44,                       // iOS HIG 觸控目標\n}} />`
+    const after = `<button style={{\n  width: triggerH, height: triggerH,\n}} />`
+    expect(hits(before)).toHaveLength(1)
+    expect(hits(after)).toHaveLength(0)
+  })
+
+  it('範圍外的數值、註解、引用代幣都不算', () => {
+    expect(hits(`const s = { height: 1 }`)).toHaveLength(0)
+    expect(hits(`const s = { height: 120 }`)).toHaveLength(0)
+    expect(hits(`// height: 40\nconst s = { height: T.controlH.md }`)).toHaveLength(0)
+    expect(hits(`/* { height: 40 } */`)).toHaveLength(0)
+  })
+
+  it('audit-ok 例外：上一行、同一行、下兩行都認；更遠不認；要寫對規則名', () => {
+    expect(hits(`// audit-ok: controlHeight — 頭像\nconst s = { height: 32 }`)).toHaveLength(0)
+    expect(hits(`const s = { height: 32 } // audit-ok: controlHeight — 頭像`)).toHaveLength(0)
+    expect(hits(`const s = {\n height: 32,\n\n // audit-ok: controlHeight — 頭像\n}`)).toHaveLength(0)
+    expect(hits(`// audit-ok: controlHeight\n\n\nconst s = { height: 32 }`)).toHaveLength(1)
+    expect(hits(`// audit-ok: bareControl — 別的規則\nconst s = { height: 32 }`)).toHaveLength(1)
+  })
+
+  it('邊界（刻意不擋，歸 code review）：變數與計算式', () => {
+    expect(hits(`const h = 40; const s = { height: h }`)).toHaveLength(0)
+    expect(hits(`const s = { height: 20 + 20 }`)).toHaveLength(0)
+  })
+})
+
+// 第二條規則：自繪按鈕高度引用 T.controlH 時必須帶 hit-area（2026-11-13 方案 B，可點範圍補到 44）
+const noHit = src => scanHit('x.tsx', src)
+
+describe('check:controls hitArea', () => {
+  it('自繪 button／a／Link 引用 controlH 卻沒有 hit-area 會亮；補上就不亮', () => {
+    expect(noHit(`<button style={{ height: T.controlH.md }} />`)).toHaveLength(1)
+    expect(noHit(`<a href="#" style={{ width: T.controlH.sm, height: T.controlH.sm }}>x</a>`)).toHaveLength(1)
+    expect(noHit(`<Link to="/" style={{ height: T.controlH['lg'] }}>x</Link>`)).toHaveLength(1)
+    expect(noHit(`<button className="focus-ring hit-area" style={{ height: T.controlH.md }} />`)).toHaveLength(0)
+    expect(noHit(`<button className="hit-area" style={{ height: T.controlH.md }} />`)).toHaveLength(0)
+  })
+
+  it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {
+    const decl = `const btnBase = { height: T.controlH.md };\n`
+    expect(noHit(decl + `<button style={btnBase} />`)).toHaveLength(1)
+    expect(noHit(decl + `<button style={{ ...btnBase, color: 'red' }} />`)).toHaveLength(1)
+    expect(noHit(decl + `<button style={off ? other : btnBase} />`)).toHaveLength(1)
+    expect(noHit(decl + `<button className="hit-area" style={btnBase} />`)).toHaveLength(0)
+  })
+
+  // code review 2026-11-13：同名變數在不同元件各宣告一次時，要找最近的那個，不能拿檔內最後一個
+  it('同名變數依作用域找最近的宣告', () => {
+    const two = firstUses => `function A() {\n  const style = { height: ${firstUses ? 'T.controlH.md' : '20'} };\n  return <button style={style} />\n}\nfunction B() {\n  const style = { height: ${firstUses ? '20' : 'T.controlH.md'} };\n  return <div style={style} />\n}`
+    expect(noHit(two(true))).toHaveLength(1)   // A 用了 controlH、沒 hit-area → 要亮（舊寫法拿到 B 的宣告而漏掉）
+    expect(noHit(two(false))).toHaveLength(0)  // A 沒用 → 不亮（舊寫法拿到 B 的宣告而誤報）
+  })
+
+  // 第二輪 review：參數、解構同名時是另一個變數，不可拿外層宣告來判斷
+  it('參數或解構遮蔽外層同名變數：不拿外層宣告', () => {
+    const outer = `const style = { height: T.controlH.md };\n`
+    expect(noHit(outer + `function Row({ style }) {\n  return <button style={style} />\n}`)).toHaveLength(0)
+    expect(noHit(outer + `function Row(style) {\n  return <button style={style} />\n}`)).toHaveLength(0)
+    expect(noHit(outer + `function Row(p) {\n  const { style } = p;\n  return <button style={style} />\n}`)).toHaveLength(0)
+    expect(noHit(outer + `for (const style of list) { <button style={style} /> }`)).toHaveLength(0)
+    // 沒有遮蔽時照常抓外層
+    expect(noHit(outer + `function Row() {\n  return <button style={style} />\n}`)).toHaveLength(1)
+  })
+
+  it('不算引用：style 裡的註解、屬性名、版面列高 rowH', () => {
+    // 期間選單項的形狀：註解寫「controlH.lg(44)」，實際用 rowH
+    expect(noHit(`<button style={{\n  // 選單項 → controlH.lg(44)\n  height: T.rowH.touch,\n}} />`)).toHaveLength(0)
+    // 門檻列 ✕ 的形狀：eslint-disable-next-line 的 line 不是變數；屬性名 line 也不是
+    expect(noHit(`const line = { height: T.controlH.md };\n<button style={{\n  // eslint-disable-next-line x\n  width: 26, line: 1 }} />`)).toHaveLength(0)
+  })
+
+  it('範圍外：Button／IconButton 自帶、input／select 做不到、div 不管', () => {
+    expect(noHit(`<Button style={{ width: T.controlH.md }}>x</Button>`)).toHaveLength(0)
+    expect(noHit(`<input style={{ height: T.controlH.sm }} />`)).toHaveLength(0)
+    expect(noHit(`<select style={{ height: T.controlH.md }} />`)).toHaveLength(0)
+    expect(noHit(`<div style={{ height: T.controlH.md }} />`)).toHaveLength(0)
+  })
+
+  it('audit-ok: hitArea 例外要寫對規則名', () => {
+    expect(noHit(`// audit-ok: hitArea — 理由\n<button style={{ height: T.controlH.md }} />`)).toHaveLength(0)
+    expect(noHit(`// audit-ok: controlHeight — 別的規則\n<button style={{ height: T.controlH.md }} />`)).toHaveLength(1)
+  })
+})

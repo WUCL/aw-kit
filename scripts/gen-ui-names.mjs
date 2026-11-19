@@ -4,7 +4,7 @@
 // 用法：node scripts/gen-ui-names.mjs [--check]；tests/ui/token-names.test.js 驗證已提交的檔案與產生結果相同。
 import { readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { isMain } from './is-main.mjs'
+import { isMain } from '../src/gates/is-main.js'
 import { BASE, renderNames } from '../src/design-tokens/index.js'
 
 export const OUT = fileURLToPath(new URL('../src/ui/internal/token-names.generated.ts', import.meta.url))

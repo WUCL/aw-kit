@@ -1,6 +1,6 @@
 {
   "name": "aw-kit",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "description": "Allen Wu's shared front-end kit: toast/confirm notify and QuickView/slide-over panel shell (React 18+; aw-kit/ui is React 19 only and ships as TS source), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",
@@ -23,6 +23,12 @@
       "types": "./src/design-tokens/index.d.ts",
       "default": "./src/design-tokens/index.js"
     },
+    "./gates/class-gate": "./src/gates/class-gate.js",
+    "./gates/controls-gate": "./src/gates/controls-gate.js",
+    "./gates/is-main": "./src/gates/is-main.js",
+    "./gates/sources": "./src/gates/sources.js",
+    "./gates/style-gate": "./src/gates/style-gate.js",
+    "./gates/terms-gate": "./src/gates/terms-gate.js",
     "./ui/annotated-section": "./src/ui/annotated-section.tsx",
     "./ui/breakpoints": "./src/ui/breakpoints.ts",
     "./ui/button": "./src/ui/button.tsx",
@@ -109,7 +115,8 @@
     "src/eslint-rules",
     "bin",
     "src/ui",
-    "src/design-tokens"
+    "src/design-tokens",
+    "src/gates"
   ],
   "scripts": {
     "dev": "vite build --watch",
@@ -117,16 +124,19 @@
     "test": "vitest run && npm run test:types && npm run lint:ui",
     "test:watch": "vitest",
     "test:types": "tsc --noEmit -p tests/panel/tsconfig.json && tsc --noEmit -p tsconfig.ui.json && tsc --noEmit -p tests/ui/tsconfig.json",
-    "lint:ui": "eslint --max-warnings 0 src/ui tests/ui scripts src/eslint-rules tests/scripts tests/eslint-rules tests/setup.js",
-    "gen:ui-names": "node scripts/gen-ui-names.mjs"
+    "lint:ui": "eslint --max-warnings 0 src/ui tests/ui scripts src/eslint-rules src/gates tests/gates tests/eslint-rules tests/setup.js",
+    "gen:ui-names": "node scripts/gen-ui-names.mjs",
+    "check:gates": "node scripts/check-gates.mjs"
   },
   "peerDependencies": {
     "class-variance-authority": "^0.7.1",
     "cn": "^0.5.2",
     "eslint": ">=9",
     "lucide-react": "^1.72.0",
+    "postcss": "^8",
     "react": ">=18",
-    "react-dom": ">=18"
+    "react-dom": ">=18",
+    "typescript": ">=5"
   },
   "peerDependenciesMeta": {
     "react": {
@@ -146,6 +156,12 @@
     },
     "lucide-react": {
       "optional": true
+    },
+    "postcss": {
+      "optional": true
+    },
+    "typescript": {
+      "optional": true
     }
   },
   "devDependencies": {
@@ -163,6 +179,7 @@
     "globals": "14.0.0",
     "jsdom": "^29.1.1",
     "lucide-react": "1.72.0",
+    "postcss": "8.5.17",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-router-dom": "^6.30.6",

@@ -43,9 +43,9 @@ const RESTRICTED_IMPORTS = {
 
 export default tseslint.config(
   {
-    // 套件自己的 Node 腳本與 ESLint 規則（含從 inknock 搬來的 scripts/is-main.mjs）：至少要有 recommended＋全形空格檢查
+    // 套件自己的 Node 腳本、ESLint 規則與閘門核心（src/gates，含從 inknock 搬來的 is-main）：至少要有 recommended＋全形空格檢查
     // （inknock 的 `npm run lint` 含 scripts/，搬過來不能變成一條規則都沒套；補審 2026-11-19）
-    files: ['scripts/**/*.mjs', 'src/eslint-rules/**/*.js', 'tests/scripts/**/*.js', 'tests/eslint-rules/**/*.js', 'tests/setup.js'],
+    files: ['scripts/**/*.mjs', 'src/eslint-rules/**/*.js', 'src/gates/**/*.js', 'tests/gates/**/*.js', 'tests/eslint-rules/**/*.js', 'tests/setup.js'],
     extends: [js.configs.recommended],
     languageOptions: { globals: { ...globals.node } },
     linterOptions: { reportUnusedDisableDirectives: 'error' },

@@ -1,14 +1,14 @@
 // @vitest-environment node
-// scripts/is-main.mjs：腳本入口判斷（判斷錯＝腳本什麼都不做就 exit 0，閘門靜默變綠）。照搬 inknock tests/check-ui-gate.test.ts 同名區塊。
+// src/gates/is-main.js：腳本入口判斷（判斷錯＝腳本什麼都不做就 exit 0，閘門靜默變綠）。照搬 inknock tests/check-ui-gate.test.ts 同名區塊。
 import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { spawnSync } from 'node:child_process'
 import { describe, expect, it } from 'vitest'
-import { isMain } from '../../scripts/is-main.mjs'
+import { isMain } from '../../src/gates/is-main.js'
 
-const real = realpathSync(fileURLToPath(new URL('../../scripts/is-main.mjs', import.meta.url)))
+const real = realpathSync(fileURLToPath(new URL('../../src/gates/is-main.js', import.meta.url)))
 const meta = { url: pathToFileURL(real).href }
 const withArgv = (p, fn) => {
   const old = process.argv[1]
@@ -16,7 +16,7 @@ const withArgv = (p, fn) => {
   try { fn() } finally { process.argv[1] = old }
 }
 
-describe('scripts/is-main.mjs', () => {
+describe('src/gates/is-main.js', () => {
   it('經 symlink 執行仍成立（Node 對主模組的 import.meta.url 已解開 symlink）', () => {
     const dir = mkdtempSync(join(tmpdir(), 'is-main-'))
     try {

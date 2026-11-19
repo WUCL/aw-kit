@@ -33,6 +33,7 @@
 
 | 日期 | 主題 | 結論 | 狀態 | 細節 |
 |------|------|------|------|------|
+| 2026-11-19 | **UI 閘門的判斷核心進 aw-kit、aw-kit 自掃 src/ui（E1 批）** | ① 規則在 `aw-kit/gates/*`（純函式），色票、擁有者、用詞表、範圍、基線由消費端帶入（沒帶就丟錯，不靜默放行）② aw-kit CI 跑 `check:gates`：字級、設計規範、控制項高度，用 aw-kit 自己的設定（色票只有共用層）③ 用詞（check:terms）不在 aw-kit 自掃：用詞表是產品的；消費端照樣連 aw-kit/ui 一起掃 ④ 消費端仍掃 aw-kit/ui（npm link 開發時當場紅；不減少既有保護）⑤ is-main 只留 aw-kit 一份。v0.10.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-19 | **欄位／選單／對話框鏈進 aw-kit（D3 批）** | 20 檔原樣搬（只有 combobox 一處非空斷言、pagination／tooltip 既有 set-state-in-effect 具名 disable）；只依賴 aw-kit 的元件測試 15 支跟著搬（讀 inknock index.css 的 dialog-look 留 inknock）；測試專用 tsconfig 只關 noUncheckedIndexedAccess（src/ui 仍全嚴）；jsdom 升到 inknock 同版 29；**元件層不依賴路由套件**（MenuRow `linkAs`、HeaderDropdown `routeKey`，消費端注入；review 抓到連結模式兩份 router、且 v6 綁定會擋 v7 消費端）。v0.9.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-19 | **讀主題的通用元件進 aw-kit（D2 批）** | theme-context＋19 檔原樣搬；分店切換列（store-toggle-pills）、訂單服務項目（category-chips）、avatar（品牌 AVATAR）是業務／品牌層，留 inknock；既有 render 期副作用寫法（skeleton 的 set-state-in-effect）以具名 disable 保留；本批元件的測試暫留 inknock（以 inknock 主題渲染，仍覆蓋 aw-kit 程式碼），aw-kit 端測試主題夾具在 D3 一起做。v0.8.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-19 | **主題 context：沒包 ThemeProvider 就報錯** | aw-kit 擁有 ThemeContext、無品牌預設值；`useTheme()` 找不到 Provider 丟錯，專案的 Provider 傳入自己 `createTheme` 的值（inknock 使用者選定）。🚫 不提供 setDefaultTheme（隱性載入順序） | 🔒 | inknock DECISIONS 同日 |
