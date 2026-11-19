@@ -4,7 +4,7 @@
 // IME 清單照搬 inknock tests/eslint-ime-rule.test.ts（selector 是同一份 src/eslint-rules/selectors.js）。
 import { fileURLToPath } from 'node:url'
 import { ESLint } from 'eslint'
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 
 const ROOT = fileURLToPath(new URL('../..', import.meta.url))
 const eslint = new ESLint({ cwd: ROOT })
@@ -12,6 +12,8 @@ async function hits(code, file, ruleId, needle = '') {
   const [r] = await eslint.lintText(code, { filePath: `${ROOT}${file}` })
   return r.messages.filter(m => m.ruleId === ruleId && m.message.includes(needle)).length
 }
+// 第一次 lint 要載入 typescript-eslint 解析器，並行跑時會超過預設 5 秒——先暖身（逾時放寬只給這一步）
+beforeAll(async () => { await eslint.lintText('export {}', { filePath: `${ROOT}src/ui/zz-warmup.ts` }) }, 60_000)
 const SYNTAX = 'no-restricted-syntax'
 const FILES = ['src/ui/zz-probe.ts', 'src/ui/zz-probe.tsx', 'src/ui/primitives/zz-probe.tsx', 'src/ui/internal/zz-probe.ts', 'src/ui/submit-enter.ts']
 
@@ -63,12 +65,19 @@ describe('aw-kit/ui lint：從 inknock 帶過來的其他規則', () => {
     ['裸 cn（套件預設版）', "import { cn } from 'cn'\nexport const g = cn('a')", '@typescript-eslint/no-restricted-imports'],
     ['裸 cn re-export', "export { cn } from 'cn'", '@typescript-eslint/no-restricted-imports'],
     ['裸 cn export *', "export * from 'cn'", '@typescript-eslint/no-restricted-imports'],
+    ['react-router-dom（元件層不依賴路由）', "import { Link } from 'react-router-dom'\nexport const L = Link", '@typescript-eslint/no-restricted-imports'],
+    ['react-router（v7 套件名）', "import { useLocation } from 'react-router'\nexport const u = useLocation", '@typescript-eslint/no-restricted-imports'],
+    ['react-router re-export', "export { Link } from 'react-router-dom'", '@typescript-eslint/no-restricted-imports'],
     ['@supabase 值 import', "import { createClient } from '@supabase/supabase-js'\nexport const c = createClient('u', 'k')", '@typescript-eslint/no-restricted-imports'],
     ['條件式呼叫 hook', "import { useState } from 'react'\nexport function useX(c: boolean) { if (c) useState(0) }", 'react-hooks/rules-of-hooks'],
     ['元件裡定義元件', 'export function A() { const B = () => <i />; return <B /> }', 'react-hooks/static-components'],
     ['寫死字級（aw-kit 代幣規則）', 'export const G = () => <p style={{ fontSize: 13 }} />', 'aw-kit/no-hardcoded-design-token'],
   ])('%s 要報錯', async (_, code, rule) => {
     expect(await hits(code, f, rule)).toBeGreaterThan(0)
+  })
+  it('測試檔可以用 react-router（MemoryRouter）；裸 cn 在測試檔照樣擋', async () => {
+    expect(await hits("import { MemoryRouter } from 'react-router-dom'\nexport const M = MemoryRouter", 'tests/ui/zz.test.tsx', '@typescript-eslint/no-restricted-imports')).toBe(0)
+    expect(await hits("import { cn } from 'cn'\nexport const g = cn('a')", 'tests/ui/zz.test.tsx', '@typescript-eslint/no-restricted-imports')).toBeGreaterThan(0)
   })
   it.each([
     ['cn/config 子路徑', "import { createCn } from 'cn/config'\nexport const c = createCn()"],

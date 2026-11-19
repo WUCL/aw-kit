@@ -63,6 +63,8 @@ CLI 的 scan root／baseline 參數化。
 - **RuleTester 一律用 TS parser**（`tests/eslint-rules/_ruleTester.js`）：規則出貨給 TS 專案，JS parser 看不到 `TSAsExpression` 等節點，會漏掉真實誤報。
 - **`undoDelete` 之類綁定資料庫的邏輯刻意不進套件**；`format`（日期／金額）也不進套件（plan §8），由 starter 複製。
 - **`package-lock.json` 已 commit**：只服務套件開發者。
+- **`src/ui` 不依賴任何路由套件**：要導頁或跟著路由的元件用 prop 讓消費端注入（`MenuRow` 的 `linkAs`、`HeaderDropdown` 的 `routeKey`）。直接 import react-router 會擋住用 v7 的消費端，且 `npm link` 時會載入第二份 router（inknock 2026-11-19 D3 review 實測標題列整個崩）。
+- **測試檔用 `tests/ui/tsconfig.json`**（tests/ui 底下全部測試）：沿用 `tsconfig.ui.json` 全部嚴格旗標、只關 `noUncheckedIndexedAccess`（消費端只檢查 src/ui，不看測試）；`src/ui` 一律全嚴。渲染讀主題的元件用 `tests/ui/helpers/test-theme.tsx` 的 `renderWithTheme`；`tests/setup.js` 統一 cleanup（globals 關閉，Testing Library 不會自動清）。jsdom 跟 inknock 同版（29），舊版缺 PointerEvent。
 - **`aw-kit/ui` 的檔案會被消費端的 tsc 直接檢查**（原始碼不是 .d.ts，`skipLibCheck` 管不到）：只用相對路徑 import、必須過 `tsconfig.ui.json`（inflorify 的嚴格旗標＋inknock 的 ES2020 lib，不可用 `.at()`／`Object.hasOwn`）。匯出表用逐條列舉而非 `./ui/*`（同資料夾有 .ts 與 .tsx），`tests/ui/exports.test.js` 驗一一對應。
 - **開發依賴是 React 19，精確釘在兩個消費端裡較低的版本**（2026-11-19：inknock 19.2.4／@types 19.2.14，inflorify 19.3.0）——`aw-kit/ui` 以原始碼交付，用到較新版才有的 API 時，舊版那邊的 tsc／執行期會壞；消費端升級後這裡才跟著升。notify／panel 仍宣稱 ≥18，靠 CI 的 react18 job 守住，不要在 notify／panel 用 19 才有的 API。
 - **代幣共用層有兩份表示（`src/design-tokens/index.js` 的 `BASE` 與 `src/ui/theme.ts`），改值兩邊一起改**，`tests/design-tokens/` 會擋不一致。`COLOR_ORDER` 決定 theme.css 的顏色順序，沿用 inknock 拆分前的順序，**不要重排**（inknock 的 theme.css 會整份變動）。專案 `DESIGN.md` 品牌層的名稱由 `BRAND_COLOR_NAMES` 定義，多一個或少一個都報錯——新增品牌色名稱＝所有消費端都要補值。
@@ -96,6 +98,7 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態（更新：2026-11-19）
 
+- 2026-11-19：`aw-kit/ui` D3 批——欄位／選單／對話框鏈 20 檔（input、number-input、select、form-field、tooltip、modal、combobox、header-dropdown 等）＋15 支元件測試（測試主題夾具、cleanup setup、jsdom 29、測試專用 tsconfig）；**元件層不依賴路由套件**（MenuRow 收 `linkAs`、HeaderDropdown 收 `routeKey`，由消費端注入）；**v0.9.0**
 - 2026-11-19：`aw-kit/ui` D2 批——`theme-context`（無預設主題、沒包 Provider 就丟錯）＋讀主題的通用元件 19 檔（data-table、tabs、skeleton、panel-*、page-header 等）；inknock 建置 CSS 逐字相同；**v0.8.0**
 - 2026-11-19：`aw-kit/ui` D1 批——葉子包裝層 14 檔（button、icon-button、card、checkbox、switch、chip、removable-chip、callout、empty-state、pressable 等，只依賴 aw-kit/ui）＋3 支測試；inknock 建置 CSS 逐字相同；**v0.7.0** 已發版（CI 綠），inknock 已改釘
 - 2026-11-19：`aw-kit/ui` C 批——primitives 16 檔（拿掉從未渲染的 RAC 元件）、`cn`（名單由共用層產生）、submit-enter／interactive／menu-placement／breakpoints／sanitize-number、shadcn 基準版、`lint:ui`；inknock 建置 CSS 逐字相同；**v0.6.0** 已發版（CI 綠），inknock 已改釘

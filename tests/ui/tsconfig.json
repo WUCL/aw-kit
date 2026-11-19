@@ -1,0 +1,12 @@
+{
+  // 測試檔的型別檢查（2026-11-19 D3 批）：沿用 tsconfig.ui.json 的全部嚴格旗標，只關掉 noUncheckedIndexedAccess。
+  // 理由：最嚴設定是因為消費端的 tsc 會直接檢查 src/ui 原始碼；測試不出貨、消費端看不到。
+  // 範圍是 tests/ui 底下**所有**測試（含 C／D1／D2 原本全嚴的那幾支），不只搬來的；測試大量用 getAllByRole(...)[i]，
+  // 為了這條旗標逐行加斷言只增加雜訊。src/ui 仍由 tsconfig.ui.json 全嚴檢查（npm run test:types 兩份都跑）。
+  "extends": "../../tsconfig.ui.json",
+  "compilerOptions": {
+    "noUncheckedIndexedAccess": false,
+    "types": ["vite/client"]
+  },
+  "include": ["."]
+}

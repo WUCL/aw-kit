@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [0.9.0] — 2026-11-19
+
+### Added
+
+- `aw-kit/ui` batch D3 (inknock ADR 0002): the field／menu／dialog chain moved verbatim from inknock `src/shared/ui` — `use-input-style`, `field-state`, `input`, `number-input`, `textarea`, `select`, `sort-select`, `tooltip`, `info-tip`, `form-field`, `use-dropdown-menu`, `menu-row`, `overflow-menu`, `header-dropdown`, `combobox`, `modal`, `prompt-dialog`, `filter-bar`, `pagination`, `use-collapsible-search`. inknock's built CSS is byte-identical before and after.
+- No router dependency: `MenuRow` takes a `linkAs` component for `to` links and `HeaderDropdown` takes a `routeKey` (closes when it changes) — consumers inject their router (inknock wraps both in `src/shared/ui`). Depending on `react-router-dom` v6 directly would block consumers on react-router v7 and, under `npm link`, load a second router instance.
+- 15 component tests moved with them; `tests/ui/helpers/test-theme.tsx` (test-only brand, `renderWithTheme`); `tests/setup.js` (Testing Library cleanup — globals are off).
+
+### Changed
+
+- Dev dependency `jsdom` 25 → 29.1.1 (inknock's version; jsdom 25 lacks the PointerEvent support the moved Tooltip tests rely on).
+- All `tests/ui` files (not only the moved ones) are type-checked with `tests/ui/tsconfig.json`: every strict flag of `tsconfig.ui.json` except `noUncheckedIndexedAccess` (consumers type-check `src/ui`, never the tests). `src/ui` stays fully strict.
+
 ## [0.8.0] — 2026-11-19
 
 ### Added

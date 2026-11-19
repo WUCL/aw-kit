@@ -1,11 +1,11 @@
 // aw-kit/ui/theme-context 的兩個約定（inknock DECISIONS 2026-11-19）：
 // ① 沒包 ThemeProvider 時 useTheme() 直接丟錯（沒有預設主題）② --focus-ring 只由最外層寫、跟著 accent600，最外層卸載時移除。
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, render } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { ThemeProvider, useTheme } from '../../src/ui/theme-context'
 import type { Theme } from '../../src/ui/theme'
 
-afterEach(() => { cleanup(); document.documentElement.style.removeProperty('--focus-ring') })
+afterEach(() => { document.documentElement.style.removeProperty('--focus-ring') })
 // 只用到 accent600：測試主題夾具（完整的 createThemeFactory 品牌）等 D3 元件測試一起做
 const theme = (accent600: string) => ({ accent600 }) as unknown as Theme
 const ring = () => document.documentElement.style.getPropertyValue('--focus-ring')

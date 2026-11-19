@@ -33,6 +33,7 @@
 
 | 日期 | 主題 | 結論 | 狀態 | 細節 |
 |------|------|------|------|------|
+| 2026-11-19 | **欄位／選單／對話框鏈進 aw-kit（D3 批）** | 20 檔原樣搬（只有 combobox 一處非空斷言、pagination／tooltip 既有 set-state-in-effect 具名 disable）；只依賴 aw-kit 的元件測試 15 支跟著搬（讀 inknock index.css 的 dialog-look 留 inknock）；測試專用 tsconfig 只關 noUncheckedIndexedAccess（src/ui 仍全嚴）；jsdom 升到 inknock 同版 29；**元件層不依賴路由套件**（MenuRow `linkAs`、HeaderDropdown `routeKey`，消費端注入；review 抓到連結模式兩份 router、且 v6 綁定會擋 v7 消費端）。v0.9.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-19 | **讀主題的通用元件進 aw-kit（D2 批）** | theme-context＋19 檔原樣搬；分店切換列（store-toggle-pills）、訂單服務項目（category-chips）、avatar（品牌 AVATAR）是業務／品牌層，留 inknock；既有 render 期副作用寫法（skeleton 的 set-state-in-effect）以具名 disable 保留；本批元件的測試暫留 inknock（以 inknock 主題渲染，仍覆蓋 aw-kit 程式碼），aw-kit 端測試主題夾具在 D3 一起做。v0.8.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |
 | 2026-11-19 | **主題 context：沒包 ThemeProvider 就報錯** | aw-kit 擁有 ThemeContext、無品牌預設值；`useTheme()` 找不到 Provider 丟錯，專案的 Provider 傳入自己 `createTheme` 的值（inknock 使用者選定）。🚫 不提供 setDefaultTheme（隱性載入順序） | 🔒 | inknock DECISIONS 同日 |
 | 2026-11-19 | **葉子包裝層進 aw-kit（D1 批）** | 只依賴 aw-kit/ui 的 14 檔原樣搬（含 icon-button／removable-chip／callout 這三個只依賴同批的）；測試只搬「只測本批元件」的 3 支，混測其他元件的（selection-controls 含 Tabs、icon-button 含 OverflowMenu）留 inknock 待 D2；`use-trailing-dot` 在 render 讀 ref 的既有寫法以具名 disable 保留（inknock 原為 warn）。v0.7.0 | 🔒 | inknock `docs/plans/2026-11-19-aw-kit-ui.md` |

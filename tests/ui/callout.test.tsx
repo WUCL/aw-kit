@@ -1,13 +1,12 @@
 // 2026-11-19 自 inknock tests/callout.test.tsx 搬入（inknock ADR 0002 D1 批）
 // @vitest-environment jsdom
 import React from 'react'
-import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, fireEvent, cleanup, screen } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, fireEvent, screen } from '@testing-library/react'
 import { installMatchMedia } from './helpers/match-media'
 import { Callout } from '../../src/ui/callout'
 import { STATE } from '../../src/ui/theme'
 
-afterEach(cleanup)
 const r = (ui: React.ReactElement) => { installMatchMedia(false); return render(ui) }
 
 describe('Callout', () => {

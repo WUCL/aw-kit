@@ -2,12 +2,11 @@
 // @vitest-environment jsdom
 // 「整塊可以點」的區塊（2026-11-17 第 20 批）：原本裸 <div onClick>，鍵盤到不了、報讀不知道能按。
 import React from 'react'
-import { describe, it, expect, afterEach, vi } from 'vitest'
-import { render, screen, cleanup, fireEvent } from '@testing-library/react'
+import { describe, it, expect, vi } from 'vitest'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { createPortal } from 'react-dom'
 import { Pressable } from '../../src/ui/pressable'
 
-afterEach(cleanup)
 
 describe('Pressable', () => {
   it('是可聚焦的按鈕；點擊、Enter、空白鍵（放開時）都觸發', () => {

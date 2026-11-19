@@ -1,8 +1,8 @@
 // 2026-11-19 自 inknock tests/button.test.tsx 搬入（inknock ADR 0002 D1 批）
 // @vitest-environment jsdom
 // Button 包裝層（src/shared/ui/button.tsx，ADR 0001 Button 批次）：對外 props 與舊版相同、事件語意維持原生。
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+import { describe, expect, it, vi } from 'vitest'
+import { fireEvent, render, screen } from '@testing-library/react'
 import { Button } from '../../src/ui/button'
 
 import { installMatchMedia } from './helpers/match-media'
@@ -10,7 +10,6 @@ import { installMatchMedia } from './helpers/match-media'
 // aw-kit 最嚴設定（noUncheckedIndexedAccess）下解構陣列要給 tuple 型別；長度由各測試的 render 決定
 type Btns = [HTMLElement, HTMLElement, HTMLElement, HTMLElement]
 
-afterEach(cleanup)
 
 describe('Button 包裝層', () => {
   it('五種 variant 對到 primitive 的樣式名', () => {

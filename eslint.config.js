@@ -31,16 +31,21 @@ const RESTRICTED_SYNTAX = [
     typeNumber: '不要用 type="number"（iPad 滾動會誤改數值、打得進 e／+／-）。',
   }),
 ]
+// 元件層不依賴路由套件（2026-11-19 D3 review）：綁 v6 會擋住用 v7 的消費端、npm link 時還會載入第二份 router。
+// 要導頁／跟著路由的用 prop 讓消費端注入（MenuRow linkAs、HeaderDropdown routeKey）。只套 src/ui（測試要用 MemoryRouter）
+const NO_ROUTER = { group: ['react-router', 'react-router/*', 'react-router-dom', 'react-router-dom/*'], message: 'aw-kit/ui 不依賴路由套件：導頁連結用 linkAs、跟著路由的用 routeKey 之類的 prop，由消費端注入。' }
 const RESTRICTED_IMPORTS = {
   paths: [{ name: 'cn', message: '請用 src/ui/cn 的 cn（認得共用層字級／間距）；套件根目錄的 cn 是預設版，會把 text-meta 當顏色吃掉。' }],
-  patterns: [{ group: ['@supabase/*', '**/node_modules/@supabase/*'], allowTypeImports: true, message: 'aw-kit/ui 是元件層，不碰資料：@supabase/* 只准 import type。' }],
+  patterns: [
+    { group: ['@supabase/*', '**/node_modules/@supabase/*'], allowTypeImports: true, message: 'aw-kit/ui 是元件層，不碰資料：@supabase/* 只准 import type。' },
+  ],
 }
 
 export default tseslint.config(
   {
     // 套件自己的 Node 腳本與 ESLint 規則（含從 inknock 搬來的 scripts/is-main.mjs）：至少要有 recommended＋全形空格檢查
     // （inknock 的 `npm run lint` 含 scripts/，搬過來不能變成一條規則都沒套；補審 2026-11-19）
-    files: ['scripts/**/*.mjs', 'src/eslint-rules/**/*.js', 'tests/scripts/**/*.js', 'tests/eslint-rules/**/*.js'],
+    files: ['scripts/**/*.mjs', 'src/eslint-rules/**/*.js', 'tests/scripts/**/*.js', 'tests/eslint-rules/**/*.js', 'tests/setup.js'],
     extends: [js.configs.recommended],
     languageOptions: { globals: { ...globals.node } },
     linterOptions: { reportUnusedDisableDirectives: 'error' },
@@ -72,6 +77,8 @@ export default tseslint.config(
     rules: {
       ...awKit.configs.recommended.rules,
       'no-restricted-syntax': ['error', ...RESTRICTED_SYNTAX],
+      // flat config 同名 rule 後者整段取代前者：src/ui 這裡要把 cn／supabase 那組一起重列再加路由禁令
+      '@typescript-eslint/no-restricted-imports': ['error', { ...RESTRICTED_IMPORTS, patterns: [...RESTRICTED_IMPORTS.patterns, NO_ROUTER] }],
     },
   },
 )
