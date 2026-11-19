@@ -42,6 +42,7 @@ CLI 的 scan root／baseline 參數化。
 | `tests/notify/`、`tests/eslint-rules/`、`tests/bin/` | jsdom 元件測試／RuleTester（TS parser）／subprocess＋fixture | `npm test` |
 | `src/ui/`（2026-11-19 起，inknock ADR 0002） | inknock＋inflorify 共用 UI 元件；**TS 原始碼交付、不 build**，每個模組一個子路徑匯出 | 原始碼直出；型別 `tsconfig.ui.json`（兩消費端最嚴聯集）、`tests/ui/` |
 | `src/ui/theme.ts`、`src/design-tokens/` | 代幣共用層（TS 常數＋`createThemeFactory`）與產生器（`BASE` 共用層＋專案 `DESIGN.md` 品牌層 → theme.css／名稱檔；純函式，讀寫檔由專案包裝腳本做） | 原始碼直出；`tests/design-tokens/` 驗 BASE↔theme.ts、品牌層負例 |
+| `src/ui/primitives/`、`cn.ts`、`internal/`、helper（submit-enter 等） | shadcn class 來源（C 批）、名單由 `scripts/gen-ui-names.mjs` 自共用層產生；`vendor/shadcn-base/` 是三方合併基準版 | 原始碼直出；`tests/ui/`、`npm run lint:ui` |
 | `.github/workflows/ci.yml` | React 19 全套＋React 18 重跑 notify／panel／規則／bin | push／PR |
 
 ---
@@ -66,6 +67,9 @@ CLI 的 scan root／baseline 參數化。
 - **開發依賴是 React 19，精確釘在兩個消費端裡較低的版本**（2026-11-19：inknock 19.2.4／@types 19.2.14，inflorify 19.3.0）——`aw-kit/ui` 以原始碼交付，用到較新版才有的 API 時，舊版那邊的 tsc／執行期會壞；消費端升級後這裡才跟著升。notify／panel 仍宣稱 ≥18，靠 CI 的 react18 job 守住，不要在 notify／panel 用 19 才有的 API。
 - **代幣共用層有兩份表示（`src/design-tokens/index.js` 的 `BASE` 與 `src/ui/theme.ts`），改值兩邊一起改**，`tests/design-tokens/` 會擋不一致。`COLOR_ORDER` 決定 theme.css 的顏色順序，沿用 inknock 拆分前的順序，**不要重排**（inknock 的 theme.css 會整份變動）。專案 `DESIGN.md` 品牌層的名稱由 `BRAND_COLOR_NAMES` 定義，多一個或少一個都報錯——新增品牌色名稱＝所有消費端都要補值。
 - **不要加「dist 與 src 同步」的逐字比對閘門**：重建後只有壓縮變數名不同（2026-11-19 實測）。
+- **`src/ui/primitives` 的 class 字串改一個字，消費端的 CSS 就會變**：它們是 Tailwind 的掃描來源（消費端 `@source` 指到 `node_modules/aw-kit/src/ui`）。搬家／重構時以消費端「建置前後 CSS 逐字相同」證明零外觀變化；`vendor/shadcn-base` 是三方合併的基準版，提交後不手改。
+- **`src/ui` 的 lint 在這裡跑（`npm run lint:ui`，`--max-warnings 0`）**：從 inknock 搬來後就不在 inknock 的 lint 範圍內，所以 inknock 會套到這些檔案的規則這裡全部補齊（清單見 `eslint.config.js` 檔頭，負例 `tests/ui/eslint-config.test.js`）。`no-restricted-syntax` 的 selector（IME Enter／Esc、原生 confirm／alert、toISOString 取日期、數字欄）只有一份：`src/eslint-rules/selectors.js`，inknock 的 eslint.config.js 也引用它，**不要再在任何一邊手抄 selector**。
+- **連結模式（`npm link aw-kit`）下消費端會看到兩份 `@types/react`**（aw-kit 自己的 devDependency）：消費端 tsconfig 以 `paths` 把 `react`／`react-dom` 型別指回自己的 node_modules（inknock 2026-11-19 做法；`preserveSymlinks` 無效，因為連結目標裡就有 node_modules）。
 
 ---
 
@@ -91,6 +95,7 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ## 目前狀態（更新：2026-11-19）
 
+- 2026-11-19：`aw-kit/ui` C 批——primitives 16 檔（拿掉從未渲染的 RAC 元件）、`cn`（名單由共用層產生）、submit-enter／interactive／menu-placement／breakpoints／sanitize-number、shadcn 基準版、`lint:ui`；inknock 建置 CSS 逐字相同；**v0.6.0** 本機已打 tag（含尚未 push 的 v0.5.0），待使用者 push
 - 2026-11-19：`aw-kit/ui` B 批（代幣合約）——`aw-kit/ui/theme`（共用層常數＋`createThemeFactory`）、`aw-kit/design-tokens`（產生器：共用層 BASE＋專案品牌層驗證與合成）（不依賴 YAML 套件，解析函式由呼叫端傳入）；inknock 已改接（theme.css 逐位元組相同）；**v0.5.0**（A＋B 批）本機已打 tag，待使用者 push
 - 2026-11-19：`aw-kit/ui` A 批（工具鏈）——開發依賴升 React 19（釘在兩消費端較低的 19.2.x）、`tsconfig.ui.json`、`tests/ui`（管線＋匯出表一致）、GitHub Actions CI（React 19 全套＋React 18 重跑）；尚未匯出任何元件、未發版
 - 2026-11-15：v0.4.1——confirm 對話框 Esc 排除中文輸入法組字（inflorify 代驗 P2）、rpc-types 掃描排序；已 commit，待使用者 push＋打 tag `v0.4.1`，之後 inknock／inflorify／mh1491 改釘

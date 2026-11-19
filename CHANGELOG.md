@@ -2,6 +2,20 @@
 
 All notable changes to this project are documented here.
 
+## [0.6.0] — 2026-11-19
+
+### Added
+
+- `aw-kit/ui` batch C (inknock ADR 0002), moved from inknock with class strings unchanged (inknock's built CSS is byte-identical before and after the move):
+  - `aw-kit/ui/primitives/*` (16 files: alert, badge, button, card, checkbox, chip, dialog, dropdown-menu, empty, input, native-select, number-field, skeleton, switch, tabs, textarea) — shadcn class sources. The never-rendered `react-aria-components` components were removed; only class exports and plain-element components remain (ADR 0002 decision 6: no RAC dependency).
+  - `aw-kit/ui/cn` — `createCn` extended with the shared layer's text sizes, spacing aliases and shadows; the name lists are generated from `BASE` into `src/ui/internal/token-names.generated.ts` (`npm run gen:ui-names`, checked in `npm test`).
+  - `aw-kit/ui/submit-enter` (IME-safe Enter／Esc, `useButtonKeys`), `aw-kit/ui/interactive`, `aw-kit/ui/menu-placement`, `aw-kit/ui/breakpoints` (media-query hooks; breakpoint values now come from `aw-kit/ui/theme` only), `aw-kit/ui/sanitize-number` (inknock `src/shared/number-input.ts`, renamed so the future `NumberInput` component can take `number-input`).
+  - `vendor/shadcn-base/aria-nova-*` — upstream bases for three-way merges (not in `files`).
+- Optional peer dependencies `class-variance-authority`, `cn`, `lucide-react`.
+- `npm run lint:ui` (part of `npm test`, `--max-warnings 0`): every rule inknock applied to the moved files — js／typescript-eslint recommended (incl. `no-irregular-whitespace`), `react/jsx-no-comment-textnodes`, react-hooks, `aw-kit/eslint-rules` recommended, the restricted-syntax packs below, no bare `cn` import, `@supabase/*` type-only. Negative cases in `tests/ui/eslint-config.test.js`.
+- `aw-kit/eslint-rules`: `imeKeyRules(message)`, `nativeDialogRules({ confirm, alert })`, `utcDateRules(message)`, `numberFieldRules({ inputMode, typeNumber })` — `no-restricted-syntax` selector packs moved from inknock so inknock and `aw-kit/ui` share one copy; callers supply the messages.
+- `scripts/is-main.mjs` (moved from inknock, symlink／non-ASCII path tests) for aw-kit's own scripts.
+
 ## [0.5.0] — 2026-11-19
 
 ### Added

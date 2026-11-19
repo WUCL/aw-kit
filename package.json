@@ -1,6 +1,6 @@
 {
   "name": "aw-kit",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "description": "Allen Wu's shared front-end kit: toast/confirm notify and QuickView/slide-over panel shell (React 18+; aw-kit/ui is React 19 only and ships as TS source), Supabase-safety ESLint rules, and the aw-check-rpc-types CLI. Consumed via git tag, subpath exports only.",
   "license": "MIT",
@@ -23,7 +23,29 @@
       "types": "./src/design-tokens/index.d.ts",
       "default": "./src/design-tokens/index.js"
     },
-    "./ui/theme": "./src/ui/theme.ts"
+    "./ui/theme": "./src/ui/theme.ts",
+    "./ui/breakpoints": "./src/ui/breakpoints.ts",
+    "./ui/cn": "./src/ui/cn.ts",
+    "./ui/interactive": "./src/ui/interactive.ts",
+    "./ui/menu-placement": "./src/ui/menu-placement.ts",
+    "./ui/sanitize-number": "./src/ui/sanitize-number.ts",
+    "./ui/submit-enter": "./src/ui/submit-enter.ts",
+    "./ui/primitives/alert": "./src/ui/primitives/alert.tsx",
+    "./ui/primitives/badge": "./src/ui/primitives/badge.tsx",
+    "./ui/primitives/button": "./src/ui/primitives/button.tsx",
+    "./ui/primitives/card": "./src/ui/primitives/card.tsx",
+    "./ui/primitives/checkbox": "./src/ui/primitives/checkbox.tsx",
+    "./ui/primitives/chip": "./src/ui/primitives/chip.tsx",
+    "./ui/primitives/dialog": "./src/ui/primitives/dialog.tsx",
+    "./ui/primitives/dropdown-menu": "./src/ui/primitives/dropdown-menu.tsx",
+    "./ui/primitives/empty": "./src/ui/primitives/empty.tsx",
+    "./ui/primitives/input": "./src/ui/primitives/input.tsx",
+    "./ui/primitives/native-select": "./src/ui/primitives/native-select.tsx",
+    "./ui/primitives/number-field": "./src/ui/primitives/number-field.tsx",
+    "./ui/primitives/skeleton": "./src/ui/primitives/skeleton.tsx",
+    "./ui/primitives/switch": "./src/ui/primitives/switch.tsx",
+    "./ui/primitives/tabs": "./src/ui/primitives/tabs.tsx",
+    "./ui/primitives/textarea": "./src/ui/primitives/textarea.tsx"
   },
   "bin": {
     "aw-check-rpc-types": "./bin/aw-check-rpc-types.mjs"
@@ -38,12 +60,17 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build && vite build --mode panel",
-    "test": "vitest run && npm run test:types",
+    "test": "vitest run && npm run test:types && npm run lint:ui",
     "test:watch": "vitest",
-    "test:types": "tsc --noEmit -p tests/panel/tsconfig.json && tsc --noEmit -p tsconfig.ui.json"
+    "test:types": "tsc --noEmit -p tests/panel/tsconfig.json && tsc --noEmit -p tsconfig.ui.json",
+    "lint:ui": "eslint --max-warnings 0 src/ui tests/ui scripts src/eslint-rules tests/scripts tests/eslint-rules",
+    "gen:ui-names": "node scripts/gen-ui-names.mjs"
   },
   "peerDependencies": {
+    "class-variance-authority": "^0.7.1",
+    "cn": "^0.5.2",
     "eslint": ">=9",
+    "lucide-react": "^1.72.0",
     "react": ">=18",
     "react-dom": ">=18"
   },
@@ -56,20 +83,37 @@
     },
     "eslint": {
       "optional": true
+    },
+    "class-variance-authority": {
+      "optional": true
+    },
+    "cn": {
+      "optional": true
+    },
+    "lucide-react": {
+      "optional": true
     }
   },
   "devDependencies": {
+    "@eslint/js": "9.39.4",
     "@testing-library/react": "^16.0.1",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@typescript-eslint/parser": "^8.70.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "class-variance-authority": "0.7.1",
+    "cn": "0.5.2",
     "eslint": "^9.39.5",
+    "eslint-plugin-react": "7.37.5",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "globals": "14.0.0",
     "jsdom": "^25.0.1",
+    "lucide-react": "1.72.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-router-dom": "^6.30.6",
     "typescript": "^5.9.3",
+    "typescript-eslint": "^8.73.0",
     "vite": "^6.0.1",
     "vitest": "^4.0.0"
   }

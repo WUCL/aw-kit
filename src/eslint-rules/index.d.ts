@@ -36,3 +36,14 @@ export interface NoInlineDateFormatOptions {
   /** Replaces the report text, e.g. point at the project's own formatter. */
   message?: string
 }
+
+/** One `no-restricted-syntax` entry. */
+export interface RestrictedSyntax { selector: string; message: string }
+/** Hand-written Enter／Escape key checks (IME composition): use the project's isSubmitEnter／isCancelEscape. */
+export function imeKeyRules(message: string): RestrictedSyntax[]
+/** window.confirm／globalThis.alert and bare alert(). */
+export function nativeDialogRules(messages: { confirm: string; alert: string }): RestrictedSyntax[]
+/** toISOString()／toJSON() sliced to a date or month (UTC, not local). */
+export function utcDateRules(message: string): RestrictedSyntax[]
+/** inputMode="decimal|numeric" and <input type="number">. */
+export function numberFieldRules(messages: { inputMode: string; typeNumber: string }): RestrictedSyntax[]
