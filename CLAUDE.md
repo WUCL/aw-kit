@@ -86,7 +86,7 @@ npm test         # vitest run（notify jsdom／eslint-rules RuleTester／bin sub
 npm run build    # 只 build notify → dist/notify/{index.js,index.d.ts,style.css}
 ```
 
-發版：改 `package.json` version＋`src/eslint-rules/index.js` 的 `meta.version`＋CHANGELOG → `npm run build`（notify／panel 原始碼有變才需要）→ commit → **AI 在本機打 tag，使用者 `git push --follow-tags`**（2026-11-19 起，inknock ADR 0002〈五〉）→ AI 改消費端釘版。
+發版：改 `package.json` version＋`src/eslint-rules/index.js` 的 `meta.version`＋CHANGELOG → `npm run build`（notify／panel 原始碼有變才需要）→ commit → **AI 在本機打附註 tag `git tag -a vX.Y.Z -m …`，使用者 `git push --follow-tags`**（2026-11-19 起，inknock ADR 0002〈五〉；⚠️ 輕量 tag（`git tag vX.Y.Z`）不會被 `--follow-tags` 推上去，2026-11-20 E1 實際踩過——推完用 `git ls-remote --tags origin vX.Y.Z` 確認）→ AI 改消費端釘版。
 
 ---
 
