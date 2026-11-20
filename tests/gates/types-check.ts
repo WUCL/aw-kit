@@ -15,4 +15,4 @@ const rules = createStyleRules({ palette: readPalette(["'#FFFFFF'"]), ...kit, is
 const hits = scanStyle('x.tsx', '', rules)
 const { fresh, cleared } = ratchet(hits, h => `${h.file}:${h.rule}`, [])
 const files: [string, string][] = uiFiles('/x', 'p/')
-export const used = [v, dirs, fresh, cleared, files, listSources('src'), scanHeight('x.tsx', ''), scanHit('x.tsx', ''), isMain({ url: '' }), scanTerms('x.tsx', '', { forbidden: { a: 'b' } }), checkPin({ ...readPinState('.'), repo: 'WUCL/aw-kit' }).problems]
+export const used = [v, dirs, fresh, cleared, files, listSources('src'), scanHeight('x.tsx', ''), scanHit('x.tsx', ''), isMain({ url: '' }), scanTerms('x.tsx', '', { forbidden: { a: 'b' } }), checkPin({ ...readPinState('.', { remote: false }), repo: 'WUCL/aw-kit', strict: true }).problems]

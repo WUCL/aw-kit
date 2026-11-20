@@ -8,7 +8,7 @@ import { describe, it, expect, vi } from 'vitest'
 import { render, fireEvent } from '@testing-library/react'
 import { installMatchMedia } from './helpers/match-media'
 import { MemoryRouter, useLocation, useNavigate } from 'react-router-dom'
-import { HeaderDropdown } from '../../src/ui/header-dropdown'
+import { HeaderDropdown, HeaderDropdownScrollArea } from '../../src/ui/header-dropdown'
 import { menuContentClassName } from '../../src/ui/primitives/dropdown-menu'
 
 
@@ -116,6 +116,69 @@ describe('HeaderDropdown 手機', () => {
     const onClose = setup(false)
     fireEvent.click(document.querySelector('[data-testid="go"]')!)
     expect(onClose).toHaveBeenCalled()
+  })
+  describe('桌機最大高度（2026-11-20 inknock TODO J）', () => {
+    function Harness({ open }: { open: boolean }) {
+      const ref = useRef<HTMLDivElement>(null)
+      return <div ref={ref}><HeaderDropdown open={open} onClose={() => {}} anchorRef={ref} width={320} label="搜尋" routeKey={null}><span>內容</span></HeaderDropdown></div>
+    }
+    // 量浮框自己的頂：假設浮框頂在 52（觸發鈕 12＋40）
+    const mockTop = () => vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({ top: 52, bottom: 60, left: 0, right: 0, width: 0, height: 8, x: 0, y: 52, toJSON: () => ({}) } as DOMRect)
+    it('最高到視窗底緣上方 16（浮框頂 52、視窗 705 → 637），視窗變矮時跟著縮', () => {
+      installMatchMedia(false)
+      const rect = mockTop()
+      const h0 = window.innerHeight
+      try {
+        window.innerHeight = 705
+        const { rerender } = render(<ThemeProvider theme={testTheme}><Harness open={false} /></ThemeProvider>)
+        rerender(<ThemeProvider theme={testTheme}><Harness open /></ThemeProvider>)
+        const box = document.querySelector('.origin-top-right') as HTMLElement
+        expect(box.style.maxHeight).toBe('637px')
+        window.innerHeight = 500
+        fireEvent(window, new Event('resize'))
+        expect(box.style.maxHeight).toBe('432px')
+      } finally { rect.mockRestore(); window.innerHeight = h0 }
+    })
+    it('一掛載就開啟也量得到（review：量觸發鈕時父層 ref 還沒接上，上限會一直是空的）', () => {
+      installMatchMedia(false)
+      const rect = mockTop()
+      const h0 = window.innerHeight
+      try {
+        window.innerHeight = 705
+        render(<ThemeProvider theme={testTheme}><Harness open /></ThemeProvider>)
+        expect((document.querySelector('.origin-top-right') as HTMLElement).style.maxHeight).toBe('637px')
+      } finally { rect.mockRestore(); window.innerHeight = h0 }
+    })
+  })
+  describe('HeaderDropdownScrollArea（唯一捲動區）', () => {
+    it('桌機：浮框直向 flex；捲動區 flex 1／min-height 0／上限／只縱向捲；外伸 4 補回 4（分隔線不撐出橫向捲動）', () => {
+      installMatchMedia(false)
+      function H() {
+        const ref = useRef<HTMLDivElement>(null)
+        return <div ref={ref}><HeaderDropdown open onClose={() => {}} anchorRef={ref} width={320} label="通知" routeKey={null}>
+          <div>標題</div><HeaderDropdownScrollArea maxHeight={400}><span data-testid="row">列</span></HeaderDropdownScrollArea><div>底部</div>
+        </HeaderDropdown></div>
+      }
+      render(<ThemeProvider theme={testTheme}><H /></ThemeProvider>)
+      const box = document.querySelector('.origin-top-right') as HTMLElement
+      expect(box.style.display).toBe('flex')
+      expect(box.style.flexDirection).toBe('column')
+      const area = (document.querySelector('[data-testid="row"]') as HTMLElement).parentElement as HTMLElement
+      expect(area.style.flex).toBe('1 1 auto')
+      expect(area.style.minHeight).toBe('0px')
+      expect(area.style.maxHeight).toBe('400px')
+      expect(area.style.overflowY).toBe('auto')
+      expect(area.style.overflowX).toBe('hidden')
+      expect(area.style.margin).toBe('0px -4px')
+      expect(area.style.padding).toBe('0px 4px')
+    })
+    it('手機：不設上限、不自己捲（整個 sheet 捲）', () => {
+      installMatchMedia(true)
+      render(<ThemeProvider theme={testTheme}><HeaderDropdownScrollArea maxHeight={400}><span data-testid="row">列</span></HeaderDropdownScrollArea></ThemeProvider>)
+      const area = (document.querySelector('[data-testid="row"]') as HTMLElement).parentElement as HTMLElement
+      expect(area.style.maxHeight).toBe('')
+      expect(area.style.overflowY).toBe('')
+    })
   })
   describe('routeKey 合約（路由由消費端給）', () => {
     function Harness({ open, routeKey, onClose }: { open: boolean; routeKey: string | null; onClose: () => void }) {

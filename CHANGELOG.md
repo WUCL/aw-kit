@@ -2,6 +2,19 @@
 
 All notable changes to this project are documented here.
 
+## [0.12.0] — 2026-11-20
+
+### Added
+
+- `aw-kit/ui/switch-row`: `SwitchRow` — a whole-row switch (title + optional description／state text + `Switch`). The row is a `<label>`, so clicking anywhere toggles once; the accessible name is the title only (`aria-labelledby` — a wrapping label's native name would also swallow the description), the description is `aria-describedby`, `stateText` is `aria-hidden` so the name never changes with the state. `tone="warning"` (warning colours only while on, with `framed`), `framed` (own border + sunken background for a standalone row), `inset` (horizontal padding 18／14 mobile; `false` when the container already pads).
+- `aw-kit/ui/switch`: `aria-label`／`aria-labelledby`／`aria-describedby` props. **Breaking (types)**: a `Switch` must have a fixed name — one of `aria-label`, `aria-labelledby` or `id` (for `<label htmlFor>`) is required by the prop types, so a nameless switch, `aria-label={undefined}`, or a bare spread no longer compiles. A wrapping `<label>` alone does not count (its text is often a state word such as "營業／公休", so the name would change with the state).
+- `aw-kit/vite`: `awKitOptimizeDeps(own?)` for consumers' `vite.config` — `exclude: ['aw-kit']` + `extensions: ['.tsx']`. Without it Vite 6's dev server loads aw-kit's `.tsx` sources under two URLs (with and without `?v=`), giving two React contexts and a "no ThemeProvider" error on `npm run dev` only (build, vitest and CI never see it; `npm link` hides it). Merges the consumer's own `optimizeDeps`.
+- `aw-kit/gates/pin`: `checkPin` compares the commit recorded in package-lock (`resolved`) with the commit the tag points to now (`readPinState(root, { remote: true })`, `fetchTagCommit(tag)`) — a re-pointed tag with the same version number used to pass all checks while `npm ci` silently installed the old commit. A deleted tag (`tagMissing`) is reported. A failed lookup (`tagCommit: null`: offline, rate limit, no git; `fetchTagCommit` retries 3 times) is a note locally and a problem with `strict: true` — turn on `remote` and `strict` in CI only (a missing check must not pass silently); locally, say that the check was skipped.
+
+### Fixed
+
+- `aw-kit/ui/header-dropdown`: on desktop／iPad the dropdown is capped at the viewport bottom (−16px) and scrolls inside; long search results used to run off-screen with the last rows unreachable on short (iPad landscape) viewports. Measured from the dropdown box itself (works when mounted open; re-measured on resize and scroll). The desktop box is now a flex column; new `HeaderDropdownScrollArea({ maxHeight })` marks the one scrolling region (e.g. a notification list between a title row and a footer link): it shrinks when the box hits the viewport bottom, so header and footer never scroll away, and it absorbs `MenuSeparator`'s `-mx-1` so no horizontal scroll appears. Without it the whole box scrolls as before.
+
 ## [0.11.0] — 2026-11-20
 
 Closes inknock ADR 0002 step 2 (batch E2): everything inflorify needs to adopt `aw-kit/ui` now lives in aw-kit.

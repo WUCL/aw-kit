@@ -15,7 +15,7 @@ import { Tabs } from '../../src/ui/tabs'
 describe('Switch', () => {
   it('role=switch＋aria-checked；點擊呼叫 onChange；選取狀態掛 data-selected 給樣式用', () => {
     const onChange = vi.fn()
-    render(<Switch checked onChange={onChange} />)
+    render(<Switch aria-label="測試" checked onChange={onChange} />)
     const sw = screen.getByRole('switch')
     expect(sw.getAttribute('aria-checked')).toBe('true')
     expect(sw.getAttribute('data-selected')).toBe('true')
@@ -23,12 +23,12 @@ describe('Switch', () => {
     expect(onChange).toHaveBeenCalledTimes(1)
   })
   it('未選取：沒有 data-selected（shadcn 的 data-selected 變體只認 "true"）', () => {
-    render(<Switch checked={false} onChange={() => {}} />)
+    render(<Switch aria-label="測試" checked={false} onChange={() => {}} />)
     expect(screen.getByRole('switch').hasAttribute('data-selected')).toBe(false)
   })
   it('停用：拿掉 onClick（不只靠 disabled 屬性擋）', () => {
     const onChange = vi.fn()
-    render(<Switch checked={false} onChange={onChange} disabled />)
+    render(<Switch aria-label="測試" checked={false} onChange={onChange} disabled />)
     const sw = screen.getByRole('switch') as HTMLButtonElement
     expect(sw.disabled).toBe(true)
     // disabled 被移除（例如有人用 devtools 拿掉）時仍不會觸發

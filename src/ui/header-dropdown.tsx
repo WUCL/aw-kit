@@ -26,6 +26,10 @@ import { menuContentClassName } from './primitives/dropdown-menu'
  * 找不到才退回觸發鈕容器自身的底緣。portal 到 body 是因為標題列祖先若有 transform，
  * fixed 會被困住（同 side-panel.tsx 的 portal 註解）。
  */
+/** 桌機浮框頂：觸發鈕容器頂往下 40；底：離視窗底至少 16（內容自己有捲動區時，請讓它的上限小於這個高度，避免兩層捲動） */
+const DESK_TOP = 40
+const DESK_BOTTOM_GAP = 16
+
 export function HeaderDropdown({
   open, onClose, anchorRef, width, label, moveFocus = true, routeKey, children,
 }: {
@@ -71,6 +75,28 @@ export function HeaderDropdown({
     return () => { prev?.focus?.() }
   }, [open, isMobile, moveFocus, anchorRef])
 
+  // 桌機／iPad：浮框最高到視窗底緣上方 16px，超過在框內捲動（2026-11-20 inknock TODO J：搜尋結果多時清單
+  // 917px 高、超出 705px 視窗，底部幾筆在 iPad 橫向點不到）。量浮框自己的頂（不是觸發鈕）：
+  // 浮框是本元件的子節點，它的 ref 在本元件的 layout effect 之前就接上——一掛載就開啟也量得到
+  // （父層 anchorRef 那時還沒接上）；也不受「定位祖先不是觸發鈕容器」影響。
+  const deskRef = useRef<HTMLDivElement>(null)
+  const [deskMax, setDeskMax] = useState<number | undefined>(undefined)
+  useLayoutEffect(() => {
+    if (!open || isMobile) return
+    const measure = () => {
+      const box = deskRef.current
+      if (!box) return
+      setDeskMax(Math.max(160, window.innerHeight - box.getBoundingClientRect().top - DESK_BOTTOM_GAP))
+    }
+    measure()
+    // 捲動也重量（review：標題列不是 fixed、或外層容器可捲時，浮框的 top 會變）；capture 才接得到任何容器的捲動。
+    // 浮框自己裡面的捲動（通知清單）不影響位置，略過（停損輪 review：每次捲動都強制重排）
+    const onScroll = (e: Event) => { if (!(e.target instanceof Node && deskRef.current?.contains(e.target))) measure() }
+    window.addEventListener('resize', measure)
+    window.addEventListener('scroll', onScroll, true)
+    return () => { window.removeEventListener('resize', measure); window.removeEventListener('scroll', onScroll, true) }
+  }, [open, isMobile])
+
   // 手機：量標題列底緣（開啟當下與視窗尺寸變動時）
   useLayoutEffect(() => {
     if (!open || !isMobile) return
@@ -108,8 +134,13 @@ export function HeaderDropdown({
     return (
       <div
         // overflow-x-hidden：選單 class 只有 overflow-y-auto（會讓 x 也變 auto），內容過寬（長網址、長姓名）時照舊裁掉、不出橫向捲軸
-        className={cn(menuContentClassName, 'origin-top-right overflow-x-hidden')}
-        style={{ position: 'absolute', top: 40, right: 0, width, zIndex: Z.menu }}
+        ref={deskRef}
+        // [&>*]:shrink-0：直接子項一律不縮（停損輪 review：有寫死高度的底部列 44、分隔線 1px 會跟著按比例被壓扁）；
+        // 捲動區的 inline flex '1 1 auto' 蓋過它，所以只有捲動區縮
+        className={cn(menuContentClassName, 'origin-top-right overflow-x-hidden [&>*]:shrink-0')}
+        // 直向 flex：內容裡若有 HeaderDropdownScrollArea，超過上限時只有它縮短、在它裡面捲動（標題列與底部列不跟著捲走）；
+        // 沒有的話照舊整個浮框捲動
+        style={{ position: 'absolute', top: DESK_TOP, right: 0, width, maxHeight: deskMax, zIndex: Z.menu, display: 'flex', flexDirection: 'column' }}
       >
         {children}
       </div>
@@ -140,5 +171,25 @@ export function HeaderDropdown({
       </div>
     </>,
     document.body,
+  )
+}
+
+/**
+ * 浮框內「唯一的捲動區」（2026-11-20 inknock TODO J review）：浮框有標題列／底部列、中間是清單時（通知），把清單包在這裡。
+ * - 桌機：最高 `maxHeight`（例：400），浮框碰到視窗底時它再縮短（flex 1、min-height 0），只有它捲動——
+ *   消費端不必自己猜「視窗扣掉標題與底部列」的常數（review 第二輪：手算常數任何尺寸一變就又兩層捲動）
+ * - 手機：不設上限、不捲動（手機浮框整個 sheet 最高 70vh、自己捲動）
+ * - 往外伸 4、補回 4 內距：裡面的 MenuSeparator 是 -mx-1（伸到浮框內距外緣），捲動區 overflow-x 會跟著變 auto，
+ *   不這樣做分隔線會撐出橫向捲動並被裁短；橫向一律不捲
+ */
+export function HeaderDropdownScrollArea({ maxHeight, children }: { maxHeight: number; children: ReactNode }) {
+  const isMobile = useIsMobile()
+  return (
+    <div style={{
+      margin: '0 -4px', padding: '0 4px',
+      ...(isMobile ? {} : { flex: '1 1 auto', minHeight: 0, maxHeight, overflowY: 'auto', overflowX: 'hidden' }),
+    }}>
+      {children}
+    </div>
   )
 }
