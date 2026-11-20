@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented here.
 
+## [0.11.0] — 2026-11-20
+
+Closes inknock ADR 0002 step 2 (batch E2): everything inflorify needs to adopt `aw-kit/ui` now lives in aw-kit.
+
+### Added
+
+- `aw-kit/ui/styles/globals.css`: the global classes aw-kit/ui components rely on — `focus-ring`／`focus-ring-inset`, `hit-area` (44px hit area, also for notify's confirm buttons), `hide-scrollbar`, `@keyframes skeleton-shimmer` — moved from inknock `src/index.css`. Load it once at the root (after your global CSS, before Tailwind). The focus fallback is now `var(--ds-accent-600, currentColor)` (brand layer, then always visible) instead of inknock's hex. The confirm buttons get the `position: relative` their `::after` hit area needs (inknock had it in its own CSS; without it the `::after` covers the whole dialog panel and the last button swallows every click). inknock's built CSS differs only by this relocation (every other rule byte-identical in order). `tests/ui/globals-css.test.js` checks every global class the components use is defined.
+- `aw-kit/eslint-rules`: `uiLibraryPatterns(message, { extraPrimitivePaths })` and `bareCnPath(message?)` — "UI low-level imports (primitives, react-aria, lucide) only in the component layer" and "no bare `cn`", moved from inknock's ESLint config; RuleTester negatives in `tests/eslint-rules/imports.test.js`.
+- `aw-kit/gates/pin`: `readPinState(root)` + `checkPin()` — the consumer pins aw-kit to a `WUCL/aw-kit` tag (forks and other repos fail) and package.json／package-lock／installed version agree; `dependencies` or `devDependencies`; npm link skips only the installed-version check, with a note.
+- Type declarations for every `aw-kit/gates/*` module (`types` export condition); `tests/gates/types-check.ts` (in `test:types`) exercises them the way a consumer calls them.
+
 ## [0.10.0] — 2026-11-19
 
 ### Added

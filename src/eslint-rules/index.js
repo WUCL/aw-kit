@@ -10,6 +10,7 @@ import noHardcodedDesignToken from './no-hardcoded-design-token.js'
 import noInlineDateFormat from './no-inline-date-format.js'
 
 export { imeKeyRules, nativeDialogRules, utcDateRules, numberFieldRules } from './selectors.js'
+export { uiLibraryPatterns, bareCnPath, PRIMITIVE_GROUP, VENDOR_GROUP } from './imports.js'
 
 export const rules = {
   'verified-supabase-write': verifiedSupabaseWrite,
@@ -18,7 +19,7 @@ export const rules = {
 }
 
 const plugin = {
-  meta: { name: 'aw-kit', version: '0.10.0' },
+  meta: { name: 'aw-kit', version: '0.11.0' },
   rules,
   configs: {},
 }

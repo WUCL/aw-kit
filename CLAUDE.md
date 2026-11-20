@@ -43,6 +43,7 @@ CLI 的 scan root／baseline 參數化。
 | `src/ui/`（2026-11-19 起，inknock ADR 0002） | inknock＋inflorify 共用 UI 元件；**TS 原始碼交付、不 build**，每個模組一個子路徑匯出 | 原始碼直出；型別 `tsconfig.ui.json`（兩消費端最嚴聯集）、`tests/ui/` |
 | `src/ui/theme.ts`、`src/design-tokens/` | 代幣共用層（TS 常數＋`createThemeFactory`）與產生器（`BASE` 共用層＋專案 `DESIGN.md` 品牌層 → theme.css／名稱檔；純函式，讀寫檔由專案包裝腳本做） | 原始碼直出；`tests/design-tokens/` 驗 BASE↔theme.ts、品牌層負例 |
 | `src/ui/primitives/`、`cn.ts`、`internal/`、helper（submit-enter 等） | shadcn class 來源（C 批）、名單由 `scripts/gen-ui-names.mjs` 自共用層產生；`vendor/shadcn-base/` 是三方合併基準版 | 原始碼直出；`tests/ui/`、`npm run lint:ui` |
+| `src/ui/styles/globals.css`（2026-11-20 E2 批） | 元件依賴的全域 class（focus-ring、hit-area、hide-scrollbar、skeleton keyframes）；消費端 root 載入一次 | 原始碼直出（`aw-kit/ui/styles/globals.css`）；`tests/ui/globals-css.test.js` |
 | `src/gates/`（2026-11-19 E1 批） | UI 閘門的判斷核心（class／style／controls／terms、檔案清單與 ratchet、is-main）：純函式，專案設定由呼叫端帶入；`scripts/check-gates.mjs` 用 aw-kit 自己的設定掃 `src/ui` | 原始碼直出（`aw-kit/gates/*`）；`tests/gates/`、`npm run check:gates`（`npm test` 內含） |
 | `.github/workflows/ci.yml` | React 19 全套＋React 18 重跑 notify／panel／規則／bin | push／PR |
 
@@ -97,8 +98,9 @@ origin  https://github.com/WUCL/aw-kit.git   （舊 URL aw-notify-kit 會轉址�
 
 ---
 
-## 目前狀態（更新：2026-11-19）
+## 目前狀態（更新：2026-11-20）
 
+- 2026-11-20：E2 批（第 2 步收尾）——`aw-kit/ui/styles/globals.css`（元件依賴的全域 class，自 inknock 搬入、focus 退回值改品牌層變數）、`uiLibraryPatterns`／`bareCnPath`（ESLint）、`aw-kit/gates/pin`（釘版一致）、gates 型別宣告；**v0.11.0**
 - 2026-11-19：E1 批——UI 閘門的判斷核心從 inknock 四支腳本搬進 `aw-kit/gates/*`（專案設定由呼叫端帶入、is-main 收成一份）；`npm run check:gates` 讓 aw-kit 自己的 CI 掃 src/ui（字級、設計規範、控制項高度；用詞表留消費端）；負例清單、固定範圍測試、陽性對照在 `tests/gates/`；inknock 閘門輸出前後逐字相同；**v0.10.0**
 - 2026-11-19：`aw-kit/ui` D3 批——欄位／選單／對話框鏈 20 檔（input、number-input、select、form-field、tooltip、modal、combobox、header-dropdown 等）＋15 支元件測試（測試主題夾具、cleanup setup、jsdom 29、測試專用 tsconfig）；**元件層不依賴路由套件**（MenuRow 收 `linkAs`、HeaderDropdown 收 `routeKey`，由消費端注入）；**v0.9.0**
 - 2026-11-19：`aw-kit/ui` D2 批——`theme-context`（無預設主題、沒包 Provider 就丟錯）＋讀主題的通用元件 19 檔（data-table、tabs、skeleton、panel-*、page-header 等）；inknock 建置 CSS 逐字相同；**v0.8.0**

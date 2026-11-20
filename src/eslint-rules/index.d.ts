@@ -47,3 +47,10 @@ export function nativeDialogRules(messages: { confirm: string; alert: string }):
 export function utcDateRules(message: string): RestrictedSyntax[]
 /** inputMode="decimal|numeric" and <input type="number">. */
 export function numberFieldRules(messages: { inputMode: string; typeNumber: string }): RestrictedSyntax[]
+
+/** no-restricted-imports 的 pattern／path（imports.js） */
+export interface RestrictedImportPattern { group: string[]; message: string }
+export const PRIMITIVE_GROUP: readonly string[]
+export const VENDOR_GROUP: readonly string[]
+export function uiLibraryPatterns(message: string, options?: { extraPrimitivePaths?: string[] }): RestrictedImportPattern[]
+export function bareCnPath(message?: string): { name: 'cn'; message: string }

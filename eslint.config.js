@@ -16,7 +16,7 @@ import tseslint from 'typescript-eslint'
 import react from 'eslint-plugin-react'
 import reactHooks from 'eslint-plugin-react-hooks'
 import globals from 'globals'
-import awKit, { imeKeyRules, nativeDialogRules, utcDateRules, numberFieldRules } from './src/eslint-rules/index.js'
+import awKit, { imeKeyRules, nativeDialogRules, utcDateRules, numberFieldRules, bareCnPath } from './src/eslint-rules/index.js'
 
 export const IME_MSG = 'Enter／Esc 請用 aw-kit/ui/submit-enter 的 isSubmitEnter()／isCancelEscape()——中文輸入法選字時的 Enter／Esc 不可觸發送出或關閉。'
 const RESTRICTED_SYNTAX = [
@@ -35,7 +35,7 @@ const RESTRICTED_SYNTAX = [
 // 要導頁／跟著路由的用 prop 讓消費端注入（MenuRow linkAs、HeaderDropdown routeKey）。只套 src/ui（測試要用 MemoryRouter）
 const NO_ROUTER = { group: ['react-router', 'react-router/*', 'react-router-dom', 'react-router-dom/*'], message: 'aw-kit/ui 不依賴路由套件：導頁連結用 linkAs、跟著路由的用 routeKey 之類的 prop，由消費端注入。' }
 const RESTRICTED_IMPORTS = {
-  paths: [{ name: 'cn', message: '請用 src/ui/cn 的 cn（認得共用層字級／間距）；套件根目錄的 cn 是預設版，會把 text-meta 當顏色吃掉。' }],
+  paths: [bareCnPath('請用 src/ui/cn 的 cn（認得共用層字級／間距）；套件根目錄的 cn 是預設版，會把 text-meta 當顏色吃掉。')],
   patterns: [
     { group: ['@supabase/*', '**/node_modules/@supabase/*'], allowTypeImports: true, message: 'aw-kit/ui 是元件層，不碰資料：@supabase/* 只准 import type。' },
   ],

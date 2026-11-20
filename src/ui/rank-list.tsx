@@ -93,7 +93,7 @@ function Row({
       onClick={clickable ? () => onSelect(item.key) : undefined}
       role={clickable ? 'button' : undefined}
       tabIndex={clickable ? 0 : undefined}
-      // 焦點環走全站的 `.focus-ring`（`index.css`），不在這裡另刻一套 outline。
+      // 焦點環走全站的 `.focus-ring`（`aw-kit/ui/styles/globals.css`），不在這裡另刻一套 outline。
       className={clickable ? 'focus-ring' : undefined}
       onKeyDown={clickable ? e => {
         // Enter 與 Space 都要——原生 <button> 兩者皆可觸發，這裡是在補回那個行為。

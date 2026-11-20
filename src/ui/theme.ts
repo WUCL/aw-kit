@@ -177,7 +177,7 @@ export const FONT_WEIGHT = {
 } as const
 
 // ─── 控制項高度（2026-11-13 方案 B＝shadcn 原版，ADR 0001〈外觀定案〉D13；取代 2026-08-25 M11）──
-// 桌機、iPad、手機同一套，不再於手機升高。可點範圍與外觀分開：Button 與 `.hit-area`（src/index.css）
+// 桌機、iPad、手機同一套，不再於手機升高。可點範圍與外觀分開：Button 與 `.hit-area`（aw-kit/ui/styles/globals.css）
 // 用 ::after 往上下補到 44（ROW_H.touch），外觀維持 28／32／36。輸入框／下拉做不到（::after 對 input 無效），接受 32。
 export const CONTROL_H = {
   sm: 28,   // 表格內嵌控制項

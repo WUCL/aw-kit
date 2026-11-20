@@ -1,0 +1,51 @@
+/* aw-kit/ui 元件依賴的全域 class（2026-11-20 自 inknock src/index.css 搬入，inknock ADR 0002 E2 批）。
+   消費端在 root 載入一次：`import 'aw-kit/ui/styles/globals.css'`（放在自己的全域 CSS 之後、Tailwind 之前）。
+   沒載入時不報錯，只是元件的鍵盤聚焦外圈、可點範圍、骨架掃光、隱藏捲軸全部靜默失效。
+   這些 class 名稱只在這裡定義；消費端不要再定義同名規則（同權重會靠載入順序互蓋）。 */
+
+/* 隱藏捲軸但仍可捲動（手機） */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Focus-visible ring — keyboard 操作可見、滑鼠點擊不顯示。所有互動元素套用。 */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  /* 由 aw-kit/ui/theme-context 的 ThemeProvider 注入 --focus-ring（= accent600）。
+     Provider 掛載前（及卸載後）退回品牌層的 --ds-accent-600（aw-kit/design-tokens 產生的 theme.css，同值）；
+     連那份 theme.css 都沒載入時退回 currentColor——外圈一定畫得出來，不會整個消失。
+     ⚠️ 驗收只能用 Tab 鍵逐一走訪，滑鼠點不出來。 */
+  outline: 2px solid var(--focus-ring, var(--ds-accent-600, currentColor)) !important;
+  outline-offset: 2px;
+}
+/* 外圈畫在框內：放在 overflow:hidden 清單容器裡的整列可點區塊（Pressable），畫在框外會被裁掉 */
+.focus-ring-inset:focus-visible {
+  outline-offset: -2px;
+}
+
+/* 可點範圍至少 44px 高（方案 B）：外觀不變，::after 往上下擴；本身 ≥ 44 時不縮。
+   與 shadcn Button 的 after:inset-y-[min(0px,…)] 同一個做法，給 inline style 的自繪按鈕用。
+   aw-kit/notify 確認框的按鈕同一條規則。
+   ⚠️ 祖先有 overflow:hidden 時擴出去的部分會被裁掉（點不到）。 */
+.hit-area,
+.fbk-dialog-actions .fbk-btn { position: relative; }   /* ::after 以按鈕本身為定位基準；少了這條，::after 會撐滿整個對話框面板、蓋住其他按鈕 */
+.hit-area::after,
+.fbk-dialog-actions .fbk-btn::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block: min(0px, calc((100% - 44px) / 2));
+}
+
+/* 骨架載入（aw-kit/ui/skeleton）：原位畫同尺寸的灰塊＋一道光。inline style 寫不了 @keyframes，所以放這裡。
+   消費端若尊重 prefers-reduced-motion（全域把動畫壓成 0.01ms），只剩靜態灰塊——那是對的。 */
+@keyframes skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
