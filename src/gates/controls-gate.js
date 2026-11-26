@@ -7,7 +7,7 @@
 //          否則手機上可點範圍只剩外觀大小。style 是同檔變數（含展開 `...btnBase`）時展開一層判斷。
 //          例外寫 `audit-ok: hitArea — 理由`（同上下行規則）。邊界：style 來自別的檔案、div 加 onClick、<input>／<select>。
 //          專案自己的「自繪按鈕」共用元件（外觀與可點範圍全由呼叫端 style 決定，如 BlockButton）以 opts.extraTags 加入檢查；
-//          只接受 JSX 標籤名（以點分段、每段為 JS 識別字），名稱比對寫法原文：別名 import（`as Cell`）、
+//          只接受 JSX 標籤名（以點分段、每段為 JS 識別字），名稱由識別字鏈組回（忽略空白、註解、解開跳脫）後比對：別名 import（`as Cell`）、
 //          重新指派（`const B = BlockButton`）、成員寫法不同（`ui.BlockButton` 對 `BlockButton`）都不檢查——歸 code review。
 //          合格條件與原生 button 相同（className 含 hit-area 或 audit-ok）；不收 className 的元件需自備對應 prop 再談。
 // 負例清單：tests/gates/controls-gate.test.js。
@@ -37,6 +37,10 @@ export function scan(file, text) {
 const HIT_TAGS = ['button', 'a', 'Link']
 const TAG_NAME = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/
 export function scanHit(file, text, opts = {}) {
+  // 鍵名打錯或整個傳陣列會靜默變成「沒有額外標籤」→ 只收 null／undefined 或只含 extraTags 鍵的物件
+  if (opts != null && (typeof opts !== 'object' || Array.isArray(opts) || Object.keys(opts).some(k => k !== 'extraTags'))) {
+    throw new TypeError('scanHit: opts 只接受 { extraTags }')
+  }
   const extra = opts?.extraTags ?? []
   // Array.from 把稀疏陣列的洞變成 undefined（some 會跳過洞，new Array(2) 會靜默通過）
   if (!Array.isArray(extra) || Array.from(extra).some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
@@ -86,7 +90,7 @@ export function scanHit(file, text, opts = {}) {
     return found
   }
   // 標籤名由識別字鏈組回（不用 getText：`<ui . Btn>`、中間夾註解時原文對不上設定的 'ui.Btn'）
-  const tagOf = n => ts.isPropertyAccessExpression(n) ? `${tagOf(n.expression)}.${n.name.text}` : n.getText(sf)
+  const tagOf = n => ts.isPropertyAccessExpression(n) ? `${tagOf(n.expression)}.${n.name.text}` : ts.isIdentifier(n) ? n.text : n.getText(sf)
   const hits = []
   const visit = node => {
     if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && tags.has(tagOf(node.tagName))) {

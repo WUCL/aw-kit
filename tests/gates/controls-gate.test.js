@@ -65,6 +65,9 @@ describe('check:controls hitArea', () => {
     expect(scanHit('x.tsx', `<ui.Btn style={{ height: T.controlH.md }} />`, { extraTags: ['ui.Btn', '_X', '$Y'] })).toHaveLength(1)
     expect(scanHit('x.tsx', src, null)).toHaveLength(0)
     expect(() => scanHit('x.tsx', src, { extraTags: new Array(2) })).toThrow(TypeError)   // 稀疏陣列
+    expect(() => scanHit('x.tsx', src, ['BlockButton'])).toThrow(TypeError)            // 整個傳陣列
+    expect(() => scanHit('x.tsx', src, { extraTag: ['BlockButton'] })).toThrow(TypeError) // 鍵名打錯
+    expect(scanHit('x.tsx', `<\\u0042lockButton style={{ height: T.controlH.md }} />`, { extraTags: ['BlockButton'] })).toHaveLength(1)   // 跳脫寫法同樣比對到
     // eslint-disable-next-line no-sparse-arrays -- 刻意的稀疏陣列負例
     expect(() => scanHit('x.tsx', src, { extraTags: [, 'BlockButton'] })).toThrow(TypeError)
     const h = (tag) => `<${tag} style={{ height: T.controlH.md }} />`
