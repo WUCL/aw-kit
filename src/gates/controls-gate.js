@@ -38,7 +38,8 @@ const HIT_TAGS = ['button', 'a', 'Link']
 const TAG_NAME = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/
 export function scanHit(file, text, opts = {}) {
   const extra = opts?.extraTags ?? []
-  if (!Array.isArray(extra) || extra.some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
+  // Array.from 把稀疏陣列的洞變成 undefined（some 會跳過洞，new Array(2) 會靜默通過）
+  if (!Array.isArray(extra) || Array.from(extra).some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
     throw new TypeError(`scanHit: extraTags 必須是 JSX 標籤名陣列，收到 ${JSON.stringify(extra)}`)
   }
   const tags = new Set([...HIT_TAGS, ...extra])
@@ -84,16 +85,18 @@ export function scanHit(file, text, opts = {}) {
     v(node)
     return found
   }
+  // 標籤名由識別字鏈組回（不用 getText：`<ui . Btn>`、中間夾註解時原文對不上設定的 'ui.Btn'）
+  const tagOf = n => ts.isPropertyAccessExpression(n) ? `${tagOf(n.expression)}.${n.name.text}` : n.getText(sf)
   const hits = []
   const visit = node => {
-    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && tags.has(node.tagName.getText(sf))) {
+    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && tags.has(tagOf(node.tagName))) {
       const attr = name => node.attributes.properties.find(p => ts.isJsxAttribute(p) && p.name.getText(sf) === name)
       const style = attr('style')
       if (style?.initializer && usesControlH(style.initializer, 1)) {
         const cls = attr('className')?.initializer?.getText(sf) ?? ''
         const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line
         const probe = [lines[line - 1], lines[line], lines[line + 1], lines[line + 2]]
-        if (!/\bhit-area\b/.test(cls) && !probe.some(l => (l ?? '').includes('audit-ok: hitArea'))) hits.push({ file, line: line + 1, tag: node.tagName.getText(sf) })
+        if (!/\bhit-area\b/.test(cls) && !probe.some(l => (l ?? '').includes('audit-ok: hitArea'))) hits.push({ file, line: line + 1, tag: tagOf(node.tagName) })
       }
     }
     ts.forEachChild(node, visit)

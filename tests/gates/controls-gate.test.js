@@ -64,6 +64,12 @@ describe('check:controls hitArea', () => {
     for (const bad of ['BlockButton.', 'ui..Btn', 'Block Button', '']) expect(() => scanHit('x.tsx', src, { extraTags: [bad] })).toThrow(TypeError)
     expect(scanHit('x.tsx', `<ui.Btn style={{ height: T.controlH.md }} />`, { extraTags: ['ui.Btn', '_X', '$Y'] })).toHaveLength(1)
     expect(scanHit('x.tsx', src, null)).toHaveLength(0)
+    expect(() => scanHit('x.tsx', src, { extraTags: new Array(2) })).toThrow(TypeError)   // 稀疏陣列
+    // eslint-disable-next-line no-sparse-arrays -- 刻意的稀疏陣列負例
+    expect(() => scanHit('x.tsx', src, { extraTags: [, 'BlockButton'] })).toThrow(TypeError)
+    const h = (tag) => `<${tag} style={{ height: T.controlH.md }} />`
+    for (const t of ['_X', '$Y']) expect(scanHit('x.tsx', h(t), { extraTags: ['_X', '$Y'] })).toHaveLength(1)
+    for (const t of ['ui . Btn', 'ui /* c */.Btn']) expect(scanHit('x.tsx', h(t), { extraTags: ['ui.Btn'] })).toEqual([{ file: 'x.tsx', line: 1, tag: 'ui.Btn' }])
     // 邊界（負例清單，刻意不擋）：別名、重新指派、成員寫法不同
     const opts = { extraTags: ['BlockButton'] }
     expect(scanHit('x.tsx', `import { BlockButton as Cell } from 'x'\n<Cell style={{ height: T.controlH.md }} />`, opts)).toHaveLength(0)

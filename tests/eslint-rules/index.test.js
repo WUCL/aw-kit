@@ -46,3 +46,12 @@ describe('aw-kit/eslint-rules', () => {
     expect(msgs).toEqual([])
   })
 })
+
+// 0.13.0 發版漏改 meta.version（03aa9dd 審查）：兩處必須一致
+describe('plugin meta.version', () => {
+  it('等於 package.json version', async () => {
+    const { readFileSync } = await import('node:fs')
+    const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
+    expect(plugin.meta.version).toBe(pkg.version)
+  })
+})
