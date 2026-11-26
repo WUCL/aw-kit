@@ -52,6 +52,16 @@ describe('check:controls hitArea', () => {
     expect(noHit(`<button className="hit-area" style={{ height: T.controlH.md }} />`)).toHaveLength(0)
   })
 
+  it('extraTags：專案的自繪按鈕元件一併檢查；未列入的不檢查；不合法的名稱直接報錯', () => {
+    const src = `<BlockButton style={{ height: T.controlH.md }}>x</BlockButton>`
+    expect(noHit(src)).toHaveLength(0)
+    expect(scanHit('x.tsx', src, { extraTags: ['BlockButton'] })).toEqual([{ file: 'x.tsx', line: 1, tag: 'BlockButton' }])
+    expect(scanHit('x.tsx', `<BlockButton className="hit-area" style={{ height: T.controlH.md }} />`, { extraTags: ['BlockButton'] })).toHaveLength(0)
+    expect(scanHit('x.tsx', `<button style={{ height: T.controlH.md }} />`, { extraTags: ['BlockButton'] })).toHaveLength(1) // 內建標籤照舊
+    expect(() => scanHit('x.tsx', src, { extraTags: ['<BlockButton'] })).toThrow(TypeError)
+    expect(() => scanHit('x.tsx', src, { extraTags: 'BlockButton' })).toThrow(TypeError)
+  })
+
   it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {
     const decl = `const btnBase = { height: T.controlH.md };\n`
     expect(noHit(decl + `<button style={btnBase} />`)).toHaveLength(1)

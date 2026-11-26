@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.13.0] — 2026-11-27
+
+### Added
+
+- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags })` also checks the consumer's own self-drawn button components (e.g. `BlockButton`, whose look and hit area come entirely from the caller's `style`). Previously a consumer had to rewrite the source text (`<BlockButton` → `<button`) before scanning, which reported the wrong tag name and depended on the rewrite keeping JSX paired. Hits report the real tag name. Invalid names (non-array, non-JSX identifiers) throw `TypeError` instead of silently checking nothing.
+
 ## [0.12.0] — 2026-11-20
 
 ### Added

@@ -6,6 +6,8 @@
 // scanHit  自繪的 <button>／<a>／<Link> 若高度或寬度引用 T.controlH，className 必須含 `hit-area`（可點範圍靠 ::after 補到 44），
 //          否則手機上可點範圍只剩外觀大小。style 是同檔變數（含展開 `...btnBase`）時展開一層判斷。
 //          例外寫 `audit-ok: hitArea — 理由`（同上下行規則）。邊界：style 來自別的檔案、div 加 onClick、<input>／<select>。
+//          專案自己的「自繪按鈕」共用元件（外觀與可點範圍全由呼叫端 style 決定，如 BlockButton）以 opts.extraTags 加入檢查；
+//          只接受 JSX 標籤名（字母開頭），不改寫原始碼。
 // 負例清單：tests/gates/controls-gate.test.js。
 import ts from 'typescript'
 
@@ -30,8 +32,14 @@ export function scan(file, text) {
   return hits
 }
 
-const HIT_TAGS = new Set(['button', 'a', 'Link'])
-export function scanHit(file, text) {
+const HIT_TAGS = ['button', 'a', 'Link']
+const TAG_NAME = /^[A-Za-z][\w.]*$/
+export function scanHit(file, text, opts = {}) {
+  const extra = opts.extraTags ?? []
+  if (!Array.isArray(extra) || extra.some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
+    throw new TypeError(`scanHit: extraTags 必須是 JSX 標籤名陣列，收到 ${JSON.stringify(extra)}`)
+  }
+  const tags = new Set([...HIT_TAGS, ...extra])
   const sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, file.endsWith('x') ? ts.ScriptKind.TSX : ts.ScriptKind.TS)
   const lines = text.split('\n')
   // 依作用域找宣告：從引用處往外層走，每層 block 只看直接宣告在它底下的 const／let（同名變數在別的元件不會被拿錯）。
@@ -76,7 +84,7 @@ export function scanHit(file, text) {
   }
   const hits = []
   const visit = node => {
-    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && HIT_TAGS.has(node.tagName.getText(sf))) {
+    if ((ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) && tags.has(node.tagName.getText(sf))) {
       const attr = name => node.attributes.properties.find(p => ts.isJsxAttribute(p) && p.name.getText(sf) === name)
       const style = attr('style')
       if (style?.initializer && usesControlH(style.initializer, 1)) {
