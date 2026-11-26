@@ -41,7 +41,8 @@ export function scanHit(file, text, opts = {}) {
   if (opts != null && (typeof opts !== 'object' || Array.isArray(opts) || Object.keys(opts).some(k => k !== 'extraTags'))) {
     throw new TypeError('scanHit: opts 只接受 { extraTags }')
   }
-  const extra = opts?.extraTags ?? []
+  // 鍵在但值是 null／undefined（例：{ extraTags: config.extraTag } 打錯來源鍵）同樣靜默變空 → 有鍵就必須是陣列
+  const extra = opts != null && 'extraTags' in opts ? opts.extraTags : []
   // Array.from 把稀疏陣列的洞變成 undefined（some 會跳過洞，new Array(2) 會靜默通過）
   if (!Array.isArray(extra) || Array.from(extra).some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
     throw new TypeError(`scanHit: extraTags 必須是 JSX 標籤名陣列，收到 ${JSON.stringify(extra)}`)
