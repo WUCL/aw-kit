@@ -6,7 +6,7 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags })` also checks the consumer's own self-drawn button components (e.g. `BlockButton`, whose look and hit area come entirely from the caller's `style`). Previously a consumer had to rewrite the source text (`<BlockButton` → `<button`) before scanning, which reported the wrong tag name and depended on the rewrite keeping JSX paired. Hits report the real tag name. Invalid names (non-array, non-JSX identifiers) throw `TypeError` instead of silently checking nothing.
+- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags })` also checks the consumer's own self-drawn button components (e.g. `BlockButton`, whose look and hit area come entirely from the caller's `style`). Previously a consumer had to rewrite the source text (`<BlockButton` → `<button`) before scanning, which reported the wrong tag name and depended on the rewrite keeping JSX paired. Hits report the real tag name. Invalid names (non-array, non-JSX identifiers) throw `TypeError` instead of silently checking nothing. **Baseline migration**: keys built from `tag` (e.g. `hit <button> file` from a rewrite) become `hit <BlockButton> file` — rename those baseline entries by hand when switching (a shrink-only `--update-baseline` cannot). Boundaries: aliased imports, reassignment and differently written member names are not matched.
 
 ## [0.12.0] — 2026-11-20
 

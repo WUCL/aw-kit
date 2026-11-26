@@ -60,6 +60,15 @@ describe('check:controls hitArea', () => {
     expect(scanHit('x.tsx', `<button style={{ height: T.controlH.md }} />`, { extraTags: ['BlockButton'] })).toHaveLength(1) // 內建標籤照舊
     expect(() => scanHit('x.tsx', src, { extraTags: ['<BlockButton'] })).toThrow(TypeError)
     expect(() => scanHit('x.tsx', src, { extraTags: 'BlockButton' })).toThrow(TypeError)
+    // 永遠比對不到的名稱（結尾點、連續點、空白）不可靜默通過
+    for (const bad of ['BlockButton.', 'ui..Btn', 'Block Button', '']) expect(() => scanHit('x.tsx', src, { extraTags: [bad] })).toThrow(TypeError)
+    expect(scanHit('x.tsx', `<ui.Btn style={{ height: T.controlH.md }} />`, { extraTags: ['ui.Btn', '_X', '$Y'] })).toHaveLength(1)
+    expect(scanHit('x.tsx', src, null)).toHaveLength(0)
+    // 邊界（負例清單，刻意不擋）：別名、重新指派、成員寫法不同
+    const opts = { extraTags: ['BlockButton'] }
+    expect(scanHit('x.tsx', `import { BlockButton as Cell } from 'x'\n<Cell style={{ height: T.controlH.md }} />`, opts)).toHaveLength(0)
+    expect(scanHit('x.tsx', `const B = BlockButton\n<B style={{ height: T.controlH.md }} />`, opts)).toHaveLength(0)
+    expect(scanHit('x.tsx', `<ui.BlockButton style={{ height: T.controlH.md }} />`, opts)).toHaveLength(0)
   })
 
   it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {

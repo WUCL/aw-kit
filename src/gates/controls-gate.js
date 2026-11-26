@@ -7,7 +7,9 @@
 //          否則手機上可點範圍只剩外觀大小。style 是同檔變數（含展開 `...btnBase`）時展開一層判斷。
 //          例外寫 `audit-ok: hitArea — 理由`（同上下行規則）。邊界：style 來自別的檔案、div 加 onClick、<input>／<select>。
 //          專案自己的「自繪按鈕」共用元件（外觀與可點範圍全由呼叫端 style 決定，如 BlockButton）以 opts.extraTags 加入檢查；
-//          只接受 JSX 標籤名（字母開頭），不改寫原始碼。
+//          只接受 JSX 標籤名（以點分段、每段為 JS 識別字），名稱比對寫法原文：別名 import（`as Cell`）、
+//          重新指派（`const B = BlockButton`）、成員寫法不同（`ui.BlockButton` 對 `BlockButton`）都不檢查——歸 code review。
+//          合格條件與原生 button 相同（className 含 hit-area 或 audit-ok）；不收 className 的元件需自備對應 prop 再談。
 // 負例清單：tests/gates/controls-gate.test.js。
 import ts from 'typescript'
 
@@ -33,9 +35,9 @@ export function scan(file, text) {
 }
 
 const HIT_TAGS = ['button', 'a', 'Link']
-const TAG_NAME = /^[A-Za-z][\w.]*$/
+const TAG_NAME = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/
 export function scanHit(file, text, opts = {}) {
-  const extra = opts.extraTags ?? []
+  const extra = opts?.extraTags ?? []
   if (!Array.isArray(extra) || extra.some(t => typeof t !== 'string' || !TAG_NAME.test(t))) {
     throw new TypeError(`scanHit: extraTags 必須是 JSX 標籤名陣列，收到 ${JSON.stringify(extra)}`)
   }
