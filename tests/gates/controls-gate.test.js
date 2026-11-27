@@ -107,10 +107,10 @@ describe('check:controls hitArea', () => {
     for (const h of bad) expect(() => scanHit('x.tsx', src, { extraTags: ['BlockButton'], hitProp: h }), JSON.stringify(h)).toThrow(TypeError)
     expect(() => scanHit('x.tsx', src, { hitProp: { name: 'hit', tags: ['BlockButton'] } })).toThrow(TypeError) // 沒有 extraTags
     // 原生標籤即使放進 extraTags 也不可列為實作 hit（React 只會把 hit 原樣寫到 DOM）
-    for (const t of ['button', 'a', 'div', 'span'])
+    for (const t of ['button', 'a', 'div', 'span', 'Link'])
       expect(() => scanHit('x.tsx', src, { extraTags: [t, 'BlockButton'], hitProp: { name: 'hit', tags: [t] } }), t).toThrow(TypeError)
-    // 專案自己的 Link 元件（大寫）可以列入
-    expect(scanHit('x.tsx', `<Link hit style={{ height: T.controlH.md }} />`, { extraTags: ['Link'], hitProp: { name: 'hit', tags: ['Link'] } })).toHaveLength(0)
+    // 專案自己的大寫元件可以列入
+    expect(scanHit('x.tsx', `<MyLink hit style={{ height: T.controlH.md }} />`, { extraTags: ['MyLink'], hitProp: { name: 'hit', tags: ['MyLink'] } })).toHaveLength(0)
   })
 
   it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {
