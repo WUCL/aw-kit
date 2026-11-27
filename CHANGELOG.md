@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [0.14.0] — 2026-11-27
+
+### Added
+
+- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags, hitProp })` — for `extraTags` components, the prop named by `hitProp` (e.g. `'hit'`, the component adds the `hit-area` class itself) also satisfies the hit-area rule, but only as a bare attribute or `={true}`; `={false}`, conditionals and variables do not count (fail-closed). Built-in tags (`button`／`a`／`Link`) ignore it. A non-identifier `hitProp` throws.
+
 ## [0.13.0] — 2026-11-27
 
 ### Added

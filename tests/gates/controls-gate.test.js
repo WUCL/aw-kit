@@ -81,6 +81,20 @@ describe('check:controls hitArea', () => {
     expect(scanHit('x.tsx', `<ui.BlockButton style={{ height: T.controlH.md }} />`, opts)).toHaveLength(0)
   })
 
+  it('hitProp：extraTags 元件寫 hit／hit={true} 放行；false、條件式、變數、原生標籤不算', () => {
+    const o = { extraTags: ['BlockButton'], hitProp: 'hit' }
+    const b = attrs => `<BlockButton ${attrs} style={{ height: T.controlH.md }} />`
+    expect(scanHit('x.tsx', b('hit'), o)).toHaveLength(0)
+    expect(scanHit('x.tsx', b('hit={true}'), o)).toHaveLength(0)
+    for (const a of ['hit={false}', 'hit={on}', 'hit={a ? true : false}', 'hit="true"', '']) expect(scanHit('x.tsx', b(a), o)).toHaveLength(1)
+    expect(scanHit('x.tsx', b('hit'), { extraTags: ['BlockButton'] })).toHaveLength(1)        // 沒設 hitProp 不認
+    expect(scanHit('x.tsx', `<button hit style={{ height: T.controlH.md }} />`, o)).toHaveLength(1) // 原生標籤不認
+    for (const bad of [1, '', 'a-b', null]) {
+      if (bad === null) expect(scanHit('x.tsx', b(''), { hitProp: null, extraTags: ['BlockButton'] })).toHaveLength(1)
+      else expect(() => scanHit('x.tsx', b(''), { ...o, hitProp: bad })).toThrow(TypeError)
+    }
+  })
+
   it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {
     const decl = `const btnBase = { height: T.controlH.md };\n`
     expect(noHit(decl + `<button style={btnBase} />`)).toHaveLength(1)

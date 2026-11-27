@@ -9,7 +9,8 @@
 //          專案自己的「自繪按鈕」共用元件（外觀與可點範圍全由呼叫端 style 決定，如 BlockButton）以 opts.extraTags 加入檢查；
 //          只接受 JSX 標籤名（以點分段、每段為 JS 識別字），名稱由識別字鏈組回（忽略空白、註解、解開跳脫）後比對：別名 import（`as Cell`）、
 //          重新指派（`const B = BlockButton`）、成員寫法不同（`ui.BlockButton` 對 `BlockButton`）都不檢查——歸 code review。
-//          合格條件與原生 button 相同（className 含 hit-area 或 audit-ok）；不收 className 的元件需自備對應 prop 再談。
+//          合格條件：className 含 hit-area、audit-ok，或（僅 extraTags 元件）opts.hitProp 指名的屬性寫成裸屬性或 `={true}`
+//          （元件以該 prop 自行加上 hit-area class）。`={false}`、條件式、變數一律不算：靜態看不出值就當沒有（fail-closed）。
 // 負例清單：tests/gates/controls-gate.test.js。
 import ts from 'typescript'
 
@@ -38,8 +39,12 @@ const HIT_TAGS = ['button', 'a', 'Link']
 const TAG_NAME = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/
 export function scanHit(file, text, opts = {}) {
   // 鍵名打錯或整個傳陣列會靜默變成「沒有額外標籤」→ 只收 null／undefined 或只含 extraTags 鍵的物件
-  if (opts != null && (typeof opts !== 'object' || Array.isArray(opts) || Object.keys(opts).some(k => k !== 'extraTags'))) {
-    throw new TypeError('scanHit: opts 只接受 { extraTags }')
+  if (opts != null && (typeof opts !== 'object' || Array.isArray(opts) || Object.keys(opts).some(k => k !== 'extraTags' && k !== 'hitProp'))) {
+    throw new TypeError(`scanHit: opts 只接受 { extraTags, hitProp }，收到鍵 ${Object.keys(Object(opts)).join(', ')}`)
+  }
+  const hitProp = opts != null && 'hitProp' in opts ? opts.hitProp : null
+  if (hitProp !== null && (typeof hitProp !== 'string' || !/^[A-Za-z_$][\w$]*$/.test(hitProp))) {
+    throw new TypeError('scanHit: hitProp 必須是屬性名字串')
   }
   // 鍵在但值是 null／undefined（例：{ extraTags: config.extraTag } 打錯來源鍵）同樣靜默變空 → 有鍵就必須是陣列
   const extra = opts != null && 'extraTags' in opts ? opts.extraTags : []
@@ -101,7 +106,11 @@ export function scanHit(file, text, opts = {}) {
         const cls = attr('className')?.initializer?.getText(sf) ?? ''
         const line = sf.getLineAndCharacterOfPosition(node.getStart(sf)).line
         const probe = [lines[line - 1], lines[line], lines[line + 1], lines[line + 2]]
-        if (!/\bhit-area\b/.test(cls) && !probe.some(l => (l ?? '').includes('audit-ok: hitArea'))) hits.push({ file, line: line + 1, tag: tagOf(node.tagName) })
+        const tag = tagOf(node.tagName)
+        const hp = hitProp && !HIT_TAGS.includes(tag) ? attr(hitProp) : undefined
+        // 裸屬性（initializer 為空）或 {true}；其他寫法看不出值 → 不算
+        const hitOn = hp && (!hp.initializer || (ts.isJsxExpression(hp.initializer) && hp.initializer.expression?.kind === ts.SyntaxKind.TrueKeyword))
+        if (!hitOn && !/\bhit-area\b/.test(cls) && !probe.some(l => (l ?? '').includes('audit-ok: hitArea'))) hits.push({ file, line: line + 1, tag })
       }
     }
     ts.forEachChild(node, visit)
