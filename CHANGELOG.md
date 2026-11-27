@@ -6,7 +6,7 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags, hitProp: { name, tags } })` — components listed in `hitProp.tags` (must be in `extraTags`, i.e. components that really implement the prop and add the `hit-area` class themselves) also satisfy the hit-area rule when the `name` prop is a bare attribute or `={true}`. Only the last same-name attribute counts, and a later `{...spread}` voids it (it may override at runtime); `={false}`, conditionals and variables never count (fail-closed). Any malformed `hitProp` (null, empty/unknown tags, extra keys, non-identifier name) throws.
+- `aw-kit/gates/controls-gate`: `scanHit(file, text, { extraTags, hitProp: { name, tags } })` — components listed in `hitProp.tags` (must be in `extraTags`, i.e. components that really implement the prop and add the `hit-area` class themselves) also satisfy the hit-area rule when the `name` prop is a bare attribute or `={true}`. Only the last same-name attribute counts, and a later `{...spread}` voids it (it may override at runtime); `={false}`, conditionals and variables never count (fail-closed). Any malformed `hitProp` throws: null, empty or unknown tags, intrinsic (lowercase, undotted) tags such as `button`／`div`, extra keys, a non-identifier name, or a reserved name (`className`／`style`／`key`／`ref`). Aliased or member-access components that forward the prop to a native element (e.g. `RR.Link`) cannot be detected statically.
 
 ## [0.13.0] — 2026-11-27
 
