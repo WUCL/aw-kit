@@ -102,9 +102,12 @@ describe('check:controls hitArea', () => {
   it('hitProp 設定不合法一律拋錯（不靜默停用）', () => {
     const src = `<BlockButton hit style={{ height: T.controlH.md }} />`
     const bad = [null, undefined, 'hit', { name: 'hit' }, { name: 'hit', tags: [] }, { name: 'hit', tags: ['Other'] },
-      { name: 'a-b', tags: ['BlockButton'] }, { name: 'hit', tags: ['BlockButton'], extra: 1 }, { name: 'hit', tags: new Array(1) }]
+      { name: 'a-b', tags: ['BlockButton'] }, { name: 'hit', tags: ['BlockButton'], extra: 1 }, { name: 'hit', tags: new Array(1) },
+      { name: 'className', tags: ['BlockButton'] }, { name: 'key', tags: ['BlockButton'] }]
     for (const h of bad) expect(() => scanHit('x.tsx', src, { extraTags: ['BlockButton'], hitProp: h }), JSON.stringify(h)).toThrow(TypeError)
     expect(() => scanHit('x.tsx', src, { hitProp: { name: 'hit', tags: ['BlockButton'] } })).toThrow(TypeError) // 沒有 extraTags
+    // 原生標籤即使放進 extraTags 也不可列為實作 hit（React 只會把 hit 原樣寫到 DOM）
+    expect(() => scanHit('x.tsx', src, { extraTags: ['button', 'BlockButton'], hitProp: { name: 'hit', tags: ['button'] } })).toThrow(TypeError)
   })
 
   it('同檔變數展開一層：style={btnBase}、{...btnBase}、三元式', () => {

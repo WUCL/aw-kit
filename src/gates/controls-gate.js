@@ -50,13 +50,14 @@ export function scanHit(file, text, opts = {}) {
     throw new TypeError(`scanHit: extraTags 必須是 JSX 標籤名陣列，收到 ${JSON.stringify(extra)}`)
   }
   // hitProp：{ name, tags }——只有 tags 列出的元件（必須在 extraTags 內、真的實作了該 prop）才認 name 屬性。
-  // 鍵在就必須完整合法（null／空 tags／不在 extraTags 的標籤都拋錯，不靜默停用）。
+  // 鍵在就必須完整合法（null／空 tags／不在 extraTags 的標籤都拋錯，不靜默停用）。原生 button／a／Link 不會實作 prop，
+  // 列入 tags 拋錯；name 不可是閘門自己判讀或 React 保留的 className／style／key／ref。
   let hitProp = null
   if (opts != null && 'hitProp' in opts) {
     const h = opts.hitProp
     if (!h || typeof h !== 'object' || Array.isArray(h) || Object.keys(h).some(k => k !== 'name' && k !== 'tags') ||
-        typeof h.name !== 'string' || !/^[A-Za-z_$][\w$]*$/.test(h.name) ||
-        !Array.isArray(h.tags) || h.tags.length === 0 || Array.from(h.tags).some(t => typeof t !== 'string' || !extra.includes(t))) {
+        typeof h.name !== 'string' || !/^[A-Za-z_$][\w$]*$/.test(h.name) || ['className', 'style', 'key', 'ref'].includes(h.name) ||
+        !Array.isArray(h.tags) || h.tags.length === 0 || Array.from(h.tags).some(t => typeof t !== 'string' || !extra.includes(t) || HIT_TAGS.includes(t))) {
       throw new TypeError('scanHit: hitProp 必須是 { name: 屬性名, tags: extraTags 內實作該屬性的元件（至少一個）}')
     }
     hitProp = { name: h.name, tags: new Set(h.tags) }
