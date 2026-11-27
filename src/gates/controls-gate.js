@@ -11,7 +11,8 @@
 //          重新指派（`const B = BlockButton`）、成員寫法不同（`ui.BlockButton` 對 `BlockButton`）都不檢查——歸 code review。
 //          合格條件：className 含 hit-area、audit-ok，或 opts.hitProp = { name, tags } 列出的元件把 name 屬性寫成裸屬性或 `={true}`
 //          （元件以該 prop 自行加上 hit-area class）。只看最後一個同名屬性、其後不得有 {...spread}；`={false}`、條件式、變數
-//          一律不算（靜態看不出值就當沒有，fail-closed）。hitProp.name 寫成無關屬性（如 disabled）無從察覺，歸 code review。
+//          一律不算（靜態看不出值就當沒有，fail-closed）。hitProp.tags 是消費端的宣告（「這些元件實作了該 prop」），閘門無從驗證：列入 NavLink 等原樣轉給 <a> 的元件、
+//          或 name 寫成無關屬性（如 disabled）都會放行，歸 code review。
 // 負例清單：tests/gates/controls-gate.test.js。
 import ts from 'typescript'
 
